@@ -1,0 +1,8 @@
+[RecvInit]
+Class="Function"
+Prototype="void RecvInit();"
+
+[RecvFrame]
+Class="Function"
+Prototype="unsigned char *RecvFrame(unsigned char src);"
+
