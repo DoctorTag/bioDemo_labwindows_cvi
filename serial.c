@@ -15,18 +15,19 @@
 /********************************************************************************************/
 /* Include files                                                                            */
 /********************************************************************************************/
+#include <utility.h>
 #include <rs232.h>
 #include <ansi_c.h>
 //#include <cvirte.h>
 //#include <userint.h>
-#include "commcallback.h"
+#include "serial.h"
 #include <formatio.h>
 
 /********************************************************************************************/
 /* Constants                                                                                    */
 /********************************************************************************************/
-#define COM_PORT    17
-
+//#define COM_PORT    35
+//int com_port;
 /********************************************************************************************/
 /* Globals                                                                                  */
 /********************************************************************************************/
@@ -40,37 +41,41 @@ void CVICALLBACK Event_Char_Detect_Func (int portNo,int eventMask,void *callback
 /********************************************************************************************/
 /* Application entry point.                                                                 */
 /********************************************************************************************/
-int Init_ComPort (void)
+int Init_ComPort (int com_port)
 {
+	int RS232Error  ;
+	DisableBreakOnLibraryErrors ();
+	/*  Open and Configure Com port */
+	RS232Error = OpenComConfig (com_port, "", 19200, 0, 8, 1, 512, 512);
+	EnableBreakOnLibraryErrors ();
 
-    /*  Open and Configure Com port */
-    OpenComConfig (COM_PORT, "", 9600, 0, 8, 1, 512, 512);
+	if (RS232Error == 0)
+	{ 
+		/*  Turn off Hardware handshaking (loopback test will not function with it on) */
+		SetCTSMode (com_port, LWRS_HWHANDSHAKE_OFF);
 
-    /*  Turn off Hardware handshaking (loopback test will not function with it on) */
-    SetCTSMode (COM_PORT, LWRS_HWHANDSHAKE_OFF);
-
-    /*  Make sure Serial buffers are empty */
-    FlushInQ (COM_PORT);
-    FlushOutQ (COM_PORT);
-
-
-    /*  Install a callback such that if the event character appears at the
-        receive buffer, our function will be notified.  */
+		/*  Make sure Serial buffers are empty */
+		FlushInQ (com_port);
+		FlushOutQ (com_port);
+	}
+ 
+	/*  Install a callback such that if the event character appears at the
+		receive buffer, our function will be notified.  */
 //  InstallComCallback (COM_PORT, LWRS_RXFLAG, 0, (int)gEventChar[0] , Event_Char_Detect_Func, 0);
 
-
-
-    return 0;
+	return RS232Error;
 }
 
 /********************************************************************************************/
 /* SendData ():  Respond to the Send button to send characters out of the serial port.      */
 /********************************************************************************************/
-int SendData (char *data,int dlen)
+int SendData (int com_port,unsigned char *data,int dlen)
 {
-    FlushInQ (COM_PORT);
-    ComWrt (COM_PORT, data, dlen);
-    return 0;
+	if(com_port < 1)
+		 return 0;
+	FlushInQ (com_port);
+	ComWrt (com_port, data, dlen);
+	return dlen;
 }
 
 /********************************************************************************************/
@@ -78,7 +83,7 @@ int SendData (char *data,int dlen)
 /********************************************************************************************/
 void CVICALLBACK Event_Char_Detect_Func (int portNo,int eventMask,void *callbackData)
 {
-    return;
+	return;
 }
 
 
@@ -86,17 +91,22 @@ void CVICALLBACK Event_Char_Detect_Func (int portNo,int eventMask,void *callback
 /********************************************************************************************/
 /* ReceiveData ():  Read the data on the serial COM port.                                   */
 /********************************************************************************************/
-int  ReceiveData (char *buf,int buflen)
+int  ReceiveData (int com_port,unsigned char *buf,int buflen)
 {
-    int     strLen;
+	int     strLen;
 
+	 if(com_port < 1)
+		 return 0;
+	/*  Read the characters from the port */
+	strLen = GetInQLen (com_port);
+	if(strLen > buflen)
+		strLen = buflen;
+	ComRd (com_port, buf, strLen);
 
-            /*  Read the characters from the port */
-            strLen = GetInQLen (COM_PORT);
-			if(strLen > buflen)
-				strLen = buflen;
-            ComRd (COM_PORT, buf, strLen);
-
-    return strLen;
+	return strLen;
 }
 
+int ShutDownCom (int com_port)
+{  
+	return  CloseCom(com_port);
+}

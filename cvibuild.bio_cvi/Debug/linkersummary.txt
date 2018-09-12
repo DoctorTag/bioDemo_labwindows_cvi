@@ -1,6 +1,7 @@
-commcallback.obj
+bio_demo.obj
+fwup_cb.obj
 mmd_comm.obj
-stripchart.obj
+serial.obj
 cvi.lib
 cvistart.lib
 kernel32.lib

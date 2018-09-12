@@ -1,10 +1,10 @@
 [Init_ComPort]
 Class="Function"
-Prototype="int Init_ComPort();"
+Prototype="int Init_ComPort(int com_port);"
 
 [SendData]
 Class="Function"
-Prototype="int SendData(unsigned char *data, int dlen);"
+Prototype="int SendData(int com_port, unsigned char *data, int dlen);"
 
 [Event_Char_Detect_Func]
 Class="Function"
@@ -12,9 +12,9 @@ Prototype="void Event_Char_Detect_Func(int portNo, int eventMask, void *callback
 
 [ReceiveData]
 Class="Function"
-Prototype="int ReceiveData(unsigned char *buf, int buflen);"
+Prototype="int ReceiveData(int com_port, unsigned char *buf, int buflen);"
 
 [ShutDownCom]
 Class="Function"
-Prototype="int ShutDownCom();"
+Prototype="int ShutDownCom(int com_port);"
 

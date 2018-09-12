@@ -1,6 +1,6 @@
 [Workspace Header]
 Version = 1700
-Pathname = "/d/software/2018/cvi/feelkit/stripchart.cws"
+Pathname = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/bio_cvi.cws"
 CVI Dir = "/c/program files (x86)/national instruments/cvi2017"
 CVI Shared Dir = "/C/Program Files (x86)/National Instruments/Shared/CVI"
 CVI Pub Local Dir = "/C/ProgramData/National Instruments/CVI2017"
@@ -11,12 +11,12 @@ VXIplug&play Framework Dir = "/C/Program Files (x86)/IVI Foundation/VISA/winnt"
 VXIplug&play Framework 64-bit Dir = "/C/Program Files/IVI Foundation/VISA/win64"
 Number of Projects = 1
 Active Project = 1
-Project 0001 = "stripchart.prj"
-Drag Bar Left = 380
-Window Top = 71
-Window Left = 18
-Window Bottom = 573
-Window Right = 808
+Project 0001 = "bio_cvi.prj"
+Drag Bar Left = 185
+Window Top = 140
+Window Left = 30
+Window Bottom = 588
+Window Right = 804
 Maximized = True
 Maximized Children = True
 Max32 Number Of Errors = 20
@@ -30,9 +30,9 @@ Save Changes Before Compiling = "Always"
 Hide Windows = False
 Break At First Statement = False
 Sort Type = "File Name"
-Number of Opened Files = 10
+Number of Opened Files = 0
 Window Confinement Region Enabled = True
-MainColumnWidth = 363
+MainColumnWidth = 168
 FileDateColumnWidth = 70
 FileSizeColumnWidth = 70
 
@@ -46,124 +46,73 @@ Batch Build Release = False
 Batch Build Debug = False
 
 [File 0001]
-Path = "/d/software/2018/cvi/feelkit/stripchart.c"
+Path = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/bio_demo.c"
 File Type = "CSource"
-Disk Date = 3615096896
+Disk Date = 3619504916
 In Projects = "1,"
-Window Top = 71
-Window Left = 30
-Window Z-Order = 1
-Source Window State = "1,83,83,83,12,14,14,0,0,144,0,248,0,0,0,36,56,0,83,12,179,439,1,33,"
+Source Window State = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
 
 [File 0002]
-Path = "/d/software/2018/cvi/feelkit/commcallback.c"
+Path = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/fwup_cb.c"
 File Type = "CSource"
-Disk Date = 3614828492
+Disk Date = 3619505876
 In Projects = "1,"
-Window Top = 117
-Window Left = 54
-Window Z-Order = 2
-Source Window State = "1,27,27,27,8,16,16,0,0,80,0,0,0,0,0,25,85,0,109,113,323,517,1,0,"
+Source Window State = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
 
 [File 0003]
-Path = "/d/software/2018/cvi/feelkit/mmd_comm.c"
+Path = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/mmd_comm.c"
 File Type = "CSource"
-Disk Date = 3592391392
+Disk Date = 3619501023
 In Projects = "1,"
-Window Top = 25
-Window Left = 6
-Window Z-Order = 5
-Source Window State = "1,58,58,58,16,24,24,0,0,80,0,0,0,0,0,25,0,0,43,53,323,517,1,0,"
+Source Window State = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
 
 [File 0004]
-Path = "/d/software/2018/cvi/feelkit/mmd_comm.h"
-File Type = "Include"
-Disk Date = 3608176607
+Path = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/serial.c"
+File Type = "CSource"
+Disk Date = 3619387461
 In Projects = "1,"
-Window Top = 186
-Window Left = 90
-Window Z-Order = 6
-Source Window State = "1,58,58,58,8,30,30,0,3,80,0,7,0,0,0,25,0,0,58,8,323,517,1,0,"
+Source Window State = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
 
 [File 0005]
-Path = "/c/Program Files (x86)/National Instruments/CVI2017/include/ansi/stdlib.h"
+Path = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/bio_demo.h"
 File Type = "Include"
-Disk Date = 3573565200
-In Projects = ""
-Window Top = 140
-Window Left = 66
-Window Z-Order = 10
-Source Window State = "1,25,25,25,17,21,17,0,0,80,0,0,0,0,0,25,7,0,26,22,323,517,1,0,"
+Disk Date = 3619329162
+In Projects = "1,"
+Source Window State = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
 
 [File 0006]
-Path = "/c/Program Files (x86)/National Instruments/CVI2017/include/rs232.h"
+Path = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/fwup_cb.h"
 File Type = "Include"
-Disk Date = 3573565200
-In Projects = ""
-Window Top = 163
-Window Left = 78
-Window Z-Order = 9
-Source Window State = "1,65,65,65,12,25,25,0,3,80,0,0,0,0,0,24,53,0,65,12,311,517,1,0,"
+Disk Date = 3619090919
+In Projects = "1,"
+Source Window State = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
 
 [File 0007]
-Path = "/d/software/2018/cvi/feelkit/commcallback.h"
+Path = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/mmd_comm.h"
 File Type = "Include"
-Disk Date = 3592369425
+Disk Date = 3619500153
 In Projects = "1,"
-Window Top = 140
-Window Left = 66
-Window Z-Order = 8
-Source Window State = "1,19,19,19,18,22,18,0,0,80,0,0,0,0,0,25,0,0,19,31,323,517,1,0,"
+Source Window State = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
 
 [File 0008]
-Path = "/d/software/2018/cvi/feelkit/stripchart.h"
+Path = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/serial.h"
 File Type = "Include"
-Disk Date = 3608116758
+Disk Date = 3619052338
 In Projects = "1,"
-Window Top = 163
-Window Left = 64
-Window Z-Order = 3
-Source Window State = "1,22,22,22,9,25,25,0,3,80,0,0,0,0,0,25,0,0,22,9,323,517,1,0,"
+Source Window State = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
 
 [File 0009]
-Path = "/d/software/2018/cvi/feelkit/stripchart.uir"
+Path = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/bio_demo.uir"
 File Type = "User Interface Resource"
-Disk Date = 3608181746
+Disk Date = 3619329162
 In Projects = "1,"
-Window Top = 94
-Window Left = 42
-Window Height = 323
-Window Width = 517
-Window Z-Order = 4
-
-[File 0010]
-Path = "/c/Program Files (x86)/National Instruments/CVI2017/include/userint.h"
-File Type = "Include"
-Disk Date = 3573565200
-In Projects = ""
-Window Top = 48
-Window Left = 18
-Window Z-Order = 7
-Source Window State = "1,2410,2410,2410,12,26,26,0,3,80,0,0,0,0,0,25,2398,0,2410,12,323,517,1,0,"
-
-[Tab Order]
-Tab 0001 = "/c/Program Files (x86)/National Instruments/CVI2017/include/ansi/stdlib.h"
-Tab 0002 = "/c/Program Files (x86)/National Instruments/CVI2017/include/rs232.h"
-Tab 0003 = "/d/software/2018/cvi/feelkit/commcallback.c"
-Tab 0004 = "/d/software/2018/cvi/feelkit/mmd_comm.c"
-Tab 0005 = "/d/software/2018/cvi/feelkit/stripchart.c"
-Tab 0006 = "/d/software/2018/cvi/feelkit/mmd_comm.h"
-Tab 0007 = "/d/software/2018/cvi/feelkit/commcallback.h"
-Tab 0008 = "/c/Program Files (x86)/National Instruments/CVI2017/include/userint.h"
-Tab 0009 = "/d/software/2018/cvi/feelkit/stripchart.uir"
-Tab 0010 = "/d/software/2018/cvi/feelkit/stripchart.h"
 
 [Default Build Config 0001 Debug]
 Generate Browse Info = True
 Enable Uninitialized Locals Runtime Warning = True
 Batch Build = False
 Profile = "Disabled"
-Debugging Level = "Extended"
+Debugging Level = "Standard"
 Execution Trace = "Disabled"
 Command Line Args = ""
 Working Directory = ""
@@ -187,7 +136,7 @@ Generate Browse Info = True
 Enable Uninitialized Locals Runtime Warning = True
 Batch Build = False
 Profile = "Disabled"
-Debugging Level = "Extended"
+Debugging Level = "Standard"
 Execution Trace = "Disabled"
 Command Line Args = ""
 Working Directory = ""
@@ -245,25 +194,4 @@ External Process Path = ""
 Command Line Args = ""
 Working Directory = ""
 Environment Options = ""
-
-[Watch 1]
-Watch Expression = "GetCtrlVal"
-
-[Watch 2]
-Watch Expression = "Rdbuf"
-
-[Watch 3]
-Watch Expression = "ReadAdcData"
-
-[Watch 4]
-Watch Expression = "datapoints"
-
-[Watch 5]
-Watch Expression = "ReadAdcData"
-
-[Watch 6]
-Watch Expression = "MMDTSTRxPacket"
-
-[Watch 7]
-Watch Expression = "LVSteamingFlag"
 

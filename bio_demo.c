@@ -16,21 +16,25 @@
 #include <cvirte.h>
 #include <userint.h>
 #include <ansi_c.h>
-#include "stripchart.h"
-#include "commcallback.h"
+#include "bio_demo.h"
+#include "serial.h"
 #include "mmd_comm.h"
+#include "fwup_cb.h"
 
 volatile    int     LVSteamingFlag             =   0;
 volatile  unsigned char SteamCBdata[2];
 
 int ReadAdcData[32];
-
+volatile int comport;
+char comStr[4];
+char msg[100];
 //static      CmtTSQHandle        tsqHdl;
 //static      int                 status;
 //static      CmtThreadFunctionID LVSteamThreadFunctionID;
 
-static int hpanel;
-void SteamData(unsigned char isbegin,unsigned char dtype) ;
+int hpanel,FWUpgrade_handle;
+
+
 
 int CVICALLBACK LVSteamThreadFunction(void *callbackData) ;
 /*---------------------------------------------------------------------------*/
@@ -38,23 +42,72 @@ int CVICALLBACK LVSteamThreadFunction(void *callbackData) ;
 /*---------------------------------------------------------------------------*/
 int main (int argc, char *argv[])
 {
-	LVSteamingFlag             =   0;
 
+	int ret;
+	LVSteamingFlag = 0;
+	comport = 0;
 	if (InitCVIRTE (0, argv, 0) == 0)
 		return -1;
-	if ((hpanel = LoadPanel (0, "stripchart.uir", PANEL)) < 0)
+
+	PromptPopup ("Config COM Port", "COMx",comStr, 3);
+	comport = atoi(comStr);
+	ret = Init_ComPort (comport);
+	if( ret != 0)
+	{
+		comport = 0;
+		sprintf (msg, "Config COM port error: %d, please reconfig!!!",ret);
+		MessagePopup ("This is a Message Popup",msg);
+	};
+
+	if ((hpanel = LoadPanel (0, "bio_demo.uir", PANEL)) < 0)
 		return -1;
 
-	Init_ComPort ()  ;
+
 	/* Display the panel and run the UI */
 	DisplayPanel (hpanel);
 	RunUserInterface ();
 
 	/* Free resources and return */
-	ShutDownCom ()  ;
+	if(comport > 0)
+		ShutDownCom (comport)  ;
 	DiscardPanel (hpanel);
 	CloseCVIRTE ();
 	return 0;
+}
+
+/*---------------------------------------------------------------------------*/
+/* This function is called whenever any item in the Configuration or Test    */
+/* menus is selected.  Notice that we are passed the menubar handle and item */
+/* ID of the selected item.                                                  */
+/*---------------------------------------------------------------------------*/
+void CVICALLBACK ConfigMenuCallback (int menubar, int menuItem,
+									 void *callbackData, int panel)
+{
+	int ret;
+	switch (menuItem)
+	{
+
+			/* Take action depending on which item was selected */
+		case MENUBAR_MENU1_ITEM1 :
+			/* Run through a series of popups... */
+			PromptPopup ("Config COM Port", "COMx",  comStr, 3);
+			comport = atoi(comStr);
+			ret = Init_ComPort (comport);
+			if( ret != 0)
+			{
+				comport = 0;
+				sprintf (msg, "Config COM port error: %d, please reconfig!!!",ret);
+				MessagePopup ("This is a Message Popup",msg);
+			};
+			break;
+		case MENUBAR_MENU1_ITEM2 :
+
+			FWUpgrade_handle = LoadPanel (hpanel, "bio_demo.uir", PANEL_FWUP);
+			InstallPopup (FWUpgrade_handle);
+
+			break;
+
+	}
 }
 
 
@@ -74,21 +127,22 @@ int CVICALLBACK PlotData (int panel, int control, int event,
 		LVSteamingFlag = val;
 		if(val ==1)
 		{
-	//	SteamCBdata[0] = (REG_FUN2_ECG_D | M_FUN_START|OBEY_MODE);
-	//			SteamCBdata[1] = 0;
+			//	SteamCBdata[0] = (REG_FUN2_ECG_D | M_FUN_START|OBEY_MODE);
+			//			SteamCBdata[1] = 0;
 
 			SteamCBdata[0] = (M_FUN_START|OBEY_MODE);
-		//	SteamCBdata[1] = REG_FUN1_PPG_R;
-		//	SteamCBdata[1] = REG_FUN1_RESP;
-			//	 SteamCBdata[1] = FUN1_COMBO_STD;
-			 SteamCBdata[1] = REG_FUN1_ECG_A;
+			//	SteamCBdata[1] = REG_FUN1_PPG_R;
+			//	SteamCBdata[1] = REG_FUN1_RESP;
+			//  SteamCBdata[1] = FUN1_COMBO_STD;
+			SteamCBdata[1] = REG_FUN1_ECG_A;
 
 			PostDeferredCallToThread (LVSteamThreadFunction, (void*)SteamCBdata, CmtGetMainThreadID ());
 		}
 		else
 		{
 
-			SteamData(OBEY_MODE,SteamCBdata[1])   ;
+			//	SteamData(comport,OBEY_MODE,SteamCBdata[1])   ;
+			sendCMD(comport,DATA_STREAMING_COMMAND,OBEY_MODE,SteamCBdata[1])   ;
 		}
 
 
@@ -128,7 +182,8 @@ int CVICALLBACK Shutdown (int panel, int control, int event,
 	if (event == EVENT_COMMIT)
 	{
 		if(LVSteamingFlag == 1)
-			SteamData(OBEY_MODE,SteamCBdata[1])   ;
+			//	SteamData(comport,OBEY_MODE,SteamCBdata[1])   ;
+			sendCMD(comport,DATA_STREAMING_COMMAND,OBEY_MODE,SteamCBdata[1])   ;
 		LVSteamingFlag=0;
 		QuitUserInterface (0);
 	}
@@ -170,7 +225,8 @@ int CVICALLBACK PanelCB (int panel, int event, void *callbackData,
 	{
 		case EVENT_CLOSE:
 			if(LVSteamingFlag == 1)
-				SteamData(OBEY_MODE,SteamCBdata[1])   ;
+				sendCMD(comport,DATA_STREAMING_COMMAND,OBEY_MODE,SteamCBdata[1])   ;
+			//SteamData(comport,OBEY_MODE,SteamCBdata[1])   ;
 			LVSteamingFlag=0;
 			QuitUserInterface (0);
 			break;
@@ -178,136 +234,97 @@ int CVICALLBACK PanelCB (int panel, int event, void *callbackData,
 	return 0;
 }
 
-void SteamData(unsigned char isbegin,unsigned char dtype)
-{
-	static  unsigned char Wrbuf[10];
-
-	Wrbuf[0] = START_DATA_HEADER;           // Start Header
-	Wrbuf[1] = DATA_STREAMING_COMMAND;      // ECG data streaming command
-	Wrbuf[2] = isbegin;                           // Start command
-	Wrbuf[3] = dtype;
-
-	Wrbuf[4] = END_DATA_HEADER;
-	Wrbuf[5] = END_DATA_HEADER;
-	Wrbuf[6] = '\n';
-	SendData(Wrbuf, 7);              // Send command to firmware
-}
 
 
 int CVICALLBACK LVSteamThreadFunction(void *callbackData)
 {
-	int traces,i;
-	unsigned int opacity;
-	static unsigned int oldOpacity = 255;
-//	double data_ppg[3];
 	double data_ld[1];
 
-	unsigned char *ptrframe;
-	unsigned char Rdbuf[64];
-	unsigned char iLoopCnt = 0;
-	//unsigned char Wrbuf[10];
+	unsigned char result,*ptrframe;
+
+
 	short ADC_Data_ptr;
-	//short filter_tmp;
 	double fout;
-	int readbytes;
+
 
 	unsigned char *pcldata = (unsigned char *)callbackData ;
-	/*
-	Wrbuf[0] = START_DATA_HEADER;           // Start Header
-	Wrbuf[1] = DATA_STREAMING_COMMAND;      // ECG data streaming command
-	Wrbuf[2] = 1;                           // Start command
-	//   Wrbuf[3] = ADC_FUN_ECG;
-	Wrbuf[3] = *((unsigned char *)callbackData);
 
-	Wrbuf[4] = END_DATA_HEADER;
-	Wrbuf[5] = END_DATA_HEADER;
-	Wrbuf[6] = '\n';
-	*/
-	SteamData(*pcldata,*(pcldata+1))   ;
-	readbytes = ReceiveData(Rdbuf, 7);   // Read buffer
-	while (readbytes > 0)
-	{
-		readbytes = ReceiveData(Rdbuf, 7);
-	}
 
-	//SendData(Wrbuf, 7);              // Send command to firmware
-	// Stream_Live_Data = TRUE;                // Set busy flag
-	// initFilter();
-	//resetFilter();
+//sendCMD(comport,DATA_STREAMING_COMMAND,*pcldata,*(pcldata+1))   ;
+	sendSyncCMDWithRsp(comport,DATA_STREAMING_COMMAND,*pcldata,*(pcldata+1),1000,&result)  ;
+	if(result == 0)
+		return 0;
+
 	RecvInit() ;
 	while( LVSteamingFlag)
 	{
+		ptrframe = receiveSyncRspFrame(comport,500,&result) ;
 
-		memset(Rdbuf,0,63);                 // Clear receive buffer
-		readbytes =ReceiveData(Rdbuf, 63);          // Read packet of 14 samples
-
-		if(readbytes>0)
+		if(( ptrframe)&&(result == 0))
 		{
-			for (short i = 0; i < readbytes; i++)
+			if(ptrframe[1] == DATA_STREAMING_PACKET)
 			{
-				ptrframe = RecvFrame(Rdbuf[i]);
-				if( ptrframe)
+				ADC_Data_ptr = 0;                               // Set pointer
+				ReadAdcData[ADC_Data_ptr++] = ptrframe[3];                 // Heart Rate
+				ReadAdcData[ADC_Data_ptr++] = ptrframe[4];                 // Respiration Rate
+
+				ReadAdcData[ADC_Data_ptr++] = ptrframe[5];                 // Lead STATUS
+				// LeadStaus = Rdbuf[4];                                   // Lead STATUS
+				for (short LC = 0; LC < PACK_SAMPLES; LC++)                       // Decode received packet of 15 samples.
 				{
-					ADC_Data_ptr = 0;                               // Set pointer
-					ReadAdcData[ADC_Data_ptr++] = ptrframe[2];                 // Heart Rate
-					ReadAdcData[ADC_Data_ptr++] = ptrframe[3];                 // Respiration Rate
+					ReadAdcData[LC+ADC_Data_ptr] =  ptrframe[LC*3 + 8];
+					//  if (ReadAdcData[LC+ADC_Data_ptr] > 127)
+					//      ReadAdcData[LC+ADC_Data_ptr]=ReadAdcData[LC+ADC_Data_ptr] -256;
+					ReadAdcData[LC+ADC_Data_ptr] = ReadAdcData[LC+ADC_Data_ptr] << 8;
+					ReadAdcData[LC+ADC_Data_ptr] |=  ptrframe[LC * 3+ 7];              // Channel 0 ( Resp or Lead I)
 
-					ReadAdcData[ADC_Data_ptr++] = ptrframe[4];                 // Lead STATUS
-					// LeadStaus = Rdbuf[4];                                   // Lead STATUS
-					for (short LC = 0; LC < PACK_SAMPLES; LC++)                       // Decode received packet of 15 samples.
+					// if(LC%2 == 1)
 					{
-						ReadAdcData[LC+ADC_Data_ptr] =  ptrframe[LC*3 + 7];
-						//  if (ReadAdcData[LC+ADC_Data_ptr] > 127)
-						//      ReadAdcData[LC+ADC_Data_ptr]=ReadAdcData[LC+ADC_Data_ptr] -256;
-						ReadAdcData[LC+ADC_Data_ptr] = ReadAdcData[LC+ADC_Data_ptr] << 8;
-						ReadAdcData[LC+ADC_Data_ptr] |=  ptrframe[LC * 3+ 6];              // Channel 0 ( Resp or Lead I)
+						data_ld[0] =  ReadAdcData[LC+ADC_Data_ptr];
 
-						// if(LC%2 == 1)
+						/* Note how we plot three points at once, one for each trace */
+						switch (ptrframe[LC*3 + 6])
 						{
-							data_ld[0] =  ReadAdcData[LC+ADC_Data_ptr];
+							case  SAMPLE_IMP:
+								//case  SAMPLE_PPG_R:
+							case  SAMPLE_ECG:
+								//	case  SAMPLE_ECG_HF:
+								//	case  SAMPLE_PPG_GDC:
+								//	data_ld[0] =  ReadAdcData[LC+ADC_Data_ptr];
+								PlotStripChart (hpanel, PANEL_ECG_CHART, data_ld, 1, 0, 0, VAL_DOUBLE);
+								break;
 
-							/* Note how we plot three points at once, one for each trace */
-							switch (ptrframe[LC*3 + 5])
-							{
-										case  SAMPLE_IMP:
-									//case  SAMPLE_PPG_R:
-								case  SAMPLE_ECG:
-									//	case  SAMPLE_ECG_HF:
-									//	case  SAMPLE_PPG_GDC:
-									//	data_ld[0] =  ReadAdcData[LC+ADC_Data_ptr];
-									PlotStripChart (hpanel, PANEL_ECG_CHART, data_ld, 1, 0, 0, VAL_DOUBLE);
-									break;
-
-								case  SAMPLE_PPG_G:
-									//data_ppg[2]  =  ReadAdcData[LC+ADC_Data_ptr];
-									PlotStripChart (hpanel, PANEL_PPG1_CHART, data_ld, 1, 0, 0, VAL_DOUBLE);
-									break;
-								case  SAMPLE_PPG_IR:
-									PlotStripChart (hpanel, PANEL_PPG1_CHART_2, data_ld, 1, 0, 0, VAL_DOUBLE);
-									break;
-								case  SAMPLE_PPG_R:
-									PlotStripChart (hpanel, PANEL_PPG1_CHART_3, data_ld, 1, 0, 0, VAL_DOUBLE);
-									break;
-									//		case  SAMPLE_PPG_IR:
-								case  SAMPLE_RESP:
-									//	data_ld[0] =  ReadAdcData[LC+ADC_Data_ptr];
-									PlotStripChart (hpanel, PANEL_RESP_CHART, data_ld, 1, 0, 0, VAL_DOUBLE);
-									break;
-
-							}
-
-
+							case  SAMPLE_PPG_G:
+								//data_ppg[2]  =  ReadAdcData[LC+ADC_Data_ptr];
+								PlotStripChart (hpanel, PANEL_PPG1_CHART, data_ld, 1, 0, 0, VAL_DOUBLE);
+								break;
+							case  SAMPLE_PPG_IR:
+								PlotStripChart (hpanel, PANEL_PPG1_CHART_2, data_ld, 1, 0, 0, VAL_DOUBLE);
+								break;
+							case  SAMPLE_PPG_R:
+								PlotStripChart (hpanel, PANEL_PPG1_CHART_3, data_ld, 1, 0, 0, VAL_DOUBLE);
+								break;
+								//		case  SAMPLE_PPG_IR:
+							case  SAMPLE_RESP:
+								//	data_ld[0] =  ReadAdcData[LC+ADC_Data_ptr];
+								PlotStripChart (hpanel, PANEL_RESP_CHART, data_ld, 1, 0, 0, VAL_DOUBLE);
+								break;
 
 						}
 
+
+
 					}
+
 				}
 			}
-
 		}
+
+
+
 		ProcessSystemEvents();
 	}
 
-  
+
 	return 0;
 }//DWORD WINAPI ThreadFunction(LPVOID iValue)

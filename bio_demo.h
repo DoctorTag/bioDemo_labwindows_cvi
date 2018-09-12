@@ -24,6 +24,14 @@
 #define  PANEL_ECG_CHART                  9       /* control type: strip, callback function: (none) */
 #define  PANEL_Ind1                       10      /* control type: numeric, callback function: (none) */
 
+#define  PANEL_FWUP                       2
+#define  PANEL_FWUP_FWUP_QUIT             2       /* control type: command, callback function: FWUP_QuitCb */
+#define  PANEL_FWUP_LOAD_FILE             3       /* control type: command, callback function: LoadBinFileCb */
+#define  PANEL_FWUP_PROGRESSBAR           4       /* control type: scale, callback function: (none) */
+#define  PANEL_FWUP_TEXTMSG_2             5       /* control type: textMsg, callback function: (none) */
+#define  PANEL_FWUP_FW_UPGRADE            6       /* control type: command, callback function: FWUpgradeCb */
+#define  PANEL_FWUP_BIN_PATH              7       /* control type: textMsg, callback function: (none) */
+
 
      /* Control Arrays: */
 
@@ -32,11 +40,18 @@
 
      /* Menu Bars, Menus, and Menu Items: */
 
-          /* (no menu bars in the resource file) */
+#define  MENUBAR                          1
+#define  MENUBAR_MENU1                    2
+#define  MENUBAR_MENU1_ITEM1              3       /* callback function: ConfigMenuCallback */
+#define  MENUBAR_MENU1_ITEM2              4       /* callback function: ConfigMenuCallback */
 
 
      /* Callback Prototypes: */
 
+void CVICALLBACK ConfigMenuCallback(int menubar, int menuItem, void *callbackData, int panel);
+int  CVICALLBACK FWUP_QuitCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
+int  CVICALLBACK FWUpgradeCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
+int  CVICALLBACK LoadBinFileCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK PanelCB(int panel, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK PauseChart(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK PlotData(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);

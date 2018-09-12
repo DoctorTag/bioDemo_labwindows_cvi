@@ -13,13 +13,13 @@
 
 
 
- int Init_ComPort (void); 
+ int Init_ComPort (int com_port); 
 
-int SendData (unsigned char *data,int dlen);
+int SendData (int com_port,unsigned char *data,int dlen);
     
-int  ReceiveData (unsigned char *buf,int buflen);
+int  ReceiveData (int com_port,unsigned char *buf,int buflen);
 
-int ShutDownCom (void);         
+int ShutDownCom (int com_port);         
 
 #ifdef __cplusplus
     }
