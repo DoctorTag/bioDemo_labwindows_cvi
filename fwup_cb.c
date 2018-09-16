@@ -19,16 +19,16 @@
 #include "bio_demo.h"
 #include "serial.h"
 #include "mmd_comm.h"
-
+#include "fwup_cb.h"
 
 #define PAGESIZE MAX_TDATA_LENGTH
-#define PAGECNT 232
+#define PAGECNT 92
 
 extern int FWUpgrade_handle;
 extern int comport;
 
 unsigned char *binBuf;
-unsigned char *rspFrame;
+
 FILE * pfile;
 
 // unsigned char tPageCnt;
@@ -114,77 +114,88 @@ int CVICALLBACK FWUP_QuitCb (int panel, int control, int event,
 int CVICALLBACK FWUpgradeCb (int panel, int control, int event,
 							 void *callbackData, int eventData1, int eventData2)
 {
-	unsigned char blver,apver,devid,result;
-	char * testbuf[64];
+	unsigned char bio_status,result,loop_cnt = 0;
+	unsigned char *rspFrame;
 	switch (event)
 	{
 		case EVENT_COMMIT:
 		{
 			SetCtrlAttribute(panel,PANEL_FWUP_PROGRESSBAR,ATTR_DIMMED,0);
 
-			SetCtrlAttribute(panel,PANEL_FWUP_PROGRESSBAR,ATTR_LABEL_TEXT,"Device id requesting...");
+			SetCtrlAttribute(panel,PANEL_FWUP_PROGRESSBAR,ATTR_LABEL_TEXT,"Device status requesting...");
 			DisplayPanel (panel);
-			rspFrame = sendSyncCMDWithRsp(comport,DEVICE_ID_REQ,0,0,1000,&result);
+info_loop:
+			if(loop_cnt > 3)
+			{
+				MessagePopup ("BioSensor :","Sensor module info error !!!");
+				return 0;
+			}
+			rspFrame = sendSyncCMDWithRsp(comport,STATUS_INFO_REQ,0,0,1000,&result);
 			if(result)
 			{
-				devid = rspFrame[2];
+				bio_status = rspFrame[3];
+				if(bio_status >= BIO_LOSE)
+				{
+					MessagePopup ("BioSensor :","Sensor module lost !!!");
+					return 0;
+				}
 
 			}
 			else
 				return 0;
 
-			SetCtrlAttribute(panel,PANEL_FWUP_PROGRESSBAR,ATTR_LABEL_TEXT,"Firmware version requesting...");
-			DisplayPanel (panel);
-			//	sendCMD(comport,FIRMWARE_VERSION_REQ,0,0);
-			rspFrame = sendSyncCMDWithRsp(comport,FIRMWARE_VERSION_REQ,0,0,1000,&result);
-			if(result)
+
+			if(bio_status == BIO_NORMAL)   //is AP?
 			{
-				blver = rspFrame[2];
-				apver = rspFrame[3];
-
-				sprintf (testbuf, "Tips: blver=0x%x apver=0x%x !!", blver,apver);
-				MessagePopup ("Upgrade :",testbuf);
-			}
-			else
-				return 0;
-
-
-
-			if((devid & blver & AP_MASK) == AP_MASK)  //is AP?
-			{
-				sendSyncCMDWithRsp(comport,RESTART_COMMAND,FWUPGRADE_RST,FWUPGRADE_PWD,1000,&result);
+				sendSyncCMDWithRsp(comport,RESTART_COMMAND,FWUPGRADE_RST,FWUP_PWD,1000,&result);
 				if(result)
 				{
 					MessagePopup ("Tips:","RESTART_COMMAND RSP OK");
-					Delay (1);
+					Delay (2);
+					loop_cnt++;
+					goto info_loop;
 				}
 				else
 					return 0;
-				
+
 			}
 
-			rspFrame = sendSyncCMDWithRsp(comport,FIRMWARE_UPGRADE_REQ,FWUPGRADE_PWD,0,2000,&result);
+			rspFrame = sendSyncCMDWithRsp(comport,FIRMWARE_UPGRADE_CMD,BL_CMD_PROGRAM,FWUP_PWD,5000,&result);
 			if(result == 0)
 				return 0;
-			
+			else
+			{
+				if(rspFrame[4] != RSP_OK)
+				{
+					MessagePopup ("Error :","BL_CMD_UPGRADE_REQ error !!!");
+					return 0;
+				}
+			}
+
 			SetCtrlAttribute(panel,PANEL_FWUP_PROGRESSBAR,ATTR_LABEL_TEXT,"Erasing...");
 			DisplayPanel (panel);
 
-			sendSyncCMDWithRsp(comport,ERASE_MEMORY_COMMAND,FWUPGRADE_PWD,0,3000,&result);
+			sendSyncCMDWithRsp(comport,FIRMWARE_UPGRADE_CMD,BL_CMD_ERASEAPP,FWUP_PWD,15000,&result);
 
 			if(result == 0)
-			{
 				return 0;
+			else
+			{
+				if(rspFrame[4] != RSP_OK)
+				{
+					MessagePopup ("Error :","BL_CMD_ERASEAPP error !!!");
+					return 0;
+				}
 			}
 
 			SetCtrlAttribute(panel,PANEL_FWUP_PROGRESSBAR,ATTR_LABEL_TEXT,"Programming...");
 			DisplayPanel (panel);
 
-			sendSyncCMDWithRsp(comport,FIRMWARE_UPGRADE_REQ,FWUPGRADE_PWD,0,3000,&result);
+
 
 			if(result)
 			{
-				unsigned int checksum = 0;
+
 
 				unsigned char *Wrbuf = (unsigned char*)malloc(MAX_TDATA_LENGTH+MAX_TMISC_LENGTH);
 
@@ -196,15 +207,45 @@ int CVICALLBACK FWUpgradeCb (int panel, int control, int event,
 
 				for(unsigned char pcnt = 0; pcnt < PAGECNT; pcnt++)
 				{
-					sendSyncAPUpgradeWithRsp(comport,Wrbuf,binBuf+pcnt*MAX_TDATA_LENGTH,MAX_TDATA_LENGTH,5000,&result) ;
+					sendSyncAPUpgradeWithRsp(comport,Wrbuf,pcnt*(MAX_TDATA_LENGTH / 2),binBuf+pcnt*MAX_TDATA_LENGTH,MAX_TDATA_LENGTH,8000,&result) ;
+
 					if(result == 0)
 					{
-							free(Wrbuf); 
-							return 0;
+						free(Wrbuf);
+						return 0;
 					}
+					else
+					{
+						if(rspFrame[4] != RSP_OK)
+						{
+							char message[64]= {0};
+							sprintf (message,"FIRMWARE_UPGRADING_COMMAND error= 0x%x !!", rspFrame[4]);
+							MessagePopup ("Error:",message);
+
+							free(Wrbuf);
+							return 0;
+						}
+						//	else
+						//	MessagePopup ("TIPS :","FIRMWARE_UPGRADING_COMMAND OK !!!");
+					}
+
 				}
 
 				free(Wrbuf);
+
+				sendSyncCMDWithRsp(comport,FIRMWARE_UPGRADE_CMD,BL_CMD_APRDY,FWUP_PWD,5000,&result);
+
+				if(result == 0)
+					return 0;
+				else
+				{
+					if(rspFrame[4] != RSP_OK)
+					{
+						MessagePopup ("Error :","BL_CMD_APRDY error !!!");
+						return 0;
+					}
+				}
+				
 				SetCtrlAttribute(panel,PANEL_FWUP_PROGRESSBAR,ATTR_LABEL_TEXT,"Program OK");
 
 				MessagePopup ("Firmware upgrade:","Program OK!!");

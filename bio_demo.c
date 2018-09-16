@@ -119,7 +119,8 @@ int CVICALLBACK PlotData (int panel, int control, int event,
 						  void *callbackData, int eventData1, int eventData2)
 {
 	int val, traces, i;
-
+	unsigned char result;
+	unsigned char *rspFrame;
 	if (event == EVENT_COMMIT)
 	{
 		GetCtrlVal(panel, control, &val);
@@ -136,7 +137,20 @@ int CVICALLBACK PlotData (int panel, int control, int event,
 			//  SteamCBdata[1] = FUN1_COMBO_STD;
 			SteamCBdata[1] = REG_FUN1_ECG_A;
 
-			PostDeferredCallToThread (LVSteamThreadFunction, (void*)SteamCBdata, CmtGetMainThreadID ());
+			rspFrame  =	sendSyncCMDWithRsp(comport,DATA_STREAMING_COMMAND,SteamCBdata[0],SteamCBdata[1],1000,&result)  ;
+			if(result == 0)
+				return 0;
+			else
+			{
+				if(rspFrame[4] != RSP_OK)
+				{
+					MessagePopup ("Error :","DATA_STREAMING_COMMAND error !!!");
+					return 0;
+				}
+			}
+
+
+			PostDeferredCallToThread (LVSteamThreadFunction, NULL, CmtGetMainThreadID ());
 		}
 		else
 		{
@@ -247,13 +261,8 @@ int CVICALLBACK LVSteamThreadFunction(void *callbackData)
 	double fout;
 
 
-	unsigned char *pcldata = (unsigned char *)callbackData ;
 
 
-//sendCMD(comport,DATA_STREAMING_COMMAND,*pcldata,*(pcldata+1))   ;
-	sendSyncCMDWithRsp(comport,DATA_STREAMING_COMMAND,*pcldata,*(pcldata+1),1000,&result)  ;
-	if(result == 0)
-		return 0;
 
 	RecvInit() ;
 	while( LVSteamingFlag)

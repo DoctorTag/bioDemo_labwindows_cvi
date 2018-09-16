@@ -238,7 +238,7 @@ unsigned char *sendSyncCMDWithRsp(int com_port,unsigned char cmd,unsigned char d
 	return rspFrame;
 }
 
-unsigned char *sendSyncAPUpgradeWithRsp(int com_port,unsigned char *target,unsigned char *pdata,unsigned char pdlen,int timeout,unsigned char *result)
+unsigned char *sendSyncAPUpgradeWithRsp(int com_port,unsigned char *target,unsigned short offset,unsigned char *pdata,unsigned char pdlen,int timeout,unsigned char *result)
 {
 	unsigned char crc_err,*rspFrame;
 	char message[64]= {0};	  
@@ -255,12 +255,16 @@ unsigned char *sendSyncAPUpgradeWithRsp(int com_port,unsigned char *target,unsig
 	
 	target[0] = START_DATA_HEADER;           // Start Header
 	target[1] = FIRMWARE_UPGRADING_COMMAND;      //  command
-	target[2] = MAX_TDATA_LENGTH;      //  length
-	memcpy(target + 3,pdata,pdlen);
+	target[2] = (pdlen+2);      //  length
+	target[3] = (unsigned char)(offset>>8);      //  offset high  
+	target[4] = (unsigned char)offset;      //  offset low 
+	memcpy(target + 5,pdata,pdlen);
 
-	target[pdlen+3] = (unsigned char)(tcrc >> 8);
-	target[pdlen+4] = (unsigned char)tcrc;
-	target[pdlen+5] = '\n';
+	tcrc += target[3];
+	tcrc += target[4];  
+	target[pdlen+5] = (unsigned char)(tcrc >> 8);
+	target[pdlen+6] = (unsigned char)tcrc;
+	target[pdlen+7] = '\n';
 	SendData(com_port,target, pdlen + MAX_TMISC_LENGTH);              // Send command to firmware
 
 	rspFrame = receiveSyncRspFrame(com_port,timeout,&crc_err) ;

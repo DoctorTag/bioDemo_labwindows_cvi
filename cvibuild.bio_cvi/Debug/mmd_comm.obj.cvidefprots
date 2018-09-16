@@ -20,5 +20,5 @@ Prototype="unsigned char *sendSyncCMDWithRsp(int com_port, unsigned char cmd, un
 
 [sendSyncAPUpgradeWithRsp]
 Class="Function"
-Prototype="unsigned char *sendSyncAPUpgradeWithRsp(int com_port, unsigned char *target, unsigned char *pdata, unsigned char pdlen, int timeout, unsigned char *result);"
+Prototype="unsigned char *sendSyncAPUpgradeWithRsp(int com_port, unsigned char *target, unsigned short offset, unsigned char *pdata, unsigned char pdlen, int timeout, unsigned char *result);"
 

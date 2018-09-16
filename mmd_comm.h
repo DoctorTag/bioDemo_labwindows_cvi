@@ -62,7 +62,7 @@ extern "C" {
 #define ACQUIRE_DATA_PACKET 		0x84
 #define DEVICE_ID_REQ              	0x85
 #define DATA_DOWNLOAD_COMMAND		0x86
-#define FIRMWARE_UPGRADE_REQ    	0x87
+#define FIRMWARE_UPGRADE_CMD	    0x87
 #define FIRMWARE_UPGRADING_COMMAND	0x88
 #define FIRMWARE_VERSION_REQ		0x89
 #define STATUS_INFO_REQ 			0x8A
@@ -79,20 +79,42 @@ extern "C" {
 
 #define NORMAL_RST				    0x01
 #define FWUPGRADE_RST				0x02
-#define FWUPGRADE_PWD				0x58
+
+#define FWUP_PWD        0x58
+#define RESET_PWD        0x68
+
+
+#define BL_CMD_REBOOT    0X60
+//#define BL_CMD_UPGRADE_REQ    0X61
+#define BL_CMD_ERASEAPP    0X62
+#define BL_CMD_JMPAPP    0X63
+#define BL_CMD_APRDY    0X64
+#define BL_CMD_PROGRAM    0X6f
+
 	
-	
-	 #define MAX_TDATA_LENGTH 128 
-	
-	   #define MAX_TMISC_LENGTH 6
+#define RSP_OK                 (0x01)  /*! Command processed OK    */
+#define RSP_PARA_ERROR     (0x02)  /*! Invalid parameters      */
+#define RSP_CMD_ERROR  (0x03)  /*! Invalid command         */
+
+#define RSP_ERASE_ERROR  (0x04)
+#define RSP_PROGRAM_ERROR  (0x05)
+#define RSP_CRC_ERROR  (0x06)
+#define RSP_VERIFY_ERROR  (0x07)
+#define RSP_UNKNOW                 (0x08)
+
+
+#define MAX_TDATA_LENGTH 128
+
+#define MAX_TMISC_LENGTH 8
 	void RecvInit(void) ;
 	unsigned char *  RecvFrame( unsigned char src,unsigned char *crc_error);
 //	void SteamData(int com_port,unsigned char isbegin,unsigned char dtype);
 	void sendCMD(int com_port,unsigned char cmd,unsigned char dtype0,unsigned char dtype) ;
 	unsigned char *receiveSyncRspFrame(int com_port,int timeout,unsigned char *crc_error);
 	unsigned char *sendSyncCMDWithRsp(int com_port,unsigned char cmd,unsigned char dtype0,unsigned char dtype,int timeout,unsigned char *result);
-	   unsigned char *sendSyncAPUpgradeWithRsp(int com_port,unsigned char *target,unsigned char *pdata,unsigned char pdlen,int timeout,unsigned char *result) ;
-	
+	unsigned char *sendSyncAPUpgradeWithRsp(int com_port,unsigned char *target,unsigned short offset,unsigned char *pdata,unsigned char pdlen,int timeout,unsigned char *result)
+ ;
+
 #ifdef __cplusplus
 }
 #endif

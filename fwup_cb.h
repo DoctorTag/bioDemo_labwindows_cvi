@@ -20,6 +20,13 @@
 #ifdef __cplusplus
     extern "C" {
 #endif
+		
+		typedef enum tBIO_SENSOR_STATE {
+	
+	BIO_NORMAL =0,
+	BIO_BOOTL,
+	BIO_LOSE	
+}BIO_SENSOR_STATE;
 
 int CVICALLBACK LoadBinFile (int panel, int control, int event, void *callbackData, int eventData1, int eventData2) ;
 
