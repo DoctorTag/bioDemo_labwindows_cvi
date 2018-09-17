@@ -17,7 +17,7 @@ Window Top = 140
 Window Left = 30
 Window Bottom = 588
 Window Right = 804
-Maximized = False
+Maximized = True
 Maximized Children = True
 Max32 Number Of Errors = 20
 Track Include File Dependencies = True
@@ -30,7 +30,7 @@ Save Changes Before Compiling = "Always"
 Hide Windows = False
 Break At First Statement = False
 Sort Type = "File Name"
-Number of Opened Files = 9
+Number of Opened Files = 10
 Window Confinement Region Enabled = True
 MainColumnWidth = 168
 FileDateColumnWidth = 70
@@ -55,61 +55,61 @@ In Projects = "1,"
 [File 0002]
 Path = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/bio_demo.c"
 File Type = "CSource"
-Disk Date = 3619586019
+Disk Date = 3620037617
 In Projects = "1,"
 Window Top = 25
 Window Left = 6
-Window Z-Order = 6
-Source Window State = "1,139,139,139,74,97,97,0,0,80,0,0,0,0,0,25,55,0,67,4,323,517,1,0,"
+Window Z-Order = 8
+Source Window State = "1,0,9,0,0,82,0,0,0,80,0,0,0,0,0,25,0,0,33,77,323,517,1,0,"
 
 [File 0003]
 Path = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/mmd_comm.c"
 File Type = "CSource"
-Disk Date = 3619731738
+Disk Date = 3620037634
 In Projects = "1,"
 Window Top = 48
 Window Left = 18
-Window Z-Order = 8
-Source Window State = "1,240,240,240,15,39,39,0,3,80,0,0,0,0,0,25,215,0,240,15,323,517,1,0,"
+Window Z-Order = 6
+Source Window State = "1,0,6,0,0,105,0,0,0,80,0,0,0,0,0,25,0,0,33,77,323,517,1,0,"
 
 [File 0004]
 Path = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/fwup_cb.c"
 File Type = "CSource"
-Disk Date = 3620037080
+Disk Date = 3620037557
 In Projects = "1,"
 Window Top = 48
 Window Left = 18
-Window Z-Order = 1
-Source Window State = "1,121,121,121,60,61,60,0,0,177,0,0,0,0,0,51,266,0,129,88,323,517,1,0,"
+Window Z-Order = 7
+Source Window State = "1,0,33,0,0,78,0,0,0,80,0,0,0,0,0,25,0,0,4,70,323,517,1,0,"
 
 [File 0005]
 Path = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/fwup_cb.h"
 File Type = "Include"
-Disk Date = 3619582501
+Disk Date = 3620037601
 In Projects = "1,"
 Window Top = 71
 Window Left = 30
-Window Z-Order = 9
-Source Window State = "1,27,27,27,4,12,12,0,3,80,0,0,0,0,0,25,14,0,27,4,323,517,1,0,"
+Window Z-Order = 3
+Source Window State = "1,0,13,0,0,79,0,0,0,80,0,0,0,0,0,25,0,0,33,77,323,517,1,0,"
 
 [File 0006]
 Path = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/mmd_comm.h"
 File Type = "Include"
-Disk Date = 3619914119
+Disk Date = 3620037693
 In Projects = "1,"
 Window Top = 25
 Window Left = 6
-Window Z-Order = 7
-Source Window State = "1,67,67,67,8,23,23,0,3,80,0,55,0,0,0,25,53,0,67,8,323,517,1,15,"
+Window Z-Order = 2
+Source Window State = "1,67,67,67,8,23,23,0,0,80,0,55,0,0,0,25,0,0,34,77,323,517,1,15,"
 
 [File 0007]
 Path = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/serial.c"
 File Type = "CSource"
-Disk Date = 3619387461
+Disk Date = 3620037662
 In Projects = "1,"
 Window Top = 23
-Window Z-Order = 3
-Source Window State = "1,0,0,0,0,0,0,0,0,94,0,0,0,0,0,31,60,0,75,4,400,600,1,0,"
+Window Z-Order = 5
+Source Window State = "1,0,12,0,0,94,0,0,0,94,0,0,0,0,0,31,83,0,33,77,400,600,1,0,"
 
 [File 0008]
 Path = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/bio_demo.uir"
@@ -120,7 +120,7 @@ Window Top = 48
 Window Left = 18
 Window Height = 323
 Window Width = 517
-Window Z-Order = 5
+Window Z-Order = 10
 
 [File 0009]
 Path Line0001 = "/c/Program Files (x86)/National Instruments/CVI2017/toolslib/custctrl/progressba"
@@ -130,25 +130,26 @@ Disk Date = 3573565200
 In Projects = ""
 Window Top = 301
 Window Left = 150
-Window Z-Order = 4
+Window Z-Order = 9
 Source Window State = "1,33,33,33,8,35,8,0,3,80,0,0,0,0,0,25,28,0,33,35,323,517,1,0,"
 
 [File 0010]
 Path = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/bio_demo.h"
 File Type = "Include"
-Disk Date = 3620030014
+Disk Date = 3620037677
 In Projects = "1,"
 Window Top = 117
 Window Left = 54
-Window Z-Order = 2
-Source Window State = "1,28,28,28,9,29,9,0,3,80,0,0,0,0,0,25,17,0,28,29,323,517,1,0,"
+Window Z-Order = 4
+Source Window State = "1,0,5,5,0,76,76,0,0,80,0,0,0,0,0,25,0,0,33,77,323,517,1,0,"
 
 [File 0011]
 Path = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/serial.h"
 File Type = "Include"
-Disk Date = 3619052338
+Disk Date = 3620037702
 In Projects = "1,"
-Source Window State = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
+Window Z-Order = 1
+Source Window State = "1,0,5,0,0,77,0,0,0,177,0,0,0,0,0,51,4,0,33,77,400,600,0,0,"
 
 [Tab Order]
 Tab 0001 = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/bio_demo.c"
@@ -161,6 +162,7 @@ Tab 0007 Line0001 = "/c/Program Files (x86)/National Instruments/CVI2017/toolsli
 Tab 0007 Line0002 = "r.h"
 Tab 0008 = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/bio_demo.uir"
 Tab 0009 = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/bio_demo.h"
+Tab 0010 = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/serial.h"
 
 [Default Build Config 0001 Debug]
 Generate Browse Info = True
