@@ -1,22 +1,21 @@
 -nologo
--out:d:\software\2018\feelkit\cvi\Demo_labwindows_cvi\cvibuild.bio_cvi\Debug\bio_cvi_dbg.exe
+-out:d:\software\2018\feelkit\cvi\Demo_labwindows_cvi\cvibuild.bio_cvi\Release\bio_demo.exe
 -arch:x86
 -timestamp
--debug:3
 -loadextmod
--res:d:\software\2018\feelkit\cvi\Demo_labwindows_cvi\cvibuild.bio_cvi\Debug\resources.res
--entry:_CVIWinMainStartupCodeForDebugging@0
+-res:d:\software\2018\feelkit\cvi\Demo_labwindows_cvi\cvibuild.bio_cvi\Release\resources.res
+-entry:_CVIWinMainStartupCode@0
 -base:0x400000
--linked:d:\software\2018\feelkit\cvi\Demo_labwindows_cvi\cvibuild.bio_cvi\Debug\linkersummary.txt
--dlldeps:d:\software\2018\feelkit\cvi\Demo_labwindows_cvi\cvibuild.bio_cvi\Debug\dlldependencies.txt
--licensing:d:\software\2018\feelkit\cvi\Demo_labwindows_cvi\cvibuild.bio_cvi\Debug\linkerlicensing.txt
--browsedeps:d:\software\2018\feelkit\cvi\Demo_labwindows_cvi\cvibuild.bio_cvi\Debug\moduledependencies.txt
+-linked:d:\software\2018\feelkit\cvi\Demo_labwindows_cvi\cvibuild.bio_cvi\Release\linkersummary.txt
+-dlldeps:d:\software\2018\feelkit\cvi\Demo_labwindows_cvi\cvibuild.bio_cvi\Release\dlldependencies.txt
+-licensing:d:\software\2018\feelkit\cvi\Demo_labwindows_cvi\cvibuild.bio_cvi\Release\linkerlicensing.txt
+-browsedeps:d:\software\2018\feelkit\cvi\Demo_labwindows_cvi\cvibuild.bio_cvi\Release\moduledependencies.txt
 -stackreserve:131072
 -stackcommit:4096
--in:d:\software\2018\feelkit\cvi\Demo_labwindows_cvi\cvibuild.bio_cvi\Debug\bio_demo.obj
--in:d:\software\2018\feelkit\cvi\Demo_labwindows_cvi\cvibuild.bio_cvi\Debug\fwup_cb.obj
--in:d:\software\2018\feelkit\cvi\Demo_labwindows_cvi\cvibuild.bio_cvi\Debug\mmd_comm.obj
--in:d:\software\2018\feelkit\cvi\Demo_labwindows_cvi\cvibuild.bio_cvi\Debug\serial.obj
+-in:d:\software\2018\feelkit\cvi\Demo_labwindows_cvi\cvibuild.bio_cvi\Release\bio_demo.obj
+-in:d:\software\2018\feelkit\cvi\Demo_labwindows_cvi\cvibuild.bio_cvi\Release\fwup_cb.obj
+-in:d:\software\2018\feelkit\cvi\Demo_labwindows_cvi\cvibuild.bio_cvi\Release\mmd_comm.obj
+-in:d:\software\2018\feelkit\cvi\Demo_labwindows_cvi\cvibuild.bio_cvi\Release\serial.obj
 -more:c:\program files (x86)\national instruments\cvi2017\bin\msvc\cvistart.lib
 -more:c:\program files (x86)\national instruments\cvi2017\bin\msvc\cvi.lib
 -more:C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x86\advapi32.lib

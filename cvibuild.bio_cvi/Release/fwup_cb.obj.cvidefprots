@@ -1,0 +1,12 @@
+[LoadBinFileCb]
+Class="Function"
+Prototype="int LoadBinFileCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+
+[FWUP_QuitCb]
+Class="Function"
+Prototype="int FWUP_QuitCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+
+[FWUpgradeCb]
+Class="Function"
+Prototype="int FWUpgradeCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+
