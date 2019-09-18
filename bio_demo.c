@@ -36,180 +36,265 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*---------------------------------------------------------------------------*/
 /* Include files                                                             */
 /*---------------------------------------------------------------------------*/
+#include <tcpsupp.h>
+#include <analysis.h>
 #include <utility.h>
 #include <cvirte.h>
 #include <userint.h>
 #include <ansi_c.h>
 #include "bio_demo.h"
 #include "serial.h"
-#include "mmd_comm.h"
+
 #include "fwup_cb.h"
+#include "sg_filt.h"
+#include "timer_cb.h"
+#include "ppg_cb.h"
+//#include "ppg_r_cb.h"
 
-volatile    int     LVSteamingFlag             =   0;
-volatile  unsigned char SteamCBdata[2];
+#include "ecg_d_cb.h"
+#include "mmd_comm.h"
 
-int ReadAdcData[32];
-volatile int comport;
-char comStr[4];
-char msg[100];
-//static      CmtTSQHandle        tsqHdl;
-//static      int                 status;
-//static      CmtThreadFunctionID LVSteamThreadFunctionID;
+#define     QUEUE_LENGTH  5000
 
-int hpanel,FWUpgrade_handle;
+extern int PPG_handle,ECG_D_handle;
+extern int FWUpgrade_handle;
+int hpanel,cfg_handle;
 
 
+static      CmtThreadFunctionID tcpThreadFunctionID;
+static      CmtThreadFunctionID serialThreadFunctionID;
+//static      CmtThreadFunctionID plotThreadFunctionID;
 
-int CVICALLBACK LVSteamThreadFunction(void *callbackData) ;
+
+unsigned char  funSelectionValue = 0;
+
+h_comm_handle_t  h_comm_handle;
+
+
+
 /*---------------------------------------------------------------------------*/
 /* This is the application's entry-point.                                    */
 /*---------------------------------------------------------------------------*/
 int main (int argc, char *argv[])
 {
+	h_comm_handle.com_ok =0 ;
+	h_comm_handle.com_port = 35;
+	h_comm_handle.s_receiving = 0;
 
-	int ret;
-	LVSteamingFlag = 0;
-	comport = 0;
+	h_comm_handle.tcp_port = 3338;
+	h_comm_handle.tcp_rdata_sig =0 ;
+	h_comm_handle.tcp_handle = 0;
+	h_comm_handle.tcp_ok = 0;
+	h_comm_handle.t_receiving = 0;
+
 	if (InitCVIRTE (0, argv, 0) == 0)
 		return -1;
 
-	PromptPopup ("Config COM Port", "COMx",comStr, 3);
-	comport = atoi(comStr);
-	ret = Init_ComPort (comport);
-	if( ret != 0)
-	{
-		comport = 0;
-		sprintf (msg, "Config COM port error: %d, please reconfig!!!",ret);
-		MessagePopup ("This is a Message Popup",msg);
-	};
 
 	if ((hpanel = LoadPanel (0, "bio_demo.uir", PANEL)) < 0)
 		return -1;
 
+	SetCtrlIndex (hpanel, PANEL_LISTBOX_FUNCTION, 0);
+	SetActiveCtrl (hpanel, PANEL_LISTBOX_FUNCTION);
 
 	/* Display the panel and run the UI */
 	DisplayPanel (hpanel);
+
+	/* Create Thread-safe Queue */
+	if(CmtNewTSQ (QUEUE_LENGTH, sizeof(h_comm_rdata_t), OPT_TSQ_DYNAMIC_SIZE, &h_comm_handle.queueHandle) < 0)
+		return -1;
+
+
+
 	RunUserInterface ();
 
 	/* Free resources and return */
-	if(comport > 0)
-		ShutDownCom (comport)  ;
+	h_comm_handle.s_receiving = 0;
+//	h_comm_handle.receiving = 0;
+if(	h_comm_handle.tcp_ok )
+		DisconnectFromTCPServer (h_comm_handle.tcp_handle); 
+
+	/* Destroy Thread-safe Queue */
+	CmtDiscardTSQ (h_comm_handle.queueHandle);
+
 	DiscardPanel (hpanel);
 	CloseCVIRTE ();
 	return 0;
 }
+
+int CVICALLBACK cfgQuitCb (int panel, int control, int event,
+						   void *callbackData, int eventData1, int eventData2)
+{
+	switch (event)
+	{
+		case EVENT_COMMIT:
+		{
+
+			DiscardPanel (panel);
+			break;
+		}
+	}
+	return 0;
+}
+
+
+int CVICALLBACK cfgOkCallback (int panel, int control, int event,
+							   void *callbackData, int eventData1, int eventData2)
+{
+	int ret;
+	unsigned char port;
+	switch (event)
+	{
+		case EVENT_COMMIT:
+		{
+			GetCtrlAttribute(panel, PANEL_CFG_UART_CHKBOX,ATTR_CTRL_VAL,&ret);
+			if(ret == 1)
+			{
+				GetCtrlAttribute(panel, PANEL_CFG_COM,ATTR_CTRL_VAL,&port);
+
+				ret = Init_ComPort(port);
+				if( ret != 0)
+				{
+					char msg[120];
+
+					h_comm_handle.com_ok = 0 ;
+					h_comm_handle.com_port = 0;
+					sprintf (msg, "Config COM port error: %d, please reconfig!!!",ret);
+					MessagePopup ("This is a Message Popup",msg);
+				}
+				else
+				{
+					h_comm_handle.com_port = port;
+					h_comm_handle.com_ok = 1 ;
+						h_comm_handle.s_receiving = 1;
+
+					CmtScheduleThreadPoolFunction (DEFAULT_THREAD_POOL_HANDLE, serial_comm_recv_Thread,(void *)&h_comm_handle, &serialThreadFunctionID);
+				}
+			}
+
+			GetCtrlAttribute(panel, PANEL_CFG_TCP_CHKBOX,ATTR_CTRL_VAL,&ret);
+			if(ret == 1)
+			{
+				GetCtrlAttribute(panel, PANEL_CFG_TCP_PORT,ATTR_CTRL_VAL,&h_comm_handle.tcp_port);
+				GetCtrlAttribute(panel, PANEL_CFG_IP,ATTR_CTRL_VAL,h_comm_handle.serverip); 
+				//	CmtScheduleThreadPoolFunction (DEFAULT_THREAD_POOL_HANDLE, tcp_comm_recv_Thread,(void *)&h_comm_handle, &tcpThreadFunctionID);
+			  h_comm_connectTcpServer(&h_comm_handle) ;
+			}
+
+			DiscardPanel (panel);
+			break;
+		}
+	}
+	return 0;
+}
+
 
 /*---------------------------------------------------------------------------*/
 /* This function is called whenever any item in the Configuration or Test    */
 /* menus is selected.  Notice that we are passed the menubar handle and item */
 /* ID of the selected item.                                                  */
 /*---------------------------------------------------------------------------*/
-void CVICALLBACK ConfigMenuCallback (int menubar, int menuItem,
-									 void *callbackData, int panel)
+
+void CVICALLBACK MenuConfigPortCb (int menubar, int menuItem,void *callbackData, int panel)
 {
-	int ret;
+
+
 	switch (menuItem)
 	{
 
-			/* Take action depending on which item was selected */
-		case MENUBAR_MENU1_ITEM1 :
-			/* Run through a series of popups... */
-			PromptPopup ("Config COM Port", "COMx",  comStr, 3);
-			comport = atoi(comStr);
-			ret = Init_ComPort (comport);
-			if( ret != 0)
+
+		case MENUBAR_MENU_COM :
+
+			cfg_handle = LoadPanel (hpanel, "bio_demo.uir", PANEL_CFG);
+			if(h_comm_handle.com_port > 0)
 			{
-				comport = 0;
-				sprintf (msg, "Config COM port error: %d, please reconfig!!!",ret);
-				MessagePopup ("This is a Message Popup",msg);
-			};
-			break;
-		case MENUBAR_MENU1_ITEM2 :
+				SetCtrlAttribute(cfg_handle,PANEL_CFG_COM,ATTR_DIMMED,0);
+				SetCtrlAttribute(cfg_handle,PANEL_CFG_COM,ATTR_CTRL_VAL,h_comm_handle.com_port);
+				SetCtrlAttribute(cfg_handle,PANEL_CFG_UART_CHKBOX,ATTR_CTRL_VAL,1);
+			}
 
-			FWUpgrade_handle = LoadPanel (hpanel, "bio_demo.uir", PANEL_FWUP);
-			InstallPopup (FWUpgrade_handle);
+			if(h_comm_handle.tcp_port > 0)
+			{
+				SetCtrlAttribute(cfg_handle,PANEL_CFG_TCP_PORT,ATTR_DIMMED,0);
+				SetCtrlAttribute(cfg_handle,PANEL_CFG_TCP_PORT,ATTR_CTRL_VAL,h_comm_handle.tcp_port);
+				SetCtrlAttribute(cfg_handle,PANEL_CFG_IP,ATTR_DIMMED,0);
+			//	SetCtrlAttribute(cfg_handle,PANEL_CFG_IP,ATTR_CTRL_VAL,h_comm_handle.serverip);
 
+				SetCtrlAttribute(cfg_handle,PANEL_CFG_TCP_CHKBOX,ATTR_CTRL_VAL,1);
+
+
+			}
+			InstallPopup (cfg_handle);
 			break;
 
 	}
 }
 
 
-/*---------------------------------------------------------------------------*/
-/* Respond to the user's choice by enabling a timer which will plot data     */
-/* continuously to a Stripchart.                                             */
-/*---------------------------------------------------------------------------*/
-int CVICALLBACK PlotData (int panel, int control, int event,
-						  void *callbackData, int eventData1, int eventData2)
+void CVICALLBACK MenuFirmUpgradeCb (int menubar, int menuItem,
+									void *callbackData, int panel)
 {
-	int val, traces, i;
-	unsigned char result;
-	unsigned char *rspFrame;
-	if (event == EVENT_COMMIT)
+	unsigned char forSensor;
+	switch (menuItem)
 	{
-		GetCtrlVal(panel, control, &val);
-		// SetCtrlAttribute (panel, PANEL_TIMER, ATTR_ENABLED, val);
-		LVSteamingFlag = val;
-		if(val ==1)
-		{
-			//	SteamCBdata[0] = (REG_FUN2_ECG_D | M_FUN_START|OBEY_MODE);
-			//			SteamCBdata[1] = 0;
+		case MENUBAR_MENU_FM_UPGRADE :
 
-			SteamCBdata[0] = (M_FUN_START|OBEY_MODE);
-			//	SteamCBdata[1] = REG_FUN1_PPG_R;
-			//	SteamCBdata[1] = REG_FUN1_RESP;
-			//  SteamCBdata[1] = FUN1_COMBO_STD;
-			SteamCBdata[1] = REG_FUN1_ECG_A;
-
-			rspFrame  =	sendSyncCMDWithRsp(comport,DATA_STREAMING_COMMAND,SteamCBdata[0],SteamCBdata[1],1000,&result)  ;
-			if(result == 0)
-				return 0;
-			else
+			if(fwfile_malloc())
 			{
-				if(rspFrame[4] != RSP_OK)
+				FWUpgrade_handle = LoadPanel (hpanel, "bio_demo.uir", PANEL_FWUP);
+							GetCtrlAttribute(FWUpgrade_handle, PANEL_FWUP_FW_SW,ATTR_CTRL_VAL,&forSensor);
+
+				initFwupCb(forSensor); 
+				InstallPopup (FWUpgrade_handle);
+			}
+			else
+				MessagePopup ("Error !!!","malloc fail!!!!");
+			break;
+
+	}
+}
+
+
+
+int CVICALLBACK FunctionTestBeginCb(int panel, int control, int event,
+									void *callbackData, int eventData1, int eventData2)
+{
+
+	switch (event)
+	{
+		case EVENT_COMMIT:
+		{
+			if(GetCtrlVal(panel, PANEL_LISTBOX_FUNCTION, &funSelectionValue) == 0)
+			{
+				switch(funSelectionValue)
 				{
-					MessagePopup ("Error :","DATA_STREAMING_COMMAND error !!!");
-					return 0;
+					case 0:
+					case 1:
+					case 2:
+					case 9:
+						case 5:
+						PPG_handle = LoadPanel (hpanel, "bio_demo.uir", PANEL_PPG);
+						InstallPopup (PPG_handle);
+
+						break;
+
+					case 3:
+					case 4:
+						ECG_D_handle = LoadPanel (hpanel, "bio_demo.uir", PANEL_ECGD);
+						InstallPopup (ECG_D_handle);
+						break;
+
 				}
+
+
 			}
 
-
-			PostDeferredCallToThread (LVSteamThreadFunction, NULL, CmtGetMainThreadID ());
 		}
-		else
-		{
-
-			//	SteamData(comport,OBEY_MODE,SteamCBdata[1])   ;
-			sendCMD(comport,DATA_STREAMING_COMMAND,OBEY_MODE,SteamCBdata[1])   ;
-		}
-
-
-		GetCtrlAttribute(panel, PANEL_RESP_CHART, ATTR_NUM_TRACES, &traces);
-		for (i=1; i<=traces; i++)
-			SetTraceAttribute(panel, PANEL_RESP_CHART, i, ATTR_TRACE_LG_VISIBLE, 1);
-
-
-		GetCtrlAttribute(panel, PANEL_ECG_CHART, ATTR_NUM_TRACES, &traces);
-		for (i=1; i<=traces; i++)
-			SetTraceAttribute(panel, PANEL_ECG_CHART, i, ATTR_TRACE_LG_VISIBLE, 1);
-
-
-		GetCtrlAttribute(panel, PANEL_PPG1_CHART, ATTR_NUM_TRACES, &traces);
-		for (i=1; i<=traces; i++)
-			SetTraceAttribute(panel, PANEL_PPG1_CHART, i, ATTR_TRACE_LG_VISIBLE, 1);
-
-		GetCtrlAttribute(panel, PANEL_PPG1_CHART_2, ATTR_NUM_TRACES, &traces);
-		for (i=1; i<=traces; i++)
-			SetTraceAttribute(panel, PANEL_PPG1_CHART_2, i, ATTR_TRACE_LG_VISIBLE, 1);
-
-
-		GetCtrlAttribute(panel, PANEL_PPG1_CHART_3, ATTR_NUM_TRACES, &traces);
-		for (i=1; i<=traces; i++)
-			SetTraceAttribute(panel, PANEL_PPG1_CHART_3, i, ATTR_TRACE_LG_VISIBLE, 1);
-
+		break;
 	}
 	return 0;
 }
+
 
 /*---------------------------------------------------------------------------*/
 /* Quit the UI loop.                                                         */
@@ -219,37 +304,9 @@ int CVICALLBACK Shutdown (int panel, int control, int event,
 {
 	if (event == EVENT_COMMIT)
 	{
-		if(LVSteamingFlag == 1)
-			//	SteamData(comport,OBEY_MODE,SteamCBdata[1])   ;
-			sendCMD(comport,DATA_STREAMING_COMMAND,OBEY_MODE,SteamCBdata[1])   ;
-		LVSteamingFlag=0;
+//	h_comm_handle.receiving = 0;
+	h_comm_handle.s_receiving = 0;
 		QuitUserInterface (0);
-	}
-	return 0;
-}
-
-
-/*---------------------------------------------------------------------------*/
-/* Pause the stripchart traces                                               */
-/*---------------------------------------------------------------------------*/
-int CVICALLBACK PauseChart (int panel, int control, int event,
-							void *callbackData, int eventData1, int eventData2)
-{
-	int val;
-	switch (event)
-	{
-		case EVENT_COMMIT:
-			GetCtrlVal(panel, control, &val);
-			SetCtrlAttribute(panel, PANEL_PPG1_CHART , ATTR_STRIP_CHART_PAUSED, val);
-			SetCtrlAttribute(panel, PANEL_PPG1_CHART_2 , ATTR_STRIP_CHART_PAUSED, val);
-			SetCtrlAttribute(panel, PANEL_PPG1_CHART_3 , ATTR_STRIP_CHART_PAUSED, val);
-
-
-			SetCtrlAttribute(panel, PANEL_RESP_CHART , ATTR_STRIP_CHART_PAUSED, val);
-
-			SetCtrlAttribute(panel, PANEL_ECG_CHART , ATTR_STRIP_CHART_PAUSED, val);
-
-			break;
 	}
 	return 0;
 }
@@ -262,102 +319,13 @@ int CVICALLBACK PanelCB (int panel, int event, void *callbackData,
 	switch (event)
 	{
 		case EVENT_CLOSE:
-			if(LVSteamingFlag == 1)
-				sendCMD(comport,DATA_STREAMING_COMMAND,OBEY_MODE,SteamCBdata[1])   ;
-			//SteamData(comport,OBEY_MODE,SteamCBdata[1])   ;
-			LVSteamingFlag=0;
+//	tcp_comm_handle.receiving = 0;
+	h_comm_handle.s_receiving = 0;
 			QuitUserInterface (0);
 			break;
+
+
 	}
 	return 0;
 }
 
-
-
-int CVICALLBACK LVSteamThreadFunction(void *callbackData)
-{
-	double data_ld[1];
-
-	unsigned char result,*ptrframe;
-
-
-	short ADC_Data_ptr;
-	double fout;
-
-
-
-
-
-	RecvInit() ;
-	while( LVSteamingFlag)
-	{
-		ptrframe = receiveSyncRspFrame(comport,500,&result) ;
-
-		if(( ptrframe)&&(result == 0))
-		{
-			if(ptrframe[1] == DATA_STREAMING_PACKET)
-			{
-				ADC_Data_ptr = 0;                               // Set pointer
-				ReadAdcData[ADC_Data_ptr++] = ptrframe[3];                 // Heart Rate
-				ReadAdcData[ADC_Data_ptr++] = ptrframe[4];                 // Respiration Rate
-
-				ReadAdcData[ADC_Data_ptr++] = ptrframe[5];                 // Lead STATUS
-				// LeadStaus = Rdbuf[4];                                   // Lead STATUS
-				for (short LC = 0; LC < PACK_SAMPLES; LC++)                       // Decode received packet of 15 samples.
-				{
-					ReadAdcData[LC+ADC_Data_ptr] =  ptrframe[LC*3 + 8];
-					//  if (ReadAdcData[LC+ADC_Data_ptr] > 127)
-					//      ReadAdcData[LC+ADC_Data_ptr]=ReadAdcData[LC+ADC_Data_ptr] -256;
-					ReadAdcData[LC+ADC_Data_ptr] = ReadAdcData[LC+ADC_Data_ptr] << 8;
-					ReadAdcData[LC+ADC_Data_ptr] |=  ptrframe[LC * 3+ 7];              // Channel 0 ( Resp or Lead I)
-
-					// if(LC%2 == 1)
-					{
-						data_ld[0] =  ReadAdcData[LC+ADC_Data_ptr];
-
-						/* Note how we plot three points at once, one for each trace */
-						switch (ptrframe[LC*3 + 6])
-						{
-							case  SAMPLE_IMP:
-								//case  SAMPLE_PPG_R:
-							case  SAMPLE_ECG:
-								//	case  SAMPLE_ECG_HF:
-								//	case  SAMPLE_PPG_GDC:
-								//	data_ld[0] =  ReadAdcData[LC+ADC_Data_ptr];
-								PlotStripChart (hpanel, PANEL_ECG_CHART, data_ld, 1, 0, 0, VAL_DOUBLE);
-								break;
-
-							case  SAMPLE_PPG_G:
-								//data_ppg[2]  =  ReadAdcData[LC+ADC_Data_ptr];
-								PlotStripChart (hpanel, PANEL_PPG1_CHART, data_ld, 1, 0, 0, VAL_DOUBLE);
-								break;
-							case  SAMPLE_PPG_IR:
-								PlotStripChart (hpanel, PANEL_PPG1_CHART_2, data_ld, 1, 0, 0, VAL_DOUBLE);
-								break;
-							case  SAMPLE_PPG_R:
-								PlotStripChart (hpanel, PANEL_PPG1_CHART_3, data_ld, 1, 0, 0, VAL_DOUBLE);
-								break;
-								//		case  SAMPLE_PPG_IR:
-							case  SAMPLE_RESP:
-								//	data_ld[0] =  ReadAdcData[LC+ADC_Data_ptr];
-								PlotStripChart (hpanel, PANEL_RESP_CHART, data_ld, 1, 0, 0, VAL_DOUBLE);
-								break;
-
-						}
-
-
-
-					}
-
-				}
-			}
-		}
-
-
-
-		ProcessSystemEvents();
-	}
-
-
-	return 0;
-}//DWORD WINAPI ThreadFunction(LPVOID iValue)

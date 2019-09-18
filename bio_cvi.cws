@@ -1,6 +1,6 @@
 [Workspace Header]
 Version = 1700
-Pathname = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/bio_cvi.cws"
+Pathname = "/d/software/2019/cvi/Demo_labwindows_cvi/bio_cvi.cws"
 CVI Dir = "/c/program files (x86)/national instruments/cvi2017"
 CVI Shared Dir = "/C/Program Files (x86)/National Instruments/Shared/CVI"
 CVI Pub Local Dir = "/C/ProgramData/National Instruments/CVI2017"
@@ -12,11 +12,11 @@ VXIplug&play Framework 64-bit Dir = "/C/Program Files/IVI Foundation/VISA/win64"
 Number of Projects = 1
 Active Project = 1
 Project 0001 = "bio_cvi.prj"
-Drag Bar Left = 185
-Window Top = 140
-Window Left = 30
-Window Bottom = 588
-Window Right = 804
+Drag Bar Left = 323
+Window Top = 284
+Window Left = 330
+Window Bottom = 678
+Window Right = 1088
 Maximized = True
 Maximized Children = True
 Max32 Number Of Errors = 20
@@ -30,9 +30,9 @@ Save Changes Before Compiling = "Always"
 Hide Windows = False
 Break At First Statement = False
 Sort Type = "File Name"
-Number of Opened Files = 10
+Number of Opened Files = 22
 Window Confinement Region Enabled = True
-MainColumnWidth = 168
+MainColumnWidth = 306
 FileDateColumnWidth = 70
 FileSizeColumnWidth = 70
 
@@ -46,123 +46,328 @@ Batch Build Release = False
 Batch Build Debug = False
 
 [File 0001]
-Path Line0001 = "/c/Program Files (x86)/National Instruments/CVI2017/toolslib/custctrl/progressba"
+Path Line0001 = "/c/program files (x86)/national instruments/cvi2017/toolslib/custctrl/progressba"
 Path Line0002 = "r.fp"
 File Type = "Function Panel"
 Disk Date = 3573565200
 In Projects = "1,"
 
 [File 0002]
-Path = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/bio_demo.c"
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/bio_demo.c"
 File Type = "CSource"
-Disk Date = 3620037617
+Disk Date = 3639451029
 In Projects = "1,"
 Window Top = 25
 Window Left = 6
-Window Z-Order = 8
-Source Window State = "1,0,9,0,0,82,0,0,0,80,0,0,0,0,0,25,0,0,33,77,323,517,1,0,"
+Window Z-Order = 12
+Source Window State = "1,103,103,103,39,53,53,0,0,80,0,0,0,0,0,25,37,0,108,35,323,517,1,0,"
 
 [File 0003]
-Path = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/mmd_comm.c"
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/ecg_d_cb.c"
 File Type = "CSource"
-Disk Date = 3620037634
+Disk Date = 3647936866
 In Projects = "1,"
 Window Top = 48
 Window Left = 18
-Window Z-Order = 6
-Source Window State = "1,0,6,0,0,105,0,0,0,80,0,0,0,0,0,25,0,0,33,77,323,517,1,0,"
+Window Z-Order = 4
+Source Window State = "1,167,167,167,28,30,30,0,0,80,0,0,0,0,0,20,137,0,176,47,263,517,1,0,"
 
 [File 0004]
-Path = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/fwup_cb.c"
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/fwup_cb.c"
 File Type = "CSource"
-Disk Date = 3620037557
+Disk Date = 3644037267
 In Projects = "1,"
 Window Top = 48
 Window Left = 18
-Window Z-Order = 7
-Source Window State = "1,0,33,0,0,78,0,0,0,80,0,0,0,0,0,25,0,0,4,70,323,517,1,0,"
+Window Z-Order = 14
+Source Window State = "1,388,396,388,8,39,8,0,0,80,0,0,0,0,0,25,664,0,685,87,323,517,1,0,"
 
 [File 0005]
-Path = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/fwup_cb.h"
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/mmd_comm.c"
+File Type = "CSource"
+Disk Date = 3644052237
+In Projects = "1,"
+Window Top = 25
+Window Left = 6
+Window Z-Order = 10
+Source Window State = "1,65,65,65,14,29,29,0,0,80,0,0,0,0,0,25,51,0,386,68,323,517,1,0,"
+
+[File 0006]
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/bio_demo.h"
 File Type = "Include"
-Disk Date = 3620037601
+Disk Date = 3639734591
+In Projects = "1,"
+Window Top = 117
+Window Left = 54
+Window Z-Order = 9
+Source Window State = "1,55,55,55,9,25,9,0,3,80,0,0,0,0,0,25,54,0,55,25,323,517,1,0,"
+
+[File 0007]
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/timer_cb.h"
+File Type = "Include"
+Disk Date = 3634373646
+In Projects = "1,"
+Window Top = 117
+Window Left = 54
+Window Z-Order = 22
+Source Window State = "1,47,47,47,12,18,12,0,3,80,0,0,0,0,0,25,38,0,47,18,323,517,1,0,"
+
+[File 0008]
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/fwup_cb.h"
+File Type = "Include"
+Disk Date = 3635283000
 In Projects = "1,"
 Window Top = 71
 Window Left = 30
-Window Z-Order = 3
-Source Window State = "1,0,13,0,0,79,0,0,0,80,0,0,0,0,0,25,0,0,33,77,323,517,1,0,"
+Window Z-Order = 21
+Source Window State = "1,51,51,51,6,43,6,0,3,80,0,0,0,0,0,25,48,0,51,43,323,517,1,0,"
 
-[File 0006]
-Path = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/mmd_comm.h"
+[File 0009]
+Path = "/c/Program Files (x86)/National Instruments/CVI2017/include/ansi/stdio.h"
 File Type = "Include"
-Disk Date = 3620037693
-In Projects = "1,"
+Disk Date = 3573565200
+In Projects = ""
 Window Top = 25
 Window Left = 6
-Window Z-Order = 2
-Source Window State = "1,67,67,67,8,23,23,0,0,80,0,55,0,0,0,25,0,0,34,77,323,517,1,15,"
+Window Z-Order = 20
+Source Window State = "1,186,186,186,14,19,19,0,3,80,0,0,0,0,0,25,174,0,186,14,323,517,1,0,"
 
-[File 0007]
-Path = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/serial.c"
+[File 0010]
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/ppg_cb.c"
 File Type = "CSource"
-Disk Date = 3620037662
+Disk Date = 3647429688
 In Projects = "1,"
-Window Top = 23
+Window Top = 117
+Window Left = 54
 Window Z-Order = 5
-Source Window State = "1,0,12,0,0,94,0,0,0,94,0,0,0,0,0,31,83,0,33,77,400,600,1,0,"
+Source Window State = "1,57,57,57,11,20,20,0,3,80,0,0,0,0,0,25,31,0,57,11,323,517,1,0,"
 
-[File 0008]
-Path = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/bio_demo.uir"
+[File 0011]
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/medianfilter.c"
+File Type = "CSource"
+Disk Date = 3631677301
+In Projects = "1,"
+Window Top = 48
+Window Left = 18
+Window Z-Order = 3
+Source Window State = "1,13,13,13,5,17,5,0,0,80,0,0,0,0,0,24,15,0,39,33,311,517,1,0,"
+
+[File 0012]
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/timer_cb.c"
+File Type = "CSource"
+Disk Date = 3634365034
+In Projects = "1,"
+Window Top = 140
+Window Left = -94
+Window Z-Order = 19
+Source Window State = "1,51,72,51,0,21,0,0,0,80,0,0,0,0,0,25,38,0,56,4,323,517,1,0,"
+
+[File 0013]
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/bio_demo.uir"
 File Type = "User Interface Resource"
-Disk Date = 3620034842
+Disk Date = 3639737363
 In Projects = "1,"
 Window Top = 48
 Window Left = 18
 Window Height = 323
 Window Width = 517
-Window Z-Order = 10
+Window Z-Order = 17
 
-[File 0009]
-Path Line0001 = "/c/Program Files (x86)/National Instruments/CVI2017/toolslib/custctrl/progressba"
-Path Line0002 = "r.h"
+[File 0014]
+Path = "/c/Program Files (x86)/National Instruments/CVI2017/include/tcpsupp.h"
 File Type = "Include"
 Disk Date = 3573565200
 In Projects = ""
+Window Top = 163
+Window Left = 78
+Window Z-Order = 18
+Source Window State = "1,67,67,67,12,25,25,0,3,80,0,0,0,0,0,25,61,0,67,12,323,517,1,0,"
+
+[File 0015]
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/filter.c"
+File Type = "CSource"
+Disk Date = 3631770608
+In Projects = "1,"
+Window Top = 25
+Window Left = 6
+Window Z-Order = 6
+Source Window State = "1,13,13,13,0,19,0,0,3,80,0,0,0,0,0,24,0,0,13,19,311,517,1,0,"
+
+[File 0016]
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/filter.h"
+File Type = "Include"
+Disk Date = 3631412178
+In Projects = "1,"
+Window Top = 25
+Window Left = 6
+Window Z-Order = 16
+Source Window State = "1,0,0,0,0,0,0,0,0,80,0,0,0,0,0,25,0,0,0,0,323,517,1,0,"
+
+[File 0017]
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/DSP_Filter.c"
+File Type = "CSource"
+Disk Date = 3643178302
+In Projects = "1,"
+Window Top = 25
+Window Left = 6
+Window Z-Order = 11
+Source Window State = "1,35,35,35,21,24,21,0,0,80,0,0,0,0,0,25,236,0,49,68,323,517,1,0,"
+
+[File 0018]
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/DSP_Filter.h"
+File Type = "Include"
+Disk Date = 3643177506
+In Projects = "1,"
+Window Top = 48
+Window Left = 18
+Window Z-Order = 15
+Source Window State = "1,8,8,8,10,14,10,0,0,80,0,0,0,0,0,25,0,0,30,35,323,517,1,0,"
+
+[File 0019]
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/mmd_comm.h"
+File Type = "Include"
+Disk Date = 3644031598
+In Projects = "1,"
+Window Top = 25
+Window Left = 6
+Window Z-Order = 8
+Source Window State = "1,211,212,211,0,0,0,0,3,80,0,193,0,0,0,25,211,0,212,0,323,517,1,0,"
+
+[File 0020]
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/serial.c"
+File Type = "CSource"
+Disk Date = 3639479431
+In Projects = "1,"
+Window Top = 23
+Window Z-Order = 13
+Source Window State = "1,114,114,114,5,16,16,0,0,94,0,0,0,0,0,31,13,0,126,62,400,600,1,0,"
+
+[File 0021]
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/fullAnalysis.c"
+File Type = "CSource"
+Disk Date = 3650924570
+In Projects = "1,"
+Window Top = 23
+Window Z-Order = 1
+Source Window State = "1,656,656,656,5,16,16,0,0,154,0,0,0,0,0,53,425,0,451,42,400,600,1,0,"
+
+[File 0022]
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/Matrix_operation.c"
+File Type = "CSource"
+Disk Date = 3491027882
+In Projects = "1,"
+Source Window State = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
+
+[File 0023]
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/regmap_cb.c"
+File Type = "CSource"
+Disk Date = 3634182912
+In Projects = "1,"
+Window Top = 232
+Window Left = 114
+Source Window State = "1,103,103,103,20,86,20,0,0,0,0,0,0,0,0,0,39,0,85,29,323,517,1,0,"
+
+[File 0024]
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/sg_filt.c"
+File Type = "CSource"
+Disk Date = 3623827678
+In Projects = "1,"
+Window Top = 324
+Window Left = 162
+Source Window State = "1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,39,0,23,14,323,517,1,0,"
+
+[File 0025]
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/ecg_d_cb.h"
+File Type = "Include"
+Disk Date = 3634181470
+In Projects = "1,"
 Window Top = 301
 Window Left = 150
-Window Z-Order = 9
-Source Window State = "1,33,33,33,8,35,8,0,3,80,0,0,0,0,0,25,28,0,33,35,323,517,1,0,"
+Source Window State = "1,53,53,53,16,20,16,0,0,0,0,0,0,0,0,0,11,0,53,80,323,517,1,0,"
 
-[File 0010]
-Path = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/bio_demo.h"
+[File 0026]
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/Matrix_operation.h"
 File Type = "Include"
-Disk Date = 3620037677
+Disk Date = 3623825586
 In Projects = "1,"
-Window Top = 117
-Window Left = 54
-Window Z-Order = 4
-Source Window State = "1,0,5,5,0,76,76,0,0,80,0,0,0,0,0,25,0,0,33,77,323,517,1,0,"
+Window Top = 48
+Window Left = 18
+Window Z-Order = 7
+Source Window State = "1,3,5,3,0,0,0,0,3,80,0,0,0,0,0,25,0,0,5,0,323,517,1,0,"
 
-[File 0011]
-Path = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/serial.h"
+[File 0027]
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/medianFilter.h"
+File Type = "Include"
+Disk Date = 3631678177
+In Projects = "1,"
+Source Window State = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
+
+[File 0028]
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/ppg_cb.h"
+File Type = "Include"
+Disk Date = 3634196445
+In Projects = "1,"
+Window Top = 140
+Window Left = 66
+Source Window State = "1,50,51,50,0,0,0,0,0,0,0,0,0,0,0,0,5,0,47,0,323,517,1,0,"
+
+[File 0029]
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/regmap_cb.h"
+File Type = "Include"
+Disk Date = 3630540847
+In Projects = "1,"
+Source Window State = "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
+
+[File 0030]
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/serial.h"
 File Type = "Include"
 Disk Date = 3620037702
 In Projects = "1,"
-Window Z-Order = 1
-Source Window State = "1,0,5,0,0,77,0,0,0,177,0,0,0,0,0,51,4,0,33,77,400,600,0,0,"
+Window Top = 23
+Source Window State = "1,0,5,0,0,77,0,0,0,0,0,0,0,0,0,0,6,0,33,77,400,600,1,0,"
+
+[File 0031]
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/sg_filt.h"
+File Type = "Include"
+Disk Date = 3623827462
+In Projects = "1,"
+Window Top = 117
+Window Left = 54
+Source Window State = "1,0,2,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,2,0,263,517,1,0,"
+
+[File 0032]
+Path = "/d/software/2019/cvi/Demo_labwindows_cvi/fullAnalysis.h"
+File Type = "Include"
+Disk Date = 3650924442
+In Projects = "1,"
+Window Top = 25
+Window Left = 6
+Window Z-Order = 2
+Source Window State = "1,83,83,83,8,17,17,0,3,80,0,0,0,0,0,25,71,0,83,8,323,517,1,0,"
 
 [Tab Order]
-Tab 0001 = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/bio_demo.c"
-Tab 0002 = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/mmd_comm.c"
-Tab 0003 = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/mmd_comm.h"
-Tab 0004 = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/fwup_cb.c"
-Tab 0005 = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/fwup_cb.h"
-Tab 0006 = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/serial.c"
-Tab 0007 Line0001 = "/c/Program Files (x86)/National Instruments/CVI2017/toolslib/custctrl/progressba"
-Tab 0007 Line0002 = "r.h"
-Tab 0008 = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/bio_demo.uir"
-Tab 0009 = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/bio_demo.h"
-Tab 0010 = "/d/software/2018/feelkit/cvi/Demo_labwindows_cvi/serial.h"
+Tab 0001 = "/d/software/2019/cvi/Demo_labwindows_cvi/timer_cb.h"
+Tab 0002 = "/d/software/2019/cvi/Demo_labwindows_cvi/mmd_comm.c"
+Tab 0003 = "/d/software/2019/cvi/Demo_labwindows_cvi/bio_demo.c"
+Tab 0004 = "/d/software/2019/cvi/Demo_labwindows_cvi/ecg_d_cb.c"
+Tab 0005 = "/d/software/2019/cvi/Demo_labwindows_cvi/fwup_cb.h"
+Tab 0006 = "/c/Program Files (x86)/National Instruments/CVI2017/include/ansi/stdio.h"
+Tab 0007 = "/d/software/2019/cvi/Demo_labwindows_cvi/fwup_cb.c"
+Tab 0008 = "/d/software/2019/cvi/Demo_labwindows_cvi/ppg_cb.c"
+Tab 0009 = "/d/software/2019/cvi/Demo_labwindows_cvi/medianfilter.c"
+Tab 0010 = "/d/software/2019/cvi/Demo_labwindows_cvi/bio_demo.uir"
+Tab 0011 = "/d/software/2019/cvi/Demo_labwindows_cvi/timer_cb.c"
+Tab 0012 = "/d/software/2019/cvi/Demo_labwindows_cvi/bio_demo.h"
+Tab 0013 = "/c/Program Files (x86)/National Instruments/CVI2017/include/tcpsupp.h"
+Tab 0014 = "/d/software/2019/cvi/Demo_labwindows_cvi/filter.c"
+Tab 0015 = "/d/software/2019/cvi/Demo_labwindows_cvi/filter.h"
+Tab 0016 = "/d/software/2019/cvi/Demo_labwindows_cvi/DSP_Filter.c"
+Tab 0017 = "/d/software/2019/cvi/Demo_labwindows_cvi/DSP_Filter.h"
+Tab 0018 = "/d/software/2019/cvi/Demo_labwindows_cvi/serial.c"
+Tab 0019 = "/d/software/2019/cvi/Demo_labwindows_cvi/mmd_comm.h"
+Tab 0020 = "/d/software/2019/cvi/Demo_labwindows_cvi/fullAnalysis.c"
+Tab 0021 = "/d/software/2019/cvi/Demo_labwindows_cvi/fullAnalysis.h"
+Tab 0022 = "/d/software/2019/cvi/Demo_labwindows_cvi/Matrix_operation.h"
 
 [Default Build Config 0001 Debug]
 Generate Browse Info = True
@@ -253,5 +458,13 @@ Working Directory = ""
 Environment Options = ""
 
 [Watch 1]
-Watch Expression = "binBuf"
+Watch Expression = "h_comm_handle"
+
+[Watch 2]
+Watch Expression = "/*new watchpoint*/"
+
+[Distributions]
+Active Index = 1
+AbsCDSPath 0001 = "/d/software/2019/cvi/Demo_labwindows_cvi/Bio_cvi.cds"
+RelCDSPath 0001 = "Bio_cvi.cds"
 

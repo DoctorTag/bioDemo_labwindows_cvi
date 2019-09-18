@@ -33,37 +33,52 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ---------------------------------------------------------------------------*/
 
-#ifndef _FWUP_CB_H_
-#define _FWUP_CB_H_
+#ifndef _REGMAP_CB_H_
+#define _REGMAP_CB_H_
 
 
 #ifdef __cplusplus
-    extern "C" {
+extern "C" {
 #endif
-		
-		typedef enum tBIO_SENSOR_STATE {
+
+	#define RegNum_Addl                        0x00
+#define RegNum_Addm                      0x01
+#define RegNum_Addh                       0x02
+#define RegNum_Ad_Type_Cnt          0x03
+#define RegNum_Dev_Id                    0x04
+#define RegNum_PStatus                   0x05
+#define RegNum_AP_VER                   0x06
+#define RegNum_BL_VERSION	          0x07
+
+#define RegNum_Fun1                        0x08
+#define RegNum_Fun2                        0x09
+#define RegNum_RUN_Mode               0x0a
+#define BL_REG_DATA                      0x0A
+
+#define RegNum_PPG_PGA                 0x0b
+#define RegNum_PPG_OP                    0x0c
+#define RegNum_PPG_DCTH                0x0d
+
+
+
+#define RegNum_MAX   14
 	
-	BIO_NORMAL =0,
-	BIO_BOOTL,
-	BIO_LOSE	
-}BIO_SENSOR_STATE;
-
-int CVICALLBACK LoadBinFile (int panel, int control, int event, void *callbackData, int eventData1, int eventData2) ;
- void initFwupCb(unsigned char forSensor);
+	#define REG_ONLY_RD_LEN  8
 
 
-void * fwfile_malloc(void);
+	int CVICALLBACK PanelRegMapCB (int panel, int event, void *callbackData,int eventData1, int eventData2) ;
 
 
+	int CVICALLBACK RegMap_QuitCb (int panel, int control, int event, void *callbackData, int eventData1, int eventData2)  ;
 
-int CVICALLBACK sensorFWUpgradeCb (int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
-int CVICALLBACK mainOtaFWUpgradeCb (int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
-void CVICALLBACK sensorFWUPFromQueueCallback (CmtTSQHandle queueHandle, unsigned int event,int value, void *callbackData);
-void CVICALLBACK otaFWUPFromQueueCallback (CmtTSQHandle queueHandle, unsigned int event,int value, void *callbackData);
+
+	int CVICALLBACK RegTableCb (int panel, int control, int event, void *callbackData, int eventData1, int eventData2) ;
+
+
 
 
 #ifdef __cplusplus
-    }
+}
 #endif
 
 

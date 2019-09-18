@@ -32,39 +32,45 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 ---------------------------------------------------------------------------*/
-
-#ifndef _FWUP_CB_H_
-#define _FWUP_CB_H_
-
-
-#ifdef __cplusplus
-    extern "C" {
-#endif
-		
-		typedef enum tBIO_SENSOR_STATE {
-	
-	BIO_NORMAL =0,
-	BIO_BOOTL,
-	BIO_LOSE	
-}BIO_SENSOR_STATE;
-
-int CVICALLBACK LoadBinFile (int panel, int control, int event, void *callbackData, int eventData1, int eventData2) ;
- void initFwupCb(unsigned char forSensor);
-
-
-void * fwfile_malloc(void);
+/* Include files                                                             */
+/*---------------------------------------------------------------------------*/
+#include "asynctmr.h"
+#include <analysis.h>
+#include <utility.h>
+#include <cvirte.h>
+#include <userint.h>
+#include <ansi_c.h>
+//#include <progressbar.h>
+#include <toolbox.h>
+#include "bio_demo.h"
+#include "serial.h"
+#include "mmd_comm.h"
+#include "timer_cb.h"
 
 
 
-int CVICALLBACK sensorFWUpgradeCb (int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
-int CVICALLBACK mainOtaFWUpgradeCb (int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
-void CVICALLBACK sensorFWUPFromQueueCallback (CmtTSQHandle queueHandle, unsigned int event,int value, void *callbackData);
-void CVICALLBACK otaFWUPFromQueueCallback (CmtTSQHandle queueHandle, unsigned int event,int value, void *callbackData);
+int CVICALLBACK TimerCallback (int panel, int control, int event,
+							   void *callbackData, int eventData1,
+							   int eventData2)
+{
+	timer_cb_data_t *cb_data = (timer_cb_data_t *) callbackData;
+	char message[64]= {0};
+
+	switch (event)
+	{
+		case EVENT_TIMER_TICK:
+			if(cb_data->timer_special_fun)
+				cb_data->timer_special_fun(cb_data);
+			else
+			{
+				SetCtrlAttribute (panel, cb_data->control, ATTR_ENABLED, 0);
+				sprintf (message, "CMD=%x respone timeout!!", cb_data->info);
+				MessagePopup ("Error:",message);
+			}
+			break;
+	}
+	return 0;
+}
 
 
-#ifdef __cplusplus
-    }
-#endif
 
-
-#endif

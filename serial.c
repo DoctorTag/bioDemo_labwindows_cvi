@@ -67,7 +67,7 @@ int Init_ComPort (int com_port)
 	int RS232Error  ;
 	DisableBreakOnLibraryErrors ();
 	/*  Open and Configure Com port */
-	RS232Error = OpenComConfig (com_port, "", 19200, 0, 8, 1, 512, 512);
+	RS232Error = OpenComConfig (com_port, "", 115200, 0, 8, 1, 512, 512);
 	EnableBreakOnLibraryErrors ();
 
 	if (RS232Error == 0)

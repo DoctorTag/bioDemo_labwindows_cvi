@@ -48,14 +48,74 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define PAGESIZE MAX_TDATA_LENGTH
 #define PAGECNT 92
 
-extern int FWUpgrade_handle;
-extern int comport;
+#define OTA_PAGECNT 8
 
-unsigned char *binBuf;
 
+extern h_comm_handle_t h_comm_handle;
+
+unsigned char Wrbuf[MAX_TDATA_LENGTH+MAX_TMISC_LENGTH];
+int FWUpgrade_handle;
+unsigned char *binBuf = NULL;
+char bin_path[MAX_PATHNAME_LEN];
+unsigned char fw_type,check_cnt;
+unsigned int program_cnt,cur_prog;
 FILE * pfile;
+unsigned int filelen;
 
-// unsigned char tPageCnt;
+
+static CmtTSQCallbackID fwupPlotcallbackID = 0;
+
+
+int CVICALLBACK fwupTimerCallback (int panel, int control, int event,
+								   void *callbackData, int eventData1,
+								   int eventData2)
+{
+	switch (event)
+	{
+		case EVENT_TIMER_TICK:
+			MessagePopup ("Error:","rsp timeout !!!!");
+			break;
+	}
+	return 0;
+}
+
+
+
+
+int CVICALLBACK FW_SWCb (int panel, int control, int event,
+						 void *callbackData, int eventData1, int eventData2)
+{
+	switch (event)
+	{
+		case EVENT_COMMIT:
+		{
+			GetCtrlAttribute(panel, PANEL_FWUP_FW_SW,ATTR_CTRL_VAL,&fw_type);
+			if(fw_type)
+			{
+				CmtUninstallTSQCallback (h_comm_handle.queueHandle, fwupPlotcallbackID);
+
+				CmtInstallTSQCallback (h_comm_handle.queueHandle, EVENT_TSQ_ITEMS_IN_QUEUE, 1, sensorFWUPFromQueueCallback, NULL,CmtGetCurrentThreadID(), &fwupPlotcallbackID);
+
+				MessagePopup ("Tips:","Firmware Upgraded for Sensor Module?");
+			}
+			else
+			{
+				CmtUninstallTSQCallback (h_comm_handle.queueHandle, fwupPlotcallbackID);
+
+				CmtInstallTSQCallback (h_comm_handle.queueHandle, EVENT_TSQ_ITEMS_IN_QUEUE, 1, otaFWUPFromQueueCallback, NULL,CmtGetCurrentThreadID(), &fwupPlotcallbackID);
+
+				MessagePopup ("Tips:","Ota for wireless MCU?");
+			}
+			memset( bin_path,0, MAX_PATHNAME_LEN);
+			SetCtrlVal (panel, PANEL_FWUP_BIN_PATH, "<Path displayed here>");
+			SetCtrlAttribute(panel,PANEL_FWUP_FW_UPGRADE,ATTR_DIMMED,1);
+
+		}
+		break;
+	}
+
+	return 0;
+}
 
 int CVICALLBACK LoadBinFileCb (int panel, int control, int event,
 							   void *callbackData, int eventData1, int eventData2)
@@ -64,46 +124,44 @@ int CVICALLBACK LoadBinFileCb (int panel, int control, int event,
 	{
 		case EVENT_COMMIT:
 		{
-			char path[MAX_PATHNAME_LEN];
-			binBuf = NULL;
-			pfile = NULL;
-			if (FileSelectPopupEx ("", "*.bin", "", "Select File to load",
-								   VAL_OK_BUTTON, 0, 0, path) != VAL_NO_FILE_SELECTED)
+			if(pfile != NULL)
 			{
+				fclose(pfile);
+				pfile = NULL;
+			}
+			GetCtrlAttribute(panel, PANEL_FWUP_FW_SW,ATTR_CTRL_VAL,&fw_type);
 
-				/* Open the file and write out the data */
-				pfile = fopen (path,"rb");
-				if(pfile != NULL)
+			if (FileSelectPopupEx ("", "*.bin", "", "Select File to load",VAL_OK_BUTTON, 0, 0, bin_path) != VAL_NO_FILE_SELECTED)
+			{
+				if(fw_type)
 				{
-					binBuf = (unsigned char*)malloc(MAX_TDATA_LENGTH*PAGECNT);
-					if(binBuf != NULL)
+					if(strstr(bin_path,"sensor") == NULL)
 					{
-						size_t rcnt;
-						fseek(pfile,0,SEEK_SET);
-						rcnt = fread((void*)binBuf,PAGESIZE,PAGECNT, pfile);
-						if(rcnt == PAGECNT)
-						{
-
-							SetCtrlVal (panel, PANEL_FWUP_BIN_PATH, path);
-							//InsertListItem (panel, PANEL_ATTACHMENTS, -1, path, path);
-							SetCtrlAttribute(panel,PANEL_FWUP_FW_UPGRADE,ATTR_DIMMED,0);
-						}
-						else
-						{
-							SetCtrlAttribute(panel,PANEL_FWUP_FW_UPGRADE,ATTR_DIMMED,1);
-							MessagePopup ("Error:","Read bin file error!!");
-						}
+						MessagePopup ("Error:","choice bin file error!!");
+						return 0;
 					}
-					else
-						MessagePopup ("Read Error:","Malloc error!!");
+					InstallCtrlCallback(panel,PANEL_FWUP_FW_UPGRADE,sensorFWUpgradeCb,NULL);
+
+
 				}
 				else
-					MessagePopup ("Error:","Open bin file error!!");
+				{
+					if(strstr(bin_path,"main_ota") == NULL)
+					{
+						MessagePopup ("Error:","choice bin file error!!");
+						return 0;
+					}
+					InstallCtrlCallback(panel,PANEL_FWUP_FW_UPGRADE,mainOtaFWUpgradeCb,NULL);
+
+				}
+
+				SetCtrlVal (panel, PANEL_FWUP_BIN_PATH, bin_path);
+				SetCtrlAttribute(panel,PANEL_FWUP_FW_UPGRADE,ATTR_DIMMED,0);
+
+
 			}
-
-
-			break;
 		}
+		break;
 	}
 	return 0;
 }
@@ -149,15 +207,242 @@ static void FWUpgradeReturnInd(int panel,char *tip,char *msg )
 
 }
 
-int CVICALLBACK FWUpgradeCb (int panel, int control, int event,
-							 void *callbackData, int eventData1, int eventData2)
+
+void CVICALLBACK sensorFWUPFromQueueCallback (CmtTSQHandle queueHandle, unsigned int event,int value, void *callbackData)
 {
-	unsigned char bio_status,result,loop_cnt = 0;
-	unsigned char *rspFrame;
+	h_comm_rdata_t rdata[1];
+	  char message[64];
+
+	switch (event)
+	{
+		case EVENT_TSQ_ITEMS_IN_QUEUE:
+
+			CmtReadTSQData (queueHandle, rdata, 1, TSQ_INFINITE_TIMEOUT, 0);
+
+			switch(rdata->dframe[1])
+			{
+				case STATUS_INFO_REQ:
+				{
+					//	SetCtrlAttribute (FWUpgrade_handle, PANEL_FWUP_TIMER, ATTR_ENABLED, 0);
+
+
+					switch(rdata->dframe[3])
+					{
+
+						case  BIO_NORMAL:   //is AP?
+						{
+							if(check_cnt == 1)
+							{
+								FWUpgradeReturnInd(FWUpgrade_handle,"BioSensor :","Fail to  restart for bootloader !!!");
+								//goto sensor_up_done;
+
+							}
+							else
+							{
+								check_cnt++;
+								h_comm_sendCMD(&h_comm_handle,RESTART_COMMAND,FWUPGRADE_RST,0,0); 
+								
+								//	SetCtrlAttribute (FWUpgrade_handle, PANEL_FWUP_TIMER, ATTR_ENABLED, 1);
+
+							}
+
+						}
+						break;
+
+						case   BIO_BOOTL:   //sensor is bootloader status !
+						{
+							h_comm_sendCMD(&h_comm_handle,FIRMWARE_UPGRADING_COMMAND,BL_CMD_UPGRADE_REQ,FWUP_PWD,0);
+
+							//	SetCtrlAttribute (FWUpgrade_handle, PANEL_FWUP_TIMER, ATTR_ENABLED, 1);
+
+						}
+						break;
+
+						case BIO_LOSE :
+								{
+							if(check_cnt == 1)
+							{
+								FWUpgradeReturnInd(FWUpgrade_handle,"BioSensor :","Sensor module lost !!!");  
+								//goto sensor_up_done;
+
+							}
+							else
+							{
+								check_cnt++;
+								h_comm_sendCMD(&h_comm_handle,RESTART_COMMAND,FWUPGRADE_RST,0,0); 
+								
+								//	SetCtrlAttribute (FWUpgrade_handle, PANEL_FWUP_TIMER, ATTR_ENABLED, 1);
+
+							}
+
+						}
+						break;
+						
+						default:
+
+							FWUpgradeReturnInd(FWUpgrade_handle,"BioSensor :","Sensor module unknow !!!");
+							//	goto sensor_up_done;
+
+							break;
+
+
+					}
+
+				}
+				break;
+				
+				case RESTART_COMMAND:
+				{
+					//	SetCtrlAttribute (FWUpgrade_handle, PANEL_FWUP_TIMER, ATTR_ENABLED, 0);
+
+
+					switch(rdata->dframe[3])
+					{
+
+						case  FWUPGRADE_RST:   
+						{
+						
+							Delay(1);
+							 h_comm_sendCMD(&h_comm_handle,STATUS_INFO_REQ,0,0,0);
+								
+						}
+						break;
+
+						case    NORMAL_RST:   
+						{
+				
+						}
+						break;
+
+					
+
+
+					}
+
+				}
+				break;
+
+				case FIRMWARE_UPGRADING_COMMAND:
+				{
+					//	SetCtrlAttribute (FWUpgrade_handle, PANEL_FWUP_TIMER, ATTR_ENABLED, 0);
+
+					switch(rdata->dframe[3])
+					{
+
+						case  BL_CMD_UPGRADE_REQ :
+						{
+							SetCtrlAttribute(FWUpgrade_handle,PANEL_FWUP_PROGRESSBAR,ATTR_LABEL_TEXT,"Erasing...");
+							DisplayPanel (FWUpgrade_handle);
+							h_comm_sendCMD(&h_comm_handle,FIRMWARE_UPGRADING_COMMAND,BL_CMD_ERASEAPP,FWUP_PWD,0);
+							Delay(1);
+							//	SetCtrlAttribute (FWUpgrade_handle, PANEL_FWUP_TIMER, ATTR_ENABLED, 1);
+						}
+						break;
+
+						case BL_CMD_ERASEAPP:
+						{
+							SetCtrlAttribute(FWUpgrade_handle,PANEL_FWUP_PROGRESSBAR,ATTR_LABEL_TEXT,"Programming...");
+							DisplayPanel (FWUpgrade_handle);
+							program_cnt = 1;
+							if(rdata->dframe[4] == RSP_OK)
+							h_comm_sendFWUpgrade(&h_comm_handle,BL_CMD_PROGRAM,Wrbuf,0,binBuf,MAX_TDATA_LENGTH) ;
+							else
+							{
+										sprintf (message, "ERASE Error Upgrade rsp: 0x%x", rdata->dframe[4]);
+							FWUpgradeReturnInd(FWUpgrade_handle,"Sensor Error:",message);
+					
+							}
+							//	SetCtrlAttribute (FWUpgrade_handle, PANEL_FWUP_TIMER, ATTR_ENABLED, 1);
+
+						}
+						break;
+
+				//	default:	 
+						case BL_CMD_PROGRAM:
+						{
+							
+							if(	program_cnt < PAGECNT)
+							{
+							//	h_comm_sendFWUpgrade(&h_comm_handle,BL_CMD_PROGRAM,Wrbuf,0,binBuf,MAX_TDATA_LENGTH) ;
+								h_comm_sendFWUpgrade(&h_comm_handle,BL_CMD_PROGRAM,Wrbuf,program_cnt*(MAX_TDATA_LENGTH / 2),binBuf+program_cnt*MAX_TDATA_LENGTH,MAX_TDATA_LENGTH) ;
+							//	Delay(0.5);
+								ProgressBar_SetPercentage (FWUpgrade_handle, PANEL_FWUP_PROGRESSBAR, (100*program_cnt)/PAGECNT, NULL);
+								program_cnt++;
+
+							}
+							else
+								h_comm_sendCMD(&h_comm_handle,FIRMWARE_UPGRADING_COMMAND,BL_CMD_APRDY,FWUP_PWD,0);
+							//	SetCtrlAttribute (FWUpgrade_handle, PANEL_FWUP_TIMER, ATTR_ENABLED, 1);
+						}
+						break;
+
+						case BL_CMD_APRDY:
+						{
+
+						//	h_comm_sendCMD(&h_comm_handle,RESTART_COMMAND,NORMAL_RST,0); 
+							SetCtrlAttribute(FWUpgrade_handle,PANEL_FWUP_PROGRESSBAR,ATTR_LABEL_TEXT,"Program OK");
+							FWUpgradeReturnInd(FWUpgrade_handle,"Firmware upgrade:","Program OK!!");
+
+						}
+						break;
+						
+						default:
+							{
+							 
+							sprintf (message, "Error Upgrade rsp: 0x%x , 0x%x", rdata->dframe[3],rdata->dframe[4]);
+							FWUpgradeReturnInd(FWUpgrade_handle,"Sensor Error:",message);
+							//	goto sensor_up_done;
+							}
+							break;
+						
+
+					}
+
+				}
+				break;
+			}
+
+
+
+			break;
+	}
+}
+
+
+int CVICALLBACK sensorFWUpgradeCb (int panel, int control, int event,
+								   void *callbackData, int eventData1, int eventData2)
+{
 	switch (event)
 	{
 		case EVENT_COMMIT:
 		{
+			/* Open the file and write out the data */
+			pfile = fopen (bin_path,"rb");
+			if(pfile != NULL)
+			{
+
+				size_t rcnt;
+				fseek(pfile,0,SEEK_SET);
+				rcnt = fread((void*)binBuf,PAGESIZE,PAGECNT, pfile);
+				if(rcnt != PAGECNT)
+				{
+					SetCtrlAttribute(panel,PANEL_FWUP_FW_UPGRADE,ATTR_DIMMED,1);
+					MessagePopup ("Error:","Read bin file error!!");
+					if(pfile)
+					{
+						fclose(pfile);
+						pfile = NULL;
+					};
+					return 0 ;
+				}
+			}
+			else
+			{
+				MessagePopup ("Error:","Open bin file error!!");
+				return 0 ;
+			}
+
+
 			ProgressBar_ConvertFromSlide (panel,PANEL_FWUP_PROGRESSBAR);
 			ProgressBar_SetAttribute (panel,PANEL_FWUP_PROGRESSBAR, ATTR_PROGRESSBAR_UPDATE_MODE, VAL_PROGRESSBAR_MANUAL_MODE);
 
@@ -168,171 +453,274 @@ int CVICALLBACK FWUpgradeCb (int panel, int control, int event,
 
 			SetCtrlAttribute(panel,PANEL_FWUP_PROGRESSBAR,ATTR_LABEL_TEXT,"Device status requesting...");
 			DisplayPanel (panel);
-info_loop:
-			if(loop_cnt > 3)
-			{
-				FWUpgradeReturnInd(panel,"BioSensor :","Sensor module info error !!!");
-				//	MessagePopup ("BioSensor :","Sensor module info error !!!");
-				return 0;
-			}
-			rspFrame = sendSyncCMDWithRsp(comport,STATUS_INFO_REQ,0,0,1000,&result);
-			if(result)
-			{
-				bio_status = rspFrame[3];
-				if(bio_status >= BIO_LOSE)
-				{
-					FWUpgradeReturnInd(panel,"BioSensor :","Sensor module lost !!!");
-					//	MessagePopup ("BioSensor :","Sensor module lost !!!");
-					return 0;
-				}
 
-			}
-			else
-			{
-				FWUpgradeReturnInd(panel,NULL,NULL);
-				return 0;
+			CmtFlushTSQ(h_comm_handle.queueHandle,TSQ_FLUSH_ALL ,NULL);
+			/* Install a callback to read and plot the generated data. */
+			//		CmtInstallTSQCallback (h_comm_handle.queueHandle, EVENT_TSQ_ITEMS_IN_QUEUE, 1, sensorFWUPFromQueueCallback, NULL,CmtGetCurrentThreadID(), &fwupPlotcallbackID);
 
-			}
+			h_comm_sendCMD(&h_comm_handle,STATUS_INFO_REQ,0,0,0);
+			check_cnt = 0;
 
-			if(bio_status == BIO_NORMAL)   //is AP?
-			{
-				sendSyncCMDWithRsp(comport,RESTART_COMMAND,FWUPGRADE_RST,FWUP_PWD,1000,&result);
-				if(result)
-				{
-					MessagePopup ("Tips:","RESTART_COMMAND RSP OK");
-					Delay (2);
-					loop_cnt++;
-					goto info_loop;
-				}
-				else
-				{
-					FWUpgradeReturnInd(panel,NULL,NULL);
-					return 0;
-
-				}
-
-			}
-
-			rspFrame = sendSyncCMDWithRsp(comport,FIRMWARE_UPGRADE_CMD,BL_CMD_PROGRAM,FWUP_PWD,5000,&result);
-			if(result == 0)
-			{
-				FWUpgradeReturnInd(panel,NULL,NULL);
-				return 0;
-
-			}
-			else
-			{
-				if(rspFrame[4] != RSP_OK)
-				{
-					FWUpgradeReturnInd(panel,"Error :","BL_CMD_UPGRADE_REQ error !!!");
-					//MessagePopup ("Error :","BL_CMD_UPGRADE_REQ error !!!");
-					return 0;
-				}
-			}
-
-			SetCtrlAttribute(panel,PANEL_FWUP_PROGRESSBAR,ATTR_LABEL_TEXT,"Erasing...");
-			DisplayPanel (panel);
-
-			sendSyncCMDWithRsp(comport,FIRMWARE_UPGRADE_CMD,BL_CMD_ERASEAPP,FWUP_PWD,15000,&result);
-
-			if(result == 0)
-			{
-				FWUpgradeReturnInd(panel,NULL,NULL);
-				return 0;
-
-			}
-			else
-			{
-				if(rspFrame[4] != RSP_OK)
-				{
-					FWUpgradeReturnInd(panel,"Error :","BL_CMD_ERASEAPP error !!!");
-					//	MessagePopup ("Error :","BL_CMD_ERASEAPP error !!!");
-					return 0;
-				}
-			}
-
-			SetCtrlAttribute(panel,PANEL_FWUP_PROGRESSBAR,ATTR_LABEL_TEXT,"Programming...");
-			DisplayPanel (panel);
+			//	SetCtrlAttribute (FWUpgrade_handle, PANEL_FWUP_TIMER, ATTR_ENABLED, 1);
 
 
 
-			if(result)
-			{
-
-
-				unsigned char *Wrbuf = (unsigned char*)malloc(MAX_TDATA_LENGTH+MAX_TMISC_LENGTH);
-
-				if(Wrbuf == NULL)
-				{
-					FWUpgradeReturnInd(panel,"Upgrade Error:","Malloc error!!");
-					//	MessagePopup ("Upgrade Error:","Malloc error!!");
-					return 0;
-				}
-
-				for(unsigned char pcnt = 0; pcnt < PAGECNT; pcnt++)
-				{
-					sendSyncAPUpgradeWithRsp(comport,Wrbuf,pcnt*(MAX_TDATA_LENGTH / 2),binBuf+pcnt*MAX_TDATA_LENGTH,MAX_TDATA_LENGTH,8000,&result) ;
-
-					if(result == 0)
-					{
-						free(Wrbuf);
-						FWUpgradeReturnInd(panel,NULL,NULL);
-						return 0;
-					}
-					else
-					{
-						if(rspFrame[4] != RSP_OK)
-						{
-							char message[64]= {0};
-							sprintf (message,"FIRMWARE_UPGRADING_COMMAND error= 0x%x !!", rspFrame[4]);
-							//MessagePopup ("Error:",message);
-							FWUpgradeReturnInd(panel,"Error:",message);
-							free(Wrbuf);
-							return 0;
-						}
-						//	else
-						//	MessagePopup ("TIPS :","FIRMWARE_UPGRADING_COMMAND OK !!!");
-					}
-
-					ProgressBar_SetPercentage (panel, PANEL_FWUP_PROGRESSBAR, (100*pcnt)/PAGECNT, NULL);
-					//	DisplayPanel (panel);
-
-				}
-
-				free(Wrbuf);
-
-				sendSyncCMDWithRsp(comport,FIRMWARE_UPGRADE_CMD,BL_CMD_APRDY,FWUP_PWD,5000,&result);
-
-				if(result == 0)
-				{
-					FWUpgradeReturnInd(panel,NULL,NULL);
-					return 0;
-
-				}
-				else
-				{
-					if(rspFrame[4] != RSP_OK)
-					{
-						FWUpgradeReturnInd(panel,"Error :","BL_CMD_APRDY error !!!");
-						//	MessagePopup ("Error :","BL_CMD_APRDY error !!!");
-						return 0;
-					}
-				}
-
-				SetCtrlAttribute(panel,PANEL_FWUP_PROGRESSBAR,ATTR_LABEL_TEXT,"Program OK");
-				FWUpgradeReturnInd(panel,"Firmware upgrade:","Program OK!!");
-				//	MessagePopup ("Firmware upgrade:","Program OK!!");
-			}
-			else
-			{
-				FWUpgradeReturnInd(panel,NULL,NULL);
-				return 0;
-
-			}
 
 
 			break;
 		}
 	}
+
+
 	return 0;
+}
+
+
+void CVICALLBACK otaFWUPFromQueueCallback (CmtTSQHandle queueHandle, unsigned int event,int value, void *callbackData)
+{
+	h_comm_rdata_t rdata[1];
+
+
+	switch (event)
+	{
+		case EVENT_TSQ_ITEMS_IN_QUEUE:
+
+			CmtReadTSQData (queueHandle, rdata, 1, TSQ_INFINITE_TIMEOUT, 0);
+
+			switch(rdata->dframe[1])
+			{
+
+
+				case FIRMWARE_UPGRADING_COMMAND:
+				{
+					//SetCtrlAttribute (FWUpgrade_handle, PANEL_FWUP_TIMER, ATTR_ENABLED, 0);
+
+					switch(rdata->dframe[3])
+					{
+
+						case  BL_CMD_OTA_REQ :
+						{
+							SetCtrlAttribute(FWUpgrade_handle,PANEL_FWUP_PROGRESSBAR,ATTR_LABEL_TEXT,"Programming...");
+							DisplayPanel (FWUpgrade_handle);
+							h_comm_sendFWUpgrade(&h_comm_handle,BL_CMD_OTA_DSEG0,Wrbuf,0,binBuf,MAX_TDATA_LENGTH) ;
+							cur_prog = 0;
+							//SetCtrlAttribute (FWUpgrade_handle, PANEL_FWUP_TIMER, ATTR_ENABLED, 1);
+						}
+						break;
+
+						case BL_CMD_OTA_DSEG0:
+						case BL_CMD_OTA_DSEG1:
+						case BL_CMD_OTA_DSEG2:
+						case BL_CMD_OTA_DSEG3:
+						case BL_CMD_OTA_DSEG4:
+						case BL_CMD_OTA_DSEG5:
+						case BL_CMD_OTA_DSEG6:
+							//	case BL_CMD_OTA_DSEG7:
+						{
+							if(cur_prog < (program_cnt-1))
+							{
+								h_comm_sendFWUpgrade(&h_comm_handle,rdata->dframe[3]+1,Wrbuf,0,binBuf+(rdata->dframe[3] - BL_CMD_OTA_DSEG0 + 1)*MAX_TDATA_LENGTH,MAX_TDATA_LENGTH) ;
+
+								//	SetCtrlAttribute (FWUpgrade_handle, PANEL_FWUP_TIMER, ATTR_ENABLED, 1);
+
+							}
+							else if(cur_prog == (program_cnt-1))
+							{
+
+
+								if((rdata->dframe[3]- BL_CMD_OTA_DSEG0)== (check_cnt -1 ))
+								{
+
+
+									SetCtrlAttribute(FWUpgrade_handle,PANEL_FWUP_PROGRESSBAR,ATTR_LABEL_TEXT,"Program OK");
+									FWUpgradeReturnInd(FWUpgrade_handle,"Firmware upgrade:","Program OK!!");
+
+									//complete
+								}
+								else if((rdata->dframe[3]- BL_CMD_OTA_DSEG0)== (check_cnt - 2))
+								{
+									if(filelen%MAX_TDATA_LENGTH)
+										h_comm_sendFWUpgrade(&h_comm_handle,rdata->dframe[3]+1,Wrbuf,0x100,binBuf+(rdata->dframe[3] - BL_CMD_OTA_DSEG0 + 1)*MAX_TDATA_LENGTH,filelen%MAX_TDATA_LENGTH) ;
+									else
+										h_comm_sendFWUpgrade(&h_comm_handle,rdata->dframe[3]+1,Wrbuf,0x100,binBuf+(rdata->dframe[3] - BL_CMD_OTA_DSEG0 + 1)*MAX_TDATA_LENGTH,MAX_TDATA_LENGTH) ;
+									//SetCtrlAttribute (FWUpgrade_handle, PANEL_FWUP_TIMER, ATTR_ENABLED, 1);
+
+								}
+								else if((rdata->dframe[3]- BL_CMD_OTA_DSEG0) < (check_cnt - 2))
+								{
+									h_comm_sendFWUpgrade(&h_comm_handle,rdata->dframe[3]+1,Wrbuf,0,binBuf+(rdata->dframe[3] - BL_CMD_OTA_DSEG0 + 1)*MAX_TDATA_LENGTH,MAX_TDATA_LENGTH) ;
+									//	SetCtrlAttribute (FWUpgrade_handle, PANEL_FWUP_TIMER, ATTR_ENABLED, 1);
+
+								}
+
+
+							}
+							else
+								FWUpgradeReturnInd(FWUpgrade_handle,"Error :","Error Upgrade unknow 0 !!!");
+						}
+						break;
+
+						case BL_CMD_OTA_DSEG7:
+						{
+							cur_prog++;
+							if(cur_prog < (program_cnt-1))
+							{
+								fread((void*)binBuf,MAX_TDATA_LENGTH,OTA_PAGECNT, pfile);
+								h_comm_sendFWUpgrade(&h_comm_handle,BL_CMD_OTA_DSEG0,Wrbuf,0,binBuf,MAX_TDATA_LENGTH) ;
+								ProgressBar_SetPercentage (FWUpgrade_handle, PANEL_FWUP_PROGRESSBAR, (100*cur_prog)/program_cnt, NULL);
+
+								//	SetCtrlAttribute (FWUpgrade_handle, PANEL_FWUP_TIMER, ATTR_ENABLED, 1);
+
+							}
+							else if(cur_prog == (program_cnt-1))
+							{
+								unsigned int tmplen = ftell(pfile) ;
+								check_cnt = (filelen-tmplen)/MAX_TDATA_LENGTH;
+								if((filelen-tmplen)%MAX_TDATA_LENGTH)
+								   check_cnt++;
+
+									fread((void*)binBuf,(filelen-tmplen),1, pfile);
+								if(check_cnt > 1)
+									h_comm_sendFWUpgrade(&h_comm_handle,BL_CMD_OTA_DSEG0,Wrbuf,0,binBuf,MAX_TDATA_LENGTH) ;
+								else
+								{
+									if(filelen%MAX_TDATA_LENGTH)
+										h_comm_sendFWUpgrade(&h_comm_handle,BL_CMD_OTA_DSEG0,Wrbuf,0x100,binBuf,filelen%MAX_TDATA_LENGTH) ;
+									else
+										h_comm_sendFWUpgrade(&h_comm_handle,BL_CMD_OTA_DSEG0,Wrbuf,0x100,binBuf,MAX_TDATA_LENGTH) ;
+								}
+
+								//	SetCtrlAttribute (FWUpgrade_handle, PANEL_FWUP_TIMER, ATTR_ENABLED, 1);
+
+							}
+							else
+							{
+								if(check_cnt == OTA_PAGECNT)
+								{
+									//complete
+
+									SetCtrlAttribute(FWUpgrade_handle,PANEL_FWUP_PROGRESSBAR,ATTR_LABEL_TEXT,"Program OK");
+									FWUpgradeReturnInd(FWUpgrade_handle,"Firmware upgrade:","Program OK!!");
+
+								}
+								else
+
+									FWUpgradeReturnInd(FWUpgrade_handle,"Error :","Error Upgrade unknow !!!");
+							}
+
+						}
+						break;
+
+
+						default:
+
+							FWUpgradeReturnInd(FWUpgrade_handle,"Error :","Error Upgrade rsp from sensor !!!");
+							//	goto sensor_up_done;
+
+							break;
+
+					}
+
+				}
+				break;
+			}
+
+
+
+			break;
+	}
+}
+
+int CVICALLBACK mainOtaFWUpgradeCb (int panel, int control, int event,
+									void *callbackData, int eventData1, int eventData2)
+{
+
+
+	switch (event)
+	{
+		case EVENT_COMMIT:
+		{
+			/* Open the file and write out the data */
+			pfile = fopen (bin_path,"rb");
+			if(pfile != NULL)
+			{
+				fseek(pfile,0,SEEK_END);
+				filelen = ftell(pfile) ;
+				program_cnt = filelen/(MAX_TDATA_LENGTH*OTA_PAGECNT);
+				if(filelen%(MAX_TDATA_LENGTH*OTA_PAGECNT))
+					program_cnt ++;
+				fseek(pfile,0,SEEK_SET);
+
+				if(fread((void*)binBuf,MAX_TDATA_LENGTH,OTA_PAGECNT, pfile) != OTA_PAGECNT)
+				{
+					SetCtrlAttribute(panel,PANEL_FWUP_FW_UPGRADE,ATTR_DIMMED,1);
+					MessagePopup ("Error:","Read bin file error!!");
+					if(pfile)
+					{
+						fclose(pfile);
+						pfile = NULL;
+					};
+					return 0 ;
+				}
+
+			}
+			else
+			{
+				MessagePopup ("Error:","Open bin file error!!");
+				return 0;
+			}
+
+			ProgressBar_ConvertFromSlide (panel,PANEL_FWUP_PROGRESSBAR);
+			ProgressBar_SetAttribute (panel,PANEL_FWUP_PROGRESSBAR, ATTR_PROGRESSBAR_UPDATE_MODE, VAL_PROGRESSBAR_MANUAL_MODE);
+
+			SetCtrlAttribute(panel,PANEL_FWUP_PROGRESSBAR,ATTR_DIMMED,0);
+			SetCtrlAttribute(panel,PANEL_FWUP_FWUP_QUIT,ATTR_DIMMED,1);
+			SetCtrlAttribute(panel,PANEL_FWUP_FW_UPGRADE,ATTR_DIMMED,1);
+			SetCtrlAttribute(panel,PANEL_FWUP_LOAD_FILE,ATTR_DIMMED,1);
+
+			SetCtrlAttribute(panel,PANEL_FWUP_PROGRESSBAR,ATTR_LABEL_TEXT,"OTA requesting...");
+			DisplayPanel (panel);
+			CmtFlushTSQ(h_comm_handle.queueHandle,TSQ_FLUSH_ALL ,NULL);
+
+
+			h_comm_sendCMD(&h_comm_handle,FIRMWARE_UPGRADING_COMMAND,BL_CMD_OTA_REQ,0,0);
+
+			//	SetCtrlAttribute (FWUpgrade_handle, PANEL_FWUP_TIMER, ATTR_ENABLED, 1);
+
+
+
+		}
+		break;
+	}
+
+
+
+	return 0;
+}
+
+
+void initFwupCb(unsigned char forSensor)
+{
+
+	if(fwupPlotcallbackID)
+				 CmtUninstallTSQCallback (h_comm_handle.queueHandle, fwupPlotcallbackID);   
+	if(forSensor)
+
+		CmtInstallTSQCallback (h_comm_handle.queueHandle, EVENT_TSQ_ITEMS_IN_QUEUE, 1, sensorFWUPFromQueueCallback, NULL,CmtGetCurrentThreadID(), &fwupPlotcallbackID);
+
+	else
+		
+		CmtInstallTSQCallback (h_comm_handle.queueHandle, EVENT_TSQ_ITEMS_IN_QUEUE, 1, otaFWUPFromQueueCallback, NULL,CmtGetCurrentThreadID(), &fwupPlotcallbackID);
+
+
+
+}
+
+void * fwfile_malloc(void)
+
+{
+
+	binBuf = (unsigned char *)malloc(MAX_TDATA_LENGTH*PAGECNT);
+	return (void*)binBuf;
+
 }

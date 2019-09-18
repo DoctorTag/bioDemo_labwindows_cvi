@@ -33,37 +33,29 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ---------------------------------------------------------------------------*/
 
-#ifndef _FWUP_CB_H_
-#define _FWUP_CB_H_
+#ifndef _TIMER_CB_H_
+#define _TIMER_CB_H_
 
 
 #ifdef __cplusplus
-    extern "C" {
+extern "C" {
 #endif
-		
-		typedef enum tBIO_SENSOR_STATE {
-	
-	BIO_NORMAL =0,
-	BIO_BOOTL,
-	BIO_LOSE	
-}BIO_SENSOR_STATE;
 
-int CVICALLBACK LoadBinFile (int panel, int control, int event, void *callbackData, int eventData1, int eventData2) ;
- void initFwupCb(unsigned char forSensor);
+	typedef void   (*timer_cb_handler_t)(void *ptimer_cb_data) ;
 
-
-void * fwfile_malloc(void);
+	typedef struct
+	{
+		int hpanel;
+		int control;
+		unsigned char info;
+		timer_cb_handler_t timer_special_fun ;
+	} timer_cb_data_t;
 
 
-
-int CVICALLBACK sensorFWUpgradeCb (int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
-int CVICALLBACK mainOtaFWUpgradeCb (int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
-void CVICALLBACK sensorFWUPFromQueueCallback (CmtTSQHandle queueHandle, unsigned int event,int value, void *callbackData);
-void CVICALLBACK otaFWUPFromQueueCallback (CmtTSQHandle queueHandle, unsigned int event,int value, void *callbackData);
-
+	int CVICALLBACK TimerCallback (int panel, int control, int event,void *callbackData, int eventData1,int eventData2)  ;
 
 #ifdef __cplusplus
-    }
+}
 #endif
 
 

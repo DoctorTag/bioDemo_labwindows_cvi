@@ -33,37 +33,29 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ---------------------------------------------------------------------------*/
 
-#ifndef _FWUP_CB_H_
-#define _FWUP_CB_H_
+#ifndef _ECG_D_CB_H_
+#define _ECG_D_CB_H_
 
 
 #ifdef __cplusplus
-    extern "C" {
+extern "C" {
 #endif
-		
-		typedef enum tBIO_SENSOR_STATE {
-	
-	BIO_NORMAL =0,
-	BIO_BOOTL,
-	BIO_LOSE	
-}BIO_SENSOR_STATE;
 
-int CVICALLBACK LoadBinFile (int panel, int control, int event, void *callbackData, int eventData1, int eventData2) ;
- void initFwupCb(unsigned char forSensor);
+	int CVICALLBACK Quit_ECG_D_Cb (int panel, int control, int event, void *callbackData, int eventData1, int eventData2) ;
 
 
-void * fwfile_malloc(void);
+	int CVICALLBACK ECG_D_StartCb (int panel, int control, int event,void *callbackData, int eventData1, int eventData2);
 
 
 
-int CVICALLBACK sensorFWUpgradeCb (int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
-int CVICALLBACK mainOtaFWUpgradeCb (int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
-void CVICALLBACK sensorFWUPFromQueueCallback (CmtTSQHandle queueHandle, unsigned int event,int value, void *callbackData);
-void CVICALLBACK otaFWUPFromQueueCallback (CmtTSQHandle queueHandle, unsigned int event,int value, void *callbackData);
+	int CVICALLBACK ECG_D_LVSteamThread(void *callbackData)  ;
+
+
+   void rxframe_ecgd_handler(unsigned char *ptrframe,unsigned char crc_result) ;
 
 
 #ifdef __cplusplus
-    }
+}
 #endif
 
 

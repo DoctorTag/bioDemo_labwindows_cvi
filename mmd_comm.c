@@ -33,23 +33,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ---------------------------------------------------------------------------*/
 
+#include "asynctmr.h"
+#include <tcpsupp.h>
 #include <ansi_c.h>
 #include <utility.h>
 #include "serial.h"
+#include "timer_cb.h"
 #include "mmd_comm.h"
 
-
-
-#define MAX_RDATA_LENGTH 48
-#define MAX_RX_LENGTH 54
-
-
-unsigned char MMDTSTRxPacket[MAX_RX_LENGTH] ;
-
-
-
-unsigned char rstate,rlength;
-unsigned short offset,rcrc,lcrc;
 
 
 
@@ -61,268 +52,375 @@ unsigned short offset,rcrc,lcrc;
 #define  RX_LENGTH        0x02
 #define  RX_DATA           0x03
 #define  RX_CRC            0x04
-#define  RX_END            0x05
-
-#define  CMD_MASK            0xF0 
-#define  CMD_HIGH			 0x80
+//#define  RX_END            0x05
 
 
 
-void RecvInit(void)
+void RecvInit(h_comm_protocol_t *pc)
 {
-	rstate = RX_HEADER;
-	offset = 0;
+	pc->rx_state = RX_HEADER;
+	pc->offset = 0;
 
 }
-unsigned char *  RecvFrame( unsigned char src,unsigned char *crc_error)
+
+unsigned char RecvStreamFrame(h_comm_protocol_t *pc, unsigned char src,unsigned char *crc_error)
 {
-	unsigned char *retvalue = (void*)0;
-	MMDTSTRxPacket[ offset] = src ;
-	offset ++;
+	unsigned char ret = 0;
+
+	pc->rframe.dframe[ pc->offset] = src ;
+	pc->offset ++;
 
 
-	switch(rstate)
+	switch(pc->rx_state)
 	{
 		case RX_HEADER:
-			if(MMDTSTRxPacket[offset - 1] == START_DATA_HEADER)
+			if(pc->rframe.dframe[pc->offset - 1] == START_DATA_HEADER)
 			{
-				rstate = RX_CMD;
+				pc->rx_state = RX_CMD;
+				pc->rlength = 0;
+
+			}
+			else if(pc->rframe.dframe[pc->offset - 1] == (START_DATA_HEADER+1)  )
+			{
+				pc->rx_state = RX_CMD;
+				pc->rlength = 256;
 
 			}
 			else
 			{
-				RecvInit();
+				RecvInit(pc);
 			}
 
 			break;
 		case RX_CMD:
-			if((CMD_MASK & MMDTSTRxPacket[offset - 1]) == CMD_HIGH)
+			pc->rx_state = RX_LENGTH;
+			break;
+		case RX_LENGTH:
+			pc->rlength |= (pc->rframe.dframe[pc->offset-1]);
+			if(pc->rlength <= MAX_RDATA_LENGTH)
 			{
-				rstate = RX_LENGTH;
-
+				pc->rx_state = RX_DATA;
+				pc->lcrc = 0;
 			}
 			else
 			{
-				RecvInit();
+				RecvInit(pc);
 			}
 			break;
-			 case RX_LENGTH:
-            rlength = MMDTSTRxPacket[offset-1];
-            if(rlength <= MAX_RDATA_LENGTH)
-            {
-                rstate = RX_DATA;
-                lcrc = 0;
-            }
-            else
-            {
-                RecvInit();
-            }
-            break;
-		 case RX_DATA:
-            if(offset >= (rlength+3))
-            {
-                rstate = RX_CRC;
-
-            }
-            lcrc += MMDTSTRxPacket[offset-1];
-            break;
-        case RX_CRC:
-            if(offset == (rlength+4))
-            {
-                rcrc = MMDTSTRxPacket[offset-1];
-                rcrc <<=8;
-            }
-
-            if(offset == (rlength+5))
-            {
-                rcrc |= MMDTSTRxPacket[offset-1];
-                rstate = RX_END;
-
-            }
-            if(offset > (rlength+5) )
-            {
-                RecvInit();
-            }
-            break;
-		case RX_END:
-			if(MMDTSTRxPacket[offset - 1] == 0x0a)
+		case RX_DATA:
+			if(pc->offset >= (pc->rlength+3))
 			{
-				(*crc_error) = (rcrc != lcrc);
-				retvalue = MMDTSTRxPacket;
-				RecvInit();
-			}
-			else
-			{
-				 if(offset >  (rlength+6))
-                {
-                    RecvInit();
-                }
-
-				
+				pc->rx_state = RX_CRC;
 
 			}
+			pc->lcrc ^= pc->rframe.dframe[pc->offset-1];
+			break;
+		case RX_CRC:
+			if(pc->offset == (pc->rlength+4))
+			{
+				pc->rcrc = pc->rframe.dframe[pc->offset-1];
+
+				(*crc_error) = ((pc->rcrc) != (pc->lcrc));
+				ret = 1;
+				RecvInit(pc);
+			}
+
+
+			if(pc->offset > (pc->rlength+4) )
+			{
+				RecvInit(pc);
+			}
+			break;
+
+	}
+
+	return ret;
+}
+
+
+static int CVICALLBACK TCPCallback (unsigned int handle, int xType,
+									int errCode, void *callbackData)
+{
+	unsigned char result,ret;
+	unsigned char Rdbuf[1024];
+	h_comm_handle_t *ptr_recv;
+	int readbytes;
+
+	ptr_recv = (h_comm_handle_t *)callbackData;
+	switch (xType)
+	{
+		case TCP_DISCONNECT:
+			/* Server disconnected. Notify user. */
+			MessagePopup ("tcp service", "tcp Server disconnected!");
+			ptr_recv->tcp_ok = 0;
+			break;
+		case TCP_DATAREADY:
+
+			DisableBreakOnLibraryErrors ();
+			while (1)
+			{
+				if ((readbytes = ClientTCPRead (handle, Rdbuf,1024, 10)) < 0)
+					break;
+				for (short i = 0; i < readbytes; i++)
+				{
+					ret = RecvStreamFrame(&ptr_recv->tcp_pc, Rdbuf[i],&result);
+					if( ret)
+					{
+						ptr_recv->tcp_pc.rframe.ctype  = TCP_CH;
+						ptr_recv->tcp_pc.rframe.dframe[0] = result;
+
+
+						CmtWriteTSQData (ptr_recv->queueHandle, (void*)&ptr_recv->tcp_pc.rframe,1,0, NULL);
+
+					}
+
+
+				}
+			}
+			EnableBreakOnLibraryErrors ();
+
+			ptr_recv->tcp_rdata_sig++;
 			break;
 	}
 
-
-
-	return retvalue;
+	return 0;
 }
 
-		
-			
-void sendCMD(int com_port,unsigned char cmd,unsigned char dtype0,unsigned char dtype)
+int CVICALLBACK serial_comm_recv_Thread(void *callbackData)
 {
-	static  unsigned char Wrbuf[8];
-	unsigned short tcrc = 0;
-	if(com_port < 1)
-		return;
+	h_comm_handle_t *ptr_recv;
+	unsigned char result,ret;
+	unsigned char Rdbuf[1024];
+	int readbytes;
 
-	tcrc += dtype0;
-	tcrc += dtype;
-	Wrbuf[0] = START_DATA_HEADER;           // Start Header
-	Wrbuf[1] = cmd;      //  command
-	Wrbuf[2] = 2;      //  length
-	Wrbuf[3] = dtype0;                           // Start command
-	Wrbuf[4] = dtype;
+	ptr_recv = (h_comm_handle_t *)callbackData;
 
-	Wrbuf[5] = (unsigned char)(tcrc >> 8);
-	Wrbuf[6] = (unsigned char)tcrc;
-	Wrbuf[7] = '\n';
-	SendData(com_port,Wrbuf, 8);              // Send command to firmware
-}
+	RecvInit(&ptr_recv->ser_pc) ;
 
-
-unsigned char Rdbuf[8];
-unsigned char *receiveSyncRspFrame(int com_port,int timeout,unsigned char *crc_error)
-{
-	unsigned char *ptrframe;
-	int readbytes,newtime,oldtime = clock();
-	unsigned char crc_ind; 
-	   ( *crc_error) = 0;
-	RecvInit() ;
-	do
+	while( ptr_recv->s_receiving)
 	{
-		readbytes = ReceiveData(com_port,Rdbuf, 8);
-		if(readbytes>0)
+		if(ptr_recv->com_port > 0)
 		{
-			for (short i = 0; i < readbytes; i++)
+			readbytes = ReceiveData(ptr_recv->com_port,Rdbuf, 1024);
+
+			if(readbytes>0)
 			{
-				ptrframe = RecvFrame(Rdbuf[i],&crc_ind);
-				if( ptrframe)
+				for (short i = 0; i < readbytes; i++)
 				{
-					( *crc_error) = crc_ind;
-					return  ptrframe;
+					ret = RecvStreamFrame(&ptr_recv->ser_pc, Rdbuf[i],&result);
+					if( ret)
+					{
+						//	void *tmp_rx = malloc(sizeof(h_comm_rdata_t));
+						ptr_recv->ser_pc.rframe.ctype  = SERIAL_CH;
+						ptr_recv->ser_pc.rframe.dframe[0] = result;
+
+						//			memcpy(tmp_rx, (void *)&(ptr_recv->ser_pc.rframe),sizeof(h_comm_rdata_t));
+
+						CmtWriteTSQData (ptr_recv->queueHandle, &(ptr_recv->ser_pc.rframe),1,TSQ_INFINITE_TIMEOUT, NULL);
+
+					}
+
+
+
 				}
 			}
 		}
-		newtime = clock();
-	}
-	while ((newtime-oldtime) < timeout) ;
+		else
+			ptr_recv->s_receiving = 0;
 
-	return NULL;
+
+	}
+
+	if(ptr_recv->com_ok > 0)
+		ShutDownCom (ptr_recv->com_port)  ;
+
+
+	return 0;
 }
 
-
-unsigned char *sendSyncCMDWithRsp(int com_port,unsigned char cmd,unsigned char dtype0,unsigned char dtype,int timeout,unsigned char *result)
+int CVICALLBACK serial_comm_recv_Thread_tmp(void *callbackData)
 {
-	unsigned char crc_err,*rspFrame;
-	char message[64]= {0};
+	h_comm_handle_t *ptr_recv;
+	unsigned char result,ret;
+	unsigned char Rdbuf[200];
+	int readbytes;
 
-	*result = 1;
-	sendCMD(com_port,cmd,dtype0,dtype);
+	ptr_recv = (h_comm_handle_t *)callbackData;
 
-	rspFrame = receiveSyncRspFrame(com_port,timeout,&crc_err) ;
+	RecvInit(&ptr_recv->ser_pc) ;
 
-	if(rspFrame == NULL)
+	while( ptr_recv->s_receiving)
 	{
-		*result = 0;
-		sprintf (message, "CMD=%x respone timeout!!", cmd);
-		MessagePopup ("Error:",message);
+		if(ptr_recv->com_port > 0)
+		{
+			readbytes = ReceiveData(ptr_recv->com_port,Rdbuf, 200);
+
+			if(readbytes>0)
+			{
+				for (short i = 0; i < readbytes; i++)
+				{
+					ret = RecvStreamFrame(&ptr_recv->ser_pc, Rdbuf[i],&result);
+					if( ret)
+					{
+						ptr_recv->ser_pc.rframe.ctype  = SERIAL_CH;
+						ptr_recv->ser_pc.rframe.dframe[0] = result;
+
+
+						CmtWriteTSQData (ptr_recv->queueHandle, (void*)&ptr_recv->ser_pc.rframe,1,TSQ_INFINITE_TIMEOUT, NULL);
+
+					}
+
+
+
+				}
+			}
+		}
+		else
+			ptr_recv->s_receiving = 0;
+
 
 	}
+
+	if(ptr_recv->com_ok > 0)
+		ShutDownCom (ptr_recv->com_port)  ;
+
+
+	return 0;
+}
+
+void h_comm_connectTcpServer(h_comm_handle_t *handle)
+{
+	RecvInit(&handle->tcp_pc) ;
+	DisableBreakOnLibraryErrors ();
+	if (ConnectToTCPServer (&(handle->tcp_handle), handle->tcp_port, handle->serverip,TCPCallback, handle, 5000) < 0)
+		MessagePopup("TCP Client", "Connection to server failed !");
 	else
 	{
-		if(rspFrame[1] != cmd)
-		{
-
-			*result = 0;
-			sprintf (message,"CMD=%x respone error!!", cmd);
-			MessagePopup ("Error:",message);
-
-		}
-		
-		if(crc_err)
-		{
-
-			*result = 0;
-			sprintf (message,"CMD=%x respone crc error!!", cmd);
-			MessagePopup ("Error:",message);
-
-		}
+		handle->tcp_ok = 1;
+		//ptr_recv->receiving = 1;
 	}
+	EnableBreakOnLibraryErrors ();
 
-	return rspFrame;
 }
 
-unsigned char *sendSyncAPUpgradeWithRsp(int com_port,unsigned char *target,unsigned short offset,unsigned char *pdata,unsigned char pdlen,int timeout,unsigned char *result)
-{
-	unsigned char crc_err,*rspFrame;
-	char message[64]= {0};	  
-	unsigned short tcrc = 0;
-	if(com_port < 1)
-		return NULL;
 
-	*result = 1; 
-	for(unsigned char i=0;i<pdlen;i++)
+int h_comm_sendCMD1(h_comm_handle_t *handle,unsigned char cmd,unsigned char dtype0,unsigned char dtype)
+{
+	unsigned char Wrbuf[8];
+
+	unsigned char tcrc = 0;
+	if((handle->com_ok < 1)&&(handle->tcp_ok < 1))
 	{
-	tcrc += pdata[i];	
+		MessagePopup ("Error:","Nothing communication ");
+		return 0;
 	}
-	
-	
+
+	tcrc ^= dtype0;
+	tcrc ^= dtype;
+	tcrc ^= cmd;
+	Wrbuf[0] = START_DATA_HEADER;           // Start Header
+	Wrbuf[1] = 3;      //  length
+
+	Wrbuf[2] = cmd;      //  command
+	Wrbuf[3] = dtype0;                           // Start command
+	Wrbuf[4] = dtype;
+
+//	Wrbuf[5] = (unsigned char)(tcrc >> 8);
+	Wrbuf[5] = tcrc;
+	Wrbuf[6] = '\n';
+
+	if(handle->tcp_ok > 0)
+	{
+
+		return ClientTCPWrite (handle->tcp_handle, Wrbuf,7, 1000) ;
+	}
+
+	if(handle->com_ok > 0)
+	{
+		return SendData(handle->com_port,Wrbuf, 7);
+	}
+	return 0;
+}
+
+
+
+int h_comm_sendCMD(h_comm_handle_t *handle,unsigned char cmd,unsigned char reg2,unsigned char reg1,unsigned char cmd_par)
+{
+	unsigned char Wrbuf[8];
+
+	unsigned char tcrc = 0;
+	if((handle->com_ok < 1)&&(handle->tcp_ok < 1))
+	{
+		MessagePopup ("Error:","Nothing communication ");
+		return 0;
+	}
+
+	tcrc ^= reg2;
+	tcrc ^= reg1;
+	tcrc ^= cmd_par;   
+	Wrbuf[0] = START_DATA_HEADER;           // Start Header
+
+	Wrbuf[1] = cmd;      //  command
+	Wrbuf[2] =3;      //  length
+
+	Wrbuf[3] = reg2;                           // Start command
+	Wrbuf[4] = reg1;
+
+	Wrbuf[5] = cmd_par;
+	Wrbuf[6] = tcrc;
+	Wrbuf[7] = '\n';
+
+	if(handle->tcp_ok > 0)
+	{
+
+		return ClientTCPWrite (handle->tcp_handle, Wrbuf,8, 1000) ;
+	}
+
+	if(handle->com_ok > 0)
+	{
+		return SendData(handle->com_port,Wrbuf, 8);
+	}
+	return 0;
+}
+
+int h_comm_sendFWUpgrade(h_comm_handle_t *handle,unsigned char up_cmd,unsigned char *target,unsigned short offset,unsigned char *pdata,unsigned char pdlen)
+{
+
+	unsigned char tcrc = 0;
+	if((handle->com_ok < 1)&&(handle->tcp_ok < 1))
+	{
+		MessagePopup ("Error:","Nothing communication ");
+		return 0;
+	}
+
+	for(unsigned char i=0; i<pdlen; i++)
+	{
+		tcrc ^= pdata[i];
+	}
+
 	target[0] = START_DATA_HEADER;           // Start Header
 	target[1] = FIRMWARE_UPGRADING_COMMAND;      //  command
-	target[2] = (pdlen+2);      //  length
-	target[3] = (unsigned char)(offset>>8);      //  offset high  
-	target[4] = (unsigned char)offset;      //  offset low 
-	memcpy(target + 5,pdata,pdlen);
+	target[2] = (pdlen+3);      //  length
+	target[3] = up_cmd ;
+	target[4] = (unsigned char)(offset>>8);      //  offset high
+	target[5] = (unsigned char)offset;      //  offset low
+	memcpy(target + 6,pdata,pdlen);
 
-	tcrc += target[3];
-	tcrc += target[4];  
-	target[pdlen+5] = (unsigned char)(tcrc >> 8);
-	target[pdlen+6] = (unsigned char)tcrc;
+	tcrc ^= target[3];
+	tcrc ^= target[4];
+	tcrc ^= target[5];
+	target[pdlen+6] = tcrc;
+//	target[pdlen+7] = (unsigned char)tcrc;
 	target[pdlen+7] = '\n';
-	SendData(com_port,target, pdlen + MAX_TMISC_LENGTH);              // Send command to firmware
 
-	rspFrame = receiveSyncRspFrame(com_port,timeout,&crc_err) ;
+	if(handle->tcp_ok >0)
+		return ClientTCPWrite (handle->tcp_handle, target, pdlen + MAX_TMISC_LENGTH, 1000) ;
+	else  if(handle->com_ok > 0)
+		return SendData(handle->com_port,target, pdlen + MAX_TMISC_LENGTH);
 
-	if(rspFrame == NULL)
-	{
-		*result = 0;
-		sprintf (message, "CMD=%x respone timeout!!", FIRMWARE_UPGRADING_COMMAND);
-		MessagePopup ("Error:",message);
-
-	}
-	else
-	{
-		if(rspFrame[1] != FIRMWARE_UPGRADING_COMMAND)
-		{
-
-			*result = 0;
-			sprintf (message,"CMD=%x respone error!!", FIRMWARE_UPGRADING_COMMAND);
-			MessagePopup ("Error:",message);
-
-		}
-		
-		if(crc_err)
-		{
-
-			*result = 0;
-			sprintf (message,"CMD=%x respone crc error!!", FIRMWARE_UPGRADING_COMMAND);
-			MessagePopup ("Error:",message);
-
-		}
-	}
-
-	return rspFrame;
+	return 0;
 }
+
+
+
+
