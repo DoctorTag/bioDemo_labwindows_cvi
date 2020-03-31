@@ -171,7 +171,7 @@ In Projects = "1,"
 Window Top = 25
 Window Left = 6
 Window Z-Order = 1
-Source Window State = "1,107,107,107,39,53,39,0,0,168,0,0,0,0,0,38,96,0,114,4,323,517,1,0,"
+Source Window State = "1,107,107,107,39,53,39,0,0,168,0,0,0,0,0,38,84,0,121,42,323,517,1,0,"
 
 [File 0014]
 Path = "/d/software/2019/git/cvi/bioDemo_labwindows_cvi/bio_analysis.lib"
