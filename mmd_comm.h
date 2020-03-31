@@ -206,7 +206,7 @@ extern "C" {
 	{
 		unsigned char ctype;
 		unsigned char dframe[MAX_RX_LENGTH];
-
+		 	void *tmptest;  
 	} h_comm_rdata_t;
 
 	typedef struct
@@ -218,6 +218,7 @@ extern "C" {
 		unsigned short rlength;
 		//unsigned char rx_frame[MAX_RX_LENGTH];
 		h_comm_rdata_t rframe;
+	
 
 	} h_comm_protocol_t;
 

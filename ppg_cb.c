@@ -48,7 +48,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ppg_cb.h"
 #include "timer_cb.h"
 #include "mmd_comm.h"
-	#include "medianfilter.h"
 
 extern	  h_comm_handle_t h_comm_handle;
 
@@ -60,6 +59,25 @@ static  unsigned char SteamCBdata[2],stream_seq[MAX_MMED_TYPES];
 static  unsigned char plotting = 0;
 static CmtTSQCallbackID ppgPlotcallbackID =0;
 
+static FILE* csv_fd;
+void openCsvFile(unsigned char file_num)
+{
+	char output_file[]="fl_ppg_xxx.csv";
+	sprintf(output_file,"fl_ppg_%3d.csv",file_num); //设置文件名
+	csv_fd = fopen(output_file,"w");	//“写”打开文件
+	if(!csv_fd)
+	{
+		perror("fopen failed!");
+
+	}
+
+}
+
+void writeCsvFile(int i)
+{
+
+	 fprintf(csv_fd, "%d\r\n", i);
+}
 void CVICALLBACK ppgPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigned int event,
 		int value, void *callbackData)
 {
@@ -128,17 +146,17 @@ void CVICALLBACK ppgPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigne
 									break;
 
 								case DATA_TYPE_24BIT:
-								
-									{
-										RdAdcData = rdata->dframe[3*LC + 6];
-										RdAdcData <<= 8;
-										RdAdcData |= rdata->dframe[3*LC + 5];
-										RdAdcData <<= 8;
-										  RdAdcData |= rdata->dframe[3*LC + 4];
-										
-									}
-								
-									break;
+
+								{
+									RdAdcData = rdata->dframe[3*LC + 6];
+									RdAdcData <<= 8;
+									RdAdcData |= rdata->dframe[3*LC + 5];
+									RdAdcData <<= 8;
+									RdAdcData |= rdata->dframe[3*LC + 4];
+
+								}
+
+								break;
 							}
 
 							data_ld[0] =  RdAdcData;
@@ -150,7 +168,10 @@ void CVICALLBACK ppgPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigne
 
 									case  SAMPLE_RESP:
 									case  SAMPLE_PPG_R:
+									//	Filter_Low(data_ld, data_ld[0],0) ;
 										PlotStripChart (PPG_handle, PANEL_PPG_CHART_AC, data_ld, 1, 0, 0, VAL_DOUBLE);
+									//	readSensor(data_ld[0]) ;
+									//	AnalysisLoop();
 										break;
 									case  SAMPLE_IMP:
 									case  SAMPLE_PPG_IR:
@@ -168,8 +189,14 @@ void CVICALLBACK ppgPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigne
 									case  SAMPLE_PPG_G:
 									case  SAMPLE_PPG_R:
 									case  SAMPLE_PPG_IR:
-									//		data_ld[0] =  RdAdcData - MedianFilterProcess(RdAdcData);    
+										//		data_ld[0] =  RdAdcData - MedianFilterProcess(RdAdcData);
+										//	Filter_Low(data_ld, data_ld[0],0) ;
+										//	 data_ld[0] = map(data_ld[0], float I_Min, float I_Max, float O_Min, float O_Max)
+
+										writeCsvFile(data_ld[0]);
 										PlotStripChart (PPG_handle, PANEL_PPG_CHART_AC, data_ld, 1, 0, 0, VAL_DOUBLE);
+										//	readSensor(data_ld[0]) ;
+										//	AnalysisLoop();
 										break;
 									case  SAMPLE_PPG_GDC:
 									case  SAMPLE_PPG_RDC:
@@ -233,6 +260,8 @@ int CVICALLBACK Quit_PPG_Cb (int panel, int control, int event,
 
 			}
 			DiscardPanel (panel);
+			if( csv_fd)
+			fclose(csv_fd);
 			break;
 		}
 	}
@@ -267,6 +296,7 @@ int CVICALLBACK PPG_StartCb (int panel, int control, int event,
 				case PPG_R_FUN:
 					SteamCBdata[0] = (unsigned char)(REG_FUN1_PPG_R >> 8);
 					SteamCBdata[1] = (unsigned char)REG_FUN1_PPG_R;
+					
 					break;
 
 				case PPG_IR_FUN:
@@ -285,8 +315,10 @@ int CVICALLBACK PPG_StartCb (int panel, int control, int event,
 					break;
 
 			}
-
-			MedianFilterInit(2048) ; 
+			openCsvFile(1);  
+		//	Filter_Low_init(0.1);
+		//	initData() ;
+		//	MedianFilterInit(2048) ;
 			h_comm_sendCMD(&h_comm_handle,DATA_STREAMING_COMMAND,SteamCBdata[0],SteamCBdata[1],0);
 			SetCtrlAttribute (PPG_handle, PANEL_PPG_TIMER, ATTR_ENABLED, 1);
 			plotting = 1;

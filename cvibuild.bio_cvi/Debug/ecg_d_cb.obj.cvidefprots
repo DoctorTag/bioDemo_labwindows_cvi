@@ -1,0 +1,16 @@
+[ecgPlotDataFromQueueCallback]
+Class="Function"
+Prototype="void ecgPlotDataFromQueueCallback(int queueHandle, unsigned int event, int value, void *callbackData);"
+
+[ecgTimerCallback]
+Class="Function"
+Prototype="int ecgTimerCallback(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+
+[Quit_ECG_D_Cb]
+Class="Function"
+Prototype="int Quit_ECG_D_Cb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+
+[ECG_D_StartCb]
+Class="Function"
+Prototype="int ECG_D_StartCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+

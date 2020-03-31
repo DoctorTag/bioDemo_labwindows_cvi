@@ -1,0 +1,24 @@
+[openCsvFile]
+Class="Function"
+Prototype="void openCsvFile(unsigned char file_num);"
+
+[writeCsvFile]
+Class="Function"
+Prototype="void writeCsvFile(int i);"
+
+[ppgPlotDataFromQueueCallback]
+Class="Function"
+Prototype="void ppgPlotDataFromQueueCallback(int queueHandle, unsigned int event, int value, void *callbackData);"
+
+[ppgTimerCallback]
+Class="Function"
+Prototype="int ppgTimerCallback(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+
+[Quit_PPG_Cb]
+Class="Function"
+Prototype="int Quit_PPG_Cb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+
+[PPG_StartCb]
+Class="Function"
+Prototype="int PPG_StartCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+

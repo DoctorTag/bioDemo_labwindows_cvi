@@ -48,41 +48,62 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define REG_VALUE_COLUMN 5
 
+extern int hpanel;
+extern h_comm_handle_t h_comm_handle;
+
+static CmtTSQCallbackID defaultcallbackID =0;
+
 Point focus;
 
-
-
-
-
-
-int CVICALLBACK Reg_ReadAllCb (int panel, int control, int event,
-							   void *callbackData, int eventData1, int eventData2)
+void CVICALLBACK bioDefaultFromQueueCallback (CmtTSQHandle queueHandle, unsigned int event,
+		int value, void *callbackData)
 {
-	unsigned char result,*rspFrame;
+	h_comm_rdata_t rdata[1];
+
+	 char ret_value[5] ;
 	switch (event)
 	{
-		case EVENT_COMMIT:
-		{
-			for(unsigned char i=0; i<RegNum_MAX; i++)
-			{
-			//	rspFrame  =	sendSyncCMDWithRsp(comport,READ_REG_COMMAND,i,0,1000,&result)  ;
-				if(result)
-				{
-					if(rspFrame)
-					{
-						char tmp_str[5] = {0};
-						sprintf (tmp_str, "0x%x", rspFrame[4]);
+		case EVENT_TSQ_ITEMS_IN_QUEUE:
 
-						SetTableCellAttribute (panel, PANEL_REG_TABLE, MakePoint(REG_VALUE_COLUMN, i+1),ATTR_CTRL_VAL, tmp_str);
-					}
+			CmtReadTSQData (queueHandle, rdata, 1, TSQ_INFINITE_TIMEOUT, 0);
+			switch(rdata->dframe[1])
+			{
+				case READ_REG_COMMAND:
+				{
+					sprintf( ret_value,"0x%02x", rdata->dframe[4]);
+				
+						SetTableCellVal(hpanel, PANEL_REG_TABLE , MakePoint(REG_VALUE_COLUMN, rdata->dframe[3] +1),ret_value);
+						  SetCtrlAttribute(hpanel, PANEL_REG_INFO,ATTR_CTRL_VAL,rdata->dframe[4]); 
 				}
 			}
 
-		}
-		break;
+			break;
 	}
-	return 0;
 }
+
+
+void installDefaultTSQCb(void)
+{
+	focus.x = REG_VALUE_COLUMN;
+		focus.y = 1;
+		
+	CmtFlushTSQ(h_comm_handle.queueHandle,TSQ_FLUSH_ALL ,NULL);
+	if(defaultcallbackID)
+	CmtUninstallTSQCallback (h_comm_handle.queueHandle, defaultcallbackID);
+	/* Install a callback to read and plot the generated data. */
+	CmtInstallTSQCallback (h_comm_handle.queueHandle, EVENT_TSQ_ITEMS_IN_QUEUE, 1, bioDefaultFromQueueCallback, NULL,CmtGetCurrentThreadID(), &defaultcallbackID);
+
+}
+
+
+void uninstallDefaultTSQCb(void)
+{
+	if(defaultcallbackID)
+	CmtUninstallTSQCallback (h_comm_handle.queueHandle, defaultcallbackID);
+	defaultcallbackID = 0;
+
+}
+
 
 
 int CVICALLBACK Reg_ReadCb (int panel, int control, int event,
@@ -94,29 +115,9 @@ int CVICALLBACK Reg_ReadCb (int panel, int control, int event,
 	{
 		case EVENT_COMMIT:
 		{
-		//	rspFrame  =	sendSyncCMDWithRsp(comport,READ_REG_COMMAND,focus.y - 1,0,1000,&result)  ;
-			if(result)
-			{
-				if(rspFrame)
-				{
-					char tmp_str[5] = {0};
-					sprintf (tmp_str, "0x%x", rspFrame[4]);
-					SetCtrlAttribute(panel, PANEL_REG_INFO,ATTR_CTRL_VAL,rspFrame[4]);
-					SetTableCellAttribute (panel, PANEL_REG_TABLE, MakePoint(REG_VALUE_COLUMN, focus.y),ATTR_CTRL_VAL, tmp_str);
-				}
-			}
-			/*
-			else
-			{
-				if(rspFrame[4] != RSP_OK)
-				{
-					char message[64]= {0};
-					sprintf (message,"READ_REG_COMMAND error= 0x%x !!", rspFrame[4]);
-					MessagePopup ("Error :",message);
-					return 0;
-				}
-			}
-			*/
+			 			h_comm_sendCMD(&h_comm_handle,READ_REG_COMMAND,focus.y - 1,0,0);
+
+
 
 		}
 		break;
@@ -137,18 +138,7 @@ int CVICALLBACK Reg_WriteCb (int panel, int control, int event,
 			{
 
 				GetCtrlAttribute(panel, PANEL_REG_INFO,ATTR_CTRL_VAL,&wvalue);
-				//	wvalue = 1;
-			//	rspFrame  =	sendSyncCMDWithRsp(comport,WRITE_REG_COMMAND,focus.y-1,wvalue,1000,&result)  ;
-				if(result)
-				{
-					if(rspFrame[4] == RSP_OK)
-				{
-					char tmp_str[5] = {0};
-					sprintf (tmp_str, "0x%x", wvalue);
-					
-					SetTableCellAttribute (panel, PANEL_REG_TABLE, MakePoint(REG_VALUE_COLUMN, focus.y),ATTR_CTRL_VAL, tmp_str);
-				}
-				}
+				h_comm_sendCMD(&h_comm_handle,WRITE_REG_COMMAND,focus.y - 1,wvalue,0); 
 			}
 
 		}
@@ -211,17 +201,17 @@ int CVICALLBACK RegTableCb (int panel, int control, int event,
 						break;
 					case (RegNum_RUN_Mode+1) :
 						SetCtrlAttribute(panel, PANEL_REG_INFO,ATTR_LABEL_TEXT,"Reg:(0x0A) Run mode");
-						break;   
-						case (RegNum_PPG_PGA+1) :
-						SetCtrlAttribute(panel, PANEL_REG_INFO,ATTR_LABEL_TEXT,"Reg:(0x0B) PPG PGA");
 						break;
-						case (RegNum_PPG_OP+1) :
-						SetCtrlAttribute(panel, PANEL_REG_INFO,ATTR_LABEL_TEXT,"Reg:(0x0C) PPG LED POWER");
+					case (RegNum_PPG_PGA+1) :
+						SetCtrlAttribute(panel, PANEL_REG_INFO,ATTR_LABEL_TEXT,"Reg:(0x0B) ADC PGA");
 						break;
-						case (RegNum_PPG_DCTH+1) :
-						SetCtrlAttribute(panel, PANEL_REG_INFO,ATTR_LABEL_TEXT,"Reg:(0x0D) PPG DC Threshold");
+					case (RegNum_PPG_OP+1) :
+						SetCtrlAttribute(panel, PANEL_REG_INFO,ATTR_LABEL_TEXT,"Reg:(0x0C) OPA GAIN");
 						break;
-						
+					case (RegNum_PPG_DCTH+1) :
+						SetCtrlAttribute(panel, PANEL_REG_INFO,ATTR_LABEL_TEXT,"Reg:(0x0D) ADC Sample rate");
+						break;
+
 						//	case (RegNum_Addl+1) :
 						//		break;
 

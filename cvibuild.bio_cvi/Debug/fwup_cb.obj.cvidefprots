@@ -1,0 +1,40 @@
+[fwupTimerCallback]
+Class="Function"
+Prototype="int fwupTimerCallback(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+
+[FW_SWCb]
+Class="Function"
+Prototype="int FW_SWCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+
+[LoadBinFileCb]
+Class="Function"
+Prototype="int LoadBinFileCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+
+[FWUP_QuitCb]
+Class="Function"
+Prototype="int FWUP_QuitCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+
+[sensorFWUPFromQueueCallback]
+Class="Function"
+Prototype="void sensorFWUPFromQueueCallback(int queueHandle, unsigned int event, int value, void *callbackData);"
+
+[sensorFWUpgradeCb]
+Class="Function"
+Prototype="int sensorFWUpgradeCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+
+[otaFWUPFromQueueCallback]
+Class="Function"
+Prototype="void otaFWUPFromQueueCallback(int queueHandle, unsigned int event, int value, void *callbackData);"
+
+[mainOtaFWUpgradeCb]
+Class="Function"
+Prototype="int mainOtaFWUpgradeCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+
+[initFwupCb]
+Class="Function"
+Prototype="void initFwupCb(unsigned char forSensor);"
+
+[fwfile_malloc]
+Class="Function"
+Prototype="void *fwfile_malloc();"
+

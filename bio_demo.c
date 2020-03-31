@@ -45,19 +45,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "bio_demo.h"
 #include "serial.h"
 
+#include "regmap_cb.h"
 #include "fwup_cb.h"
-#include "sg_filt.h"
+
 #include "timer_cb.h"
 #include "ppg_cb.h"
 //#include "ppg_r_cb.h"
 
 #include "ecg_d_cb.h"
 #include "mmd_comm.h"
+#include "local_analysis_cb.h"
 
 #define     QUEUE_LENGTH  5000
 
 extern int PPG_handle,ECG_D_handle;
 extern int FWUpgrade_handle;
+extern int l_analysis_handle;
+
 int hpanel,cfg_handle;
 
 
@@ -101,18 +105,20 @@ int main (int argc, char *argv[])
 	DisplayPanel (hpanel);
 
 	/* Create Thread-safe Queue */
-	if(CmtNewTSQ (QUEUE_LENGTH, sizeof(h_comm_rdata_t), OPT_TSQ_DYNAMIC_SIZE, &h_comm_handle.queueHandle) < 0)
+//	if(CmtNewTSQ (QUEUE_LENGTH, sizeof(h_comm_rdata_t), OPT_TSQ_DYNAMIC_SIZE, &h_comm_handle.queueHandle) < 0)
+				if(CmtNewTSQ (QUEUE_LENGTH, sizeof(new_tsq_t), OPT_TSQ_DYNAMIC_SIZE, &h_comm_handle.queueHandle) < 0)
+
 		return -1;
 
-
+	installDefaultTSQCb() ;
 
 	RunUserInterface ();
 
 	/* Free resources and return */
 	h_comm_handle.s_receiving = 0;
 //	h_comm_handle.receiving = 0;
-if(	h_comm_handle.tcp_ok )
-		DisconnectFromTCPServer (h_comm_handle.tcp_handle); 
+	if(	h_comm_handle.tcp_ok )
+		DisconnectFromTCPServer (h_comm_handle.tcp_handle);
 
 	/* Destroy Thread-safe Queue */
 	CmtDiscardTSQ (h_comm_handle.queueHandle);
@@ -166,7 +172,7 @@ int CVICALLBACK cfgOkCallback (int panel, int control, int event,
 				{
 					h_comm_handle.com_port = port;
 					h_comm_handle.com_ok = 1 ;
-						h_comm_handle.s_receiving = 1;
+					h_comm_handle.s_receiving = 1;
 
 					CmtScheduleThreadPoolFunction (DEFAULT_THREAD_POOL_HANDLE, serial_comm_recv_Thread,(void *)&h_comm_handle, &serialThreadFunctionID);
 				}
@@ -176,9 +182,9 @@ int CVICALLBACK cfgOkCallback (int panel, int control, int event,
 			if(ret == 1)
 			{
 				GetCtrlAttribute(panel, PANEL_CFG_TCP_PORT,ATTR_CTRL_VAL,&h_comm_handle.tcp_port);
-				GetCtrlAttribute(panel, PANEL_CFG_IP,ATTR_CTRL_VAL,h_comm_handle.serverip); 
+				GetCtrlAttribute(panel, PANEL_CFG_IP,ATTR_CTRL_VAL,h_comm_handle.serverip);
 				//	CmtScheduleThreadPoolFunction (DEFAULT_THREAD_POOL_HANDLE, tcp_comm_recv_Thread,(void *)&h_comm_handle, &tcpThreadFunctionID);
-			  h_comm_connectTcpServer(&h_comm_handle) ;
+				h_comm_connectTcpServer(&h_comm_handle) ;
 			}
 
 			DiscardPanel (panel);
@@ -218,7 +224,7 @@ void CVICALLBACK MenuConfigPortCb (int menubar, int menuItem,void *callbackData,
 				SetCtrlAttribute(cfg_handle,PANEL_CFG_TCP_PORT,ATTR_DIMMED,0);
 				SetCtrlAttribute(cfg_handle,PANEL_CFG_TCP_PORT,ATTR_CTRL_VAL,h_comm_handle.tcp_port);
 				SetCtrlAttribute(cfg_handle,PANEL_CFG_IP,ATTR_DIMMED,0);
-			//	SetCtrlAttribute(cfg_handle,PANEL_CFG_IP,ATTR_CTRL_VAL,h_comm_handle.serverip);
+				//	SetCtrlAttribute(cfg_handle,PANEL_CFG_IP,ATTR_CTRL_VAL,h_comm_handle.serverip);
 
 				SetCtrlAttribute(cfg_handle,PANEL_CFG_TCP_CHKBOX,ATTR_CTRL_VAL,1);
 
@@ -242,9 +248,10 @@ void CVICALLBACK MenuFirmUpgradeCb (int menubar, int menuItem,
 			if(fwfile_malloc())
 			{
 				FWUpgrade_handle = LoadPanel (hpanel, "bio_demo.uir", PANEL_FWUP);
-							GetCtrlAttribute(FWUpgrade_handle, PANEL_FWUP_FW_SW,ATTR_CTRL_VAL,&forSensor);
+				GetCtrlAttribute(FWUpgrade_handle, PANEL_FWUP_FW_SW,ATTR_CTRL_VAL,&forSensor);
+				uninstallDefaultTSQCb() ;
+				initFwupCb(forSensor);
 
-				initFwupCb(forSensor); 
 				InstallPopup (FWUpgrade_handle);
 			}
 			else
@@ -254,7 +261,21 @@ void CVICALLBACK MenuFirmUpgradeCb (int menubar, int menuItem,
 	}
 }
 
+void CVICALLBACK MenuLocalAnalysisCb (int menubar, int menuItem,
+									  void *callbackData, int panel)
+{
+	switch (menuItem)
+	{
+		case MENUBAR_MENU_LOCAL_ANALYSIS :
 
+			l_analysis_handle = LoadPanel (hpanel, "bio_demo.uir", PANEL_LA);
+
+			uninstallDefaultTSQCb() ;
+			InstallPopup (l_analysis_handle);
+			break;
+
+	}
+}
 
 int CVICALLBACK FunctionTestBeginCb(int panel, int control, int event,
 									void *callbackData, int eventData1, int eventData2)
@@ -272,8 +293,9 @@ int CVICALLBACK FunctionTestBeginCb(int panel, int control, int event,
 					case 1:
 					case 2:
 					case 9:
-						case 5:
+					case 5:
 						PPG_handle = LoadPanel (hpanel, "bio_demo.uir", PANEL_PPG);
+						uninstallDefaultTSQCb() ;
 						InstallPopup (PPG_handle);
 
 						break;
@@ -281,6 +303,7 @@ int CVICALLBACK FunctionTestBeginCb(int panel, int control, int event,
 					case 3:
 					case 4:
 						ECG_D_handle = LoadPanel (hpanel, "bio_demo.uir", PANEL_ECGD);
+						uninstallDefaultTSQCb() ;
 						InstallPopup (ECG_D_handle);
 						break;
 
@@ -305,7 +328,8 @@ int CVICALLBACK Shutdown (int panel, int control, int event,
 	if (event == EVENT_COMMIT)
 	{
 //	h_comm_handle.receiving = 0;
-	h_comm_handle.s_receiving = 0;
+		h_comm_handle.s_receiving = 0;
+	//	uninstallDefaultTSQCb() ;
 		QuitUserInterface (0);
 	}
 	return 0;
@@ -320,7 +344,8 @@ int CVICALLBACK PanelCB (int panel, int event, void *callbackData,
 	{
 		case EVENT_CLOSE:
 //	tcp_comm_handle.receiving = 0;
-	h_comm_handle.s_receiving = 0;
+			h_comm_handle.s_receiving = 0;
+		//	uninstallDefaultTSQCb() ;
 			QuitUserInterface (0);
 			break;
 

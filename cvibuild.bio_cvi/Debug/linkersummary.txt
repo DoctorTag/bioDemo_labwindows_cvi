@@ -1,9 +1,15 @@
 bio_demo.obj
+ecg_d_cb.obj
 fwup_cb.obj
+local_analysis_cb.obj
 mmd_comm.obj
+ppg_cb.obj
+regmap_cb.obj
 serial.obj
+timer_cb.obj
 cvi.lib
 cvistart.lib
+bio_analysis.lib
 progressbar.obj
 asynctmr.obj
 cviauto.lib

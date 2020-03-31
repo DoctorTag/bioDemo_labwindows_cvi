@@ -46,7 +46,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "fwup_cb.h"
 
 #define PAGESIZE MAX_TDATA_LENGTH
-#define PAGECNT 92
+#define PAGECNT 232
 
 #define OTA_PAGECNT 8
 
@@ -185,6 +185,8 @@ int CVICALLBACK FWUP_QuitCb (int panel, int control, int event,
 				fclose(pfile);
 				pfile = NULL;
 			}
+							CmtUninstallTSQCallback (h_comm_handle.queueHandle, fwupPlotcallbackID);
+
 			DiscardPanel (FWUpgrade_handle);
 			break;
 		}
@@ -302,7 +304,7 @@ void CVICALLBACK sensorFWUPFromQueueCallback (CmtTSQHandle queueHandle, unsigned
 						case  FWUPGRADE_RST:   
 						{
 						
-							Delay(1);
+							Delay(3);
 							 h_comm_sendCMD(&h_comm_handle,STATUS_INFO_REQ,0,0,0);
 								
 						}

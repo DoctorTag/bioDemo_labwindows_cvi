@@ -1,24 +1,32 @@
 [RecvInit]
 Class="Function"
-Prototype="void RecvInit();"
+Prototype="void RecvInit(h_comm_protocol_t *pc);"
 
-[RecvFrame]
+[RecvStreamFrame]
 Class="Function"
-Prototype="unsigned char *RecvFrame(unsigned char src, unsigned char *crc_error);"
+Prototype="unsigned char RecvStreamFrame(h_comm_protocol_t *pc, unsigned char src, unsigned char *crc_error);"
 
-[sendCMD]
+[serial_comm_recv_Thread]
 Class="Function"
-Prototype="void sendCMD(int com_port, unsigned char cmd, unsigned char dtype0, unsigned char dtype);"
+Prototype="int serial_comm_recv_Thread(void *callbackData);"
 
-[receiveSyncRspFrame]
+[serial_comm_recv_Thread_tmp]
 Class="Function"
-Prototype="unsigned char *receiveSyncRspFrame(int com_port, int timeout, unsigned char *crc_error);"
+Prototype="int serial_comm_recv_Thread_tmp(void *callbackData);"
 
-[sendSyncCMDWithRsp]
+[h_comm_connectTcpServer]
 Class="Function"
-Prototype="unsigned char *sendSyncCMDWithRsp(int com_port, unsigned char cmd, unsigned char dtype0, unsigned char dtype, int timeout, unsigned char *result);"
+Prototype="void h_comm_connectTcpServer(h_comm_handle_t *handle);"
 
-[sendSyncAPUpgradeWithRsp]
+[h_comm_sendCMD1]
 Class="Function"
-Prototype="unsigned char *sendSyncAPUpgradeWithRsp(int com_port, unsigned char *target, unsigned short offset, unsigned char *pdata, unsigned char pdlen, int timeout, unsigned char *result);"
+Prototype="int h_comm_sendCMD1(h_comm_handle_t *handle, unsigned char cmd, unsigned char dtype0, unsigned char dtype);"
+
+[h_comm_sendCMD]
+Class="Function"
+Prototype="int h_comm_sendCMD(h_comm_handle_t *handle, unsigned char cmd, unsigned char reg2, unsigned char reg1, unsigned char cmd_par);"
+
+[h_comm_sendFWUpgrade]
+Class="Function"
+Prototype="int h_comm_sendFWUpgrade(h_comm_handle_t *handle, unsigned char up_cmd, unsigned char *target, unsigned short offset, unsigned char *pdata, unsigned char pdlen);"
 

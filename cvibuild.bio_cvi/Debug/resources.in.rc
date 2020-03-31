@@ -1,7 +1,7 @@
 #include "C:\Program Files (x86)\National Instruments\Shared\MSDTRedistributables\SDKHeaderFiles\8.1\winver.h"
 
 2 ICON "c:\\program files (x86)\\national instruments\\cvi2017\\bin\\default.ico"
-1 24 "d:\\software\\2018\\feelkit\\cvi\\Demo_labwindows_cvi\\cvibuild.bio_cvi\\Debug\\manifest.xml"
+1 24 "d:\\software\\2019\\git\\cvi\\bioDemo_labwindows_cvi\\cvibuild.bio_cvi\\Debug\\manifest.xml"
 
 
 STRINGTABLE DISCARDABLE
@@ -26,7 +26,7 @@ BEGIN
             VALUE "FileDescription", "bio_cvi_dbg (Debug x86)\0"
             VALUE "FileVersion", "1.0\0"
             VALUE "InternalName", "bio_cvi_dbg\0"
-            VALUE "LegalCopyright", "Copyright ? 2018\0"
+            VALUE "LegalCopyright", "Copyright ? 2020\0"
             VALUE "OriginalFilename", "bio_cvi_dbg.exe\0"
             VALUE "ProductName", " bio_cvi_dbg\0"
             VALUE "ProductVersion", "1.0\0"

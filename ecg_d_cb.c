@@ -47,9 +47,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ecg_d_cb.h"
 #include "timer_cb.h"
 
-#include "dsp_filter.h"     
-#include "filter.h"
-#include "medianfilter.h"
 
 extern	  h_comm_handle_t h_comm_handle;
 
@@ -93,7 +90,7 @@ void CVICALLBACK ecgPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigne
 					ftype = (((rdata->dframe[1]& 0xf0 )-DATA_TYPE_DEFAULT) >> 4)+MASK_8BIT;
 					dlen =   rdata->dframe[2];
 					if(ftype == MASK_24BIT)
-					dlen += 256;
+						dlen += 256;
 					dtype = (rdata->dframe[1]& DATA_TYPE_MASK );
 					if(dtype < MAX_MMED_TYPES)
 					{
@@ -110,7 +107,7 @@ void CVICALLBACK ecgPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigne
 						stream_seq[dtype] = rdata->dframe[3];
 						//	MessagePopup ("Error:","RecvSensor frame lost!!!!");
 						// LeadStaus = Rdbuf[4];                                   // Lead STATUS
-					
+
 						dcnt = (dlen*2)/ftype ;
 						for (unsigned char LC = 0; LC < dcnt; LC++)                       // Decode received packet of 15 samples.
 						{
@@ -139,7 +136,7 @@ void CVICALLBACK ecgPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigne
 								case DATA_TYPE_24BIT:
 
 								{
-								//	unsigned char tmp_h  = rdata->dframe[3*LC + 6]  ;
+									//	unsigned char tmp_h  = rdata->dframe[3*LC + 6]  ;
 									//if(tmp_h >=  0x80)
 									//	tmp_h += 0x80;
 									RdAdcData =  rdata->dframe[3*LC + 6];
@@ -151,9 +148,9 @@ void CVICALLBACK ecgPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigne
 								}
 
 								break;
-								
+
 								default:
-									
+
 									while(1) ;
 									break;
 							}
@@ -165,11 +162,7 @@ void CVICALLBACK ecgPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigne
 
 
 								case  SAMPLE_ECG:
-							//		data_ld[0] =  RdAdcData - MedianFilterProcess(RdAdcData);
-						//data_ld[0] = Lead_II_Filter(data_ld[0], IIR2_25Hz_Table, IIR2_05Hz_Table);
-									//	data_ld[0] =  data_ld[0] - MedianFilterProcess(data_ld[0]);
-										//	 data_ld[0] /=128;
-
+								
 									PlotStripChart (ECG_D_handle, PANEL_ECGD_CHART_D, data_ld, 1, 0, 0, VAL_DOUBLE);
 									break;
 
@@ -185,7 +178,7 @@ void CVICALLBACK ecgPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigne
 				}
 
 			}
-			  
+
 			break;
 	}
 }
@@ -254,10 +247,10 @@ int CVICALLBACK ECG_D_StartCb (int panel, int control, int event,
 
 			if(funSelectionValue == 3)
 			{
-			SteamCBdata[0] = (unsigned char)(REG_FUN2_ECG_DI >> 8);
+				SteamCBdata[0] = (unsigned char)(REG_FUN2_ECG_DI >> 8);
 				SteamCBdata[1] = (unsigned char)REG_FUN2_ECG_DI;
-			//		SteamCBdata[0] = (unsigned char)(REG_FUN1_ECG_AII >> 8);
-			//	SteamCBdata[1] = (unsigned char)REG_FUN1_ECG_AII ;
+				//		SteamCBdata[0] = (unsigned char)(REG_FUN1_ECG_AII >> 8);
+				//	SteamCBdata[1] = (unsigned char)REG_FUN1_ECG_AII ;
 
 			}
 			else
@@ -266,10 +259,9 @@ int CVICALLBACK ECG_D_StartCb (int panel, int control, int event,
 				SteamCBdata[1] = (unsigned char)REG_FUN1_ECG_A ;
 
 			}
-			MedianFilterInit(2048) ;
-				h_comm_sendCMD(&h_comm_handle,DATA_STREAMING_COMMAND,SteamCBdata[0],SteamCBdata[1],0);  
-			
-		//	SetCtrlAttribute (ECG_D_handle, PANEL_ECGD_TIMER, ATTR_ENABLED, 1);
+			h_comm_sendCMD(&h_comm_handle,DATA_STREAMING_COMMAND,SteamCBdata[0],SteamCBdata[1],0);
+
+			//	SetCtrlAttribute (ECG_D_handle, PANEL_ECGD_TIMER, ATTR_ENABLED, 1);
 			plotting = 1;
 			CmtFlushTSQ(h_comm_handle.queueHandle,TSQ_FLUSH_ALL ,NULL);
 			/* Install a callback to read and plot the generated data. */

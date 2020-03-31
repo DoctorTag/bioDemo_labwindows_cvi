@@ -16,16 +16,15 @@
 #define  PANEL                            1       /* callback function: PanelCB */
 #define  PANEL_REG_READ                   2       /* control type: command, callback function: Reg_ReadCb */
 #define  PANEL_REG_WRITE                  3       /* control type: command, callback function: Reg_WriteCb */
-#define  PANEL_READ_ALL_REG               4       /* control type: command, callback function: Reg_ReadAllCb */
-#define  PANEL_QUIT                       5       /* control type: command, callback function: Shutdown */
-#define  PANEL_REG_INFO                   6       /* control type: numeric, callback function: (none) */
-#define  PANEL_DECORATION_6               7       /* control type: deco, callback function: (none) */
-#define  PANEL_REG_TABLE                  8       /* control type: table, callback function: RegTableCb */
-#define  PANEL_DECORATION                 9       /* control type: deco, callback function: (none) */
-#define  PANEL_TEXT_REG_MAP               10      /* control type: textMsg, callback function: (none) */
-#define  PANEL_TEXT_FUN_TEXT              11      /* control type: textMsg, callback function: (none) */
-#define  PANEL_LISTBOX_FUNCTION           12      /* control type: listBox, callback function: (none) */
-#define  PANEL_CMDBUTTON_TEST             13      /* control type: command, callback function: FunctionTestBeginCb */
+#define  PANEL_QUIT                       4       /* control type: command, callback function: Shutdown */
+#define  PANEL_REG_INFO                   5       /* control type: numeric, callback function: (none) */
+#define  PANEL_DECORATION_6               6       /* control type: deco, callback function: (none) */
+#define  PANEL_REG_TABLE                  7       /* control type: table, callback function: RegTableCb */
+#define  PANEL_DECORATION                 8       /* control type: deco, callback function: (none) */
+#define  PANEL_TEXT_REG_MAP               9       /* control type: textMsg, callback function: (none) */
+#define  PANEL_TEXT_FUN_TEXT              10      /* control type: textMsg, callback function: (none) */
+#define  PANEL_LISTBOX_FUNCTION           11      /* control type: listBox, callback function: (none) */
+#define  PANEL_CMDBUTTON_TEST             12      /* control type: command, callback function: FunctionTestBeginCb */
 
 #define  PANEL_CFG                        2
 #define  PANEL_CFG_TCP_PORT               2       /* control type: numeric, callback function: (none) */
@@ -55,7 +54,19 @@
 #define  PANEL_FWUP_BIN_PATH              7       /* control type: textMsg, callback function: (none) */
 #define  PANEL_FWUP_FW_SW                 8       /* control type: binary, callback function: FW_SWCb */
 
-#define  PANEL_PPG                        5
+#define  PANEL_LA                         5
+#define  PANEL_LA_LA_QUIT                 2       /* control type: command, callback function: LA_QuitCb */
+#define  PANEL_LA_CHART_RESULT_2          3       /* control type: strip, callback function: (none) */
+#define  PANEL_LA_CHART_RESULT            4       /* control type: strip, callback function: (none) */
+#define  PANEL_LA_CHART_DATA              5       /* control type: strip, callback function: (none) */
+#define  PANEL_LA_LA_STOP                 6       /* control type: command, callback function: LAStopCb */
+#define  PANEL_LA_LA_START                7       /* control type: command, callback function: LAStartCb */
+#define  PANEL_LA_LA_LOAD_FILE            8       /* control type: command, callback function: LALoadFileCb */
+#define  PANEL_LA_LA_LED                  9       /* control type: LED, callback function: (none) */
+#define  PANEL_LA_LA_STRING               10      /* control type: string, callback function: (none) */
+#define  PANEL_LA_NUMERIC                 11      /* control type: numeric, callback function: (none) */
+
+#define  PANEL_PPG                        6
 #define  PANEL_PPG_PLOT                   2       /* control type: textButton, callback function: PPG_StartCb */
 #define  PANEL_PPG_CHART_DC               3       /* control type: strip, callback function: (none) */
 #define  PANEL_PPG_CHART_AC               4       /* control type: strip, callback function: (none) */
@@ -75,6 +86,7 @@
 #define  MENUBAR                          1
 #define  MENUBAR_MENU_COM                 2       /* callback function: MenuConfigPortCb */
 #define  MENUBAR_MENU_FM_UPGRADE          3       /* callback function: MenuFirmUpgradeCb */
+#define  MENUBAR_MENU_LOCAL_ANALYSIS      4       /* callback function: MenuLocalAnalysisCb */
 
 
      /* Callback Prototypes: */
@@ -86,15 +98,19 @@ int  CVICALLBACK ecgTimerCallback(int panel, int control, int event, void *callb
 int  CVICALLBACK FunctionTestBeginCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK FW_SWCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK FWUP_QuitCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
+int  CVICALLBACK LA_QuitCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
+int  CVICALLBACK LALoadFileCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
+int  CVICALLBACK LAStartCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
+int  CVICALLBACK LAStopCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK LoadBinFileCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 void CVICALLBACK MenuConfigPortCb(int menubar, int menuItem, void *callbackData, int panel);
 void CVICALLBACK MenuFirmUpgradeCb(int menubar, int menuItem, void *callbackData, int panel);
+void CVICALLBACK MenuLocalAnalysisCb(int menubar, int menuItem, void *callbackData, int panel);
 int  CVICALLBACK PanelCB(int panel, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK PPG_StartCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK ppgTimerCallback(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK Quit_ECG_D_Cb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK Quit_PPG_Cb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
-int  CVICALLBACK Reg_ReadAllCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK Reg_ReadCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK Reg_WriteCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK RegTableCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
