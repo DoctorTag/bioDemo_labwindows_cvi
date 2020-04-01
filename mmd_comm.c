@@ -37,6 +37,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tcpsupp.h>
 #include <ansi_c.h>
 #include <utility.h>
+
+#include "bio_common.h"
+
 #include "serial.h"
 #include "timer_cb.h"
 #include "mmd_comm.h"
@@ -166,11 +169,18 @@ static int CVICALLBACK TCPCallback (unsigned int handle, int xType,
 					ret = RecvStreamFrame(&ptr_recv->tcp_pc, Rdbuf[i],&result);
 					if( ret)
 					{
+						new_tsq_t ntsq;
+						h_comm_rdata_t *prbuf = (h_comm_rdata_t*)malloc(sizeof(h_comm_rdata_t));
+						if (prbuf ==NULL )
+						{
+							MessagePopup ("tcp service", "malloc fail!");
+							break;
+						}
 						ptr_recv->tcp_pc.rframe.ctype  = TCP_CH;
 						ptr_recv->tcp_pc.rframe.dframe[0] = result;
-
-
-						CmtWriteTSQData (ptr_recv->queueHandle, (void*)&ptr_recv->tcp_pc.rframe,1,0, NULL);
+						memcpy((void*)prbuf,(void*)&ptr_recv->tcp_pc.rframe,sizeof(h_comm_rdata_t));
+						ntsq.p_tsq = (void*)prbuf;
+						CmtWriteTSQData (ptr_recv->queueHandle, &ntsq,1,0, NULL);
 
 					}
 
@@ -210,13 +220,20 @@ int CVICALLBACK serial_comm_recv_Thread(void *callbackData)
 					ret = RecvStreamFrame(&ptr_recv->ser_pc, Rdbuf[i],&result);
 					if( ret)
 					{
-						//	void *tmp_rx = malloc(sizeof(h_comm_rdata_t));
+						new_tsq_t ntsq;
+						h_comm_rdata_t *prbuf = (h_comm_rdata_t*)malloc(sizeof(h_comm_rdata_t));
+						if (prbuf ==NULL )
+						{
+							MessagePopup ("serial service", "malloc fail!");
+							break;
+						}
 						ptr_recv->ser_pc.rframe.ctype  = SERIAL_CH;
 						ptr_recv->ser_pc.rframe.dframe[0] = result;
 
-						//			memcpy(tmp_rx, (void *)&(ptr_recv->ser_pc.rframe),sizeof(h_comm_rdata_t));
+						memcpy((void*)prbuf,(void*)&ptr_recv->ser_pc.rframe,sizeof(h_comm_rdata_t));
+						ntsq.p_tsq = (void*)prbuf;
 
-						CmtWriteTSQData (ptr_recv->queueHandle, &(ptr_recv->ser_pc.rframe),1,TSQ_INFINITE_TIMEOUT, NULL);
+						CmtWriteTSQData (ptr_recv->queueHandle, &ntsq,1,TSQ_INFINITE_TIMEOUT, NULL);
 
 					}
 
@@ -238,55 +255,6 @@ int CVICALLBACK serial_comm_recv_Thread(void *callbackData)
 	return 0;
 }
 
-int CVICALLBACK serial_comm_recv_Thread_tmp(void *callbackData)
-{
-	h_comm_handle_t *ptr_recv;
-	unsigned char result,ret;
-	unsigned char Rdbuf[200];
-	int readbytes;
-
-	ptr_recv = (h_comm_handle_t *)callbackData;
-
-	RecvInit(&ptr_recv->ser_pc) ;
-
-	while( ptr_recv->s_receiving)
-	{
-		if(ptr_recv->com_port > 0)
-		{
-			readbytes = ReceiveData(ptr_recv->com_port,Rdbuf, 200);
-
-			if(readbytes>0)
-			{
-				for (short i = 0; i < readbytes; i++)
-				{
-					ret = RecvStreamFrame(&ptr_recv->ser_pc, Rdbuf[i],&result);
-					if( ret)
-					{
-						ptr_recv->ser_pc.rframe.ctype  = SERIAL_CH;
-						ptr_recv->ser_pc.rframe.dframe[0] = result;
-
-
-						CmtWriteTSQData (ptr_recv->queueHandle, (void*)&ptr_recv->ser_pc.rframe,1,TSQ_INFINITE_TIMEOUT, NULL);
-
-					}
-
-
-
-				}
-			}
-		}
-		else
-			ptr_recv->s_receiving = 0;
-
-
-	}
-
-	if(ptr_recv->com_ok > 0)
-		ShutDownCom (ptr_recv->com_port)  ;
-
-
-	return 0;
-}
 
 void h_comm_connectTcpServer(h_comm_handle_t *handle)
 {
@@ -357,7 +325,7 @@ int h_comm_sendCMD(h_comm_handle_t *handle,unsigned char cmd,unsigned char reg2,
 
 	tcrc ^= reg2;
 	tcrc ^= reg1;
-	tcrc ^= cmd_par;   
+	tcrc ^= cmd_par;
 	Wrbuf[0] = START_DATA_HEADER;           // Start Header
 
 	Wrbuf[1] = cmd;      //  command

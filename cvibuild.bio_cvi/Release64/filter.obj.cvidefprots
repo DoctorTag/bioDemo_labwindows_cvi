@@ -1,0 +1,20 @@
+[Lead_II_Filter]
+Class="Function"
+Prototype="int Lead_II_Filter(int datum, const double *LpCoefs, const double *HpCoefs);"
+
+[IIR_HP_Filter]
+Class="Function"
+Prototype="double IIR_HP_Filter(const double *pTable, double *pBuffer, int Xn);"
+
+[IIR_LP_Filter]
+Class="Function"
+Prototype="double IIR_LP_Filter(const double *pTable, double *pBuffer, int Xn);"
+
+[Shift2Left]
+Class="Function"
+Prototype="void Shift2Left(int *array, int Length);"
+
+[IIR_Bandstop]
+Class="Function"
+Prototype="double IIR_Bandstop(const double *pTable, double *pBuffer, int Xn);"
+

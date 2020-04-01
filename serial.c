@@ -71,7 +71,7 @@ int Init_ComPort (int com_port)
 	EnableBreakOnLibraryErrors ();
 
 	if (RS232Error == 0)
-	{ 
+	{
 		/*  Turn off Hardware handshaking (loopback test will not function with it on) */
 		SetCTSMode (com_port, LWRS_HWHANDSHAKE_OFF);
 
@@ -79,7 +79,7 @@ int Init_ComPort (int com_port)
 		FlushInQ (com_port);
 		FlushOutQ (com_port);
 	}
- 
+
 	/*  Install a callback such that if the event character appears at the
 		receive buffer, our function will be notified.  */
 //  InstallComCallback (COM_PORT, LWRS_RXFLAG, 0, (int)gEventChar[0] , Event_Char_Detect_Func, 0);
@@ -93,7 +93,7 @@ int Init_ComPort (int com_port)
 int SendData (int com_port,unsigned char *data,int dlen)
 {
 	if(com_port < 1)
-		 return 0;
+		return 0;
 	FlushInQ (com_port);
 	ComWrt (com_port, data, dlen);
 	return dlen;
@@ -116,8 +116,8 @@ int  ReceiveData (int com_port,unsigned char *buf,int buflen)
 {
 	int     strLen;
 
-	 if(com_port < 1)
-		 return 0;
+	if(com_port < 1)
+		return 0;
 	/*  Read the characters from the port */
 	strLen = GetInQLen (com_port);
 	if(strLen > buflen)
@@ -128,6 +128,6 @@ int  ReceiveData (int com_port,unsigned char *buf,int buflen)
 }
 
 int ShutDownCom (int com_port)
-{  
+{
 	return  CloseCom(com_port);
 }

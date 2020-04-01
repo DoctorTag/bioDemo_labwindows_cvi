@@ -1,0 +1,16 @@
+[Reg_ReadAllCb]
+Class="Function"
+Prototype="int Reg_ReadAllCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+
+[Reg_ReadCb]
+Class="Function"
+Prototype="int Reg_ReadCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+
+[Reg_WriteCb]
+Class="Function"
+Prototype="int Reg_WriteCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+
+[RegTableCb]
+Class="Function"
+Prototype="int RegTableCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+

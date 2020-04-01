@@ -41,6 +41,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <ansi_c.h>
 
 #include <toolbox.h>
+
+#include "bio_common.h"
+
 #include "bio_demo.h"
 #include "serial.h"
 #include "mmd_comm.h"
@@ -62,16 +65,20 @@ static CmtTSQCallbackID ecgPlotcallbackID;
 void CVICALLBACK ecgPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigned int event,
 		int value, void *callbackData)
 {
-	h_comm_rdata_t rdata[1];
+	h_comm_rdata_t *rdata;
+	new_tsq_t rtsq[1];
 
 	double data_ld[1];
 	unsigned char dtype,ftype,dcnt;
 	unsigned short dlen;
+
 	switch (event)
 	{
 		case EVENT_TSQ_ITEMS_IN_QUEUE:
 
-			CmtReadTSQData (queueHandle, rdata, 1, TSQ_INFINITE_TIMEOUT, 0);
+			CmtReadTSQData (queueHandle, rtsq, 1, TSQ_INFINITE_TIMEOUT, 0);
+
+			rdata = rtsq[0].p_tsq;
 			if(rdata->dframe[1] == DATA_STREAMING_COMMAND)
 			{
 				SetCtrlAttribute (ECG_D_handle, PANEL_ECGD_TIMER, ATTR_ENABLED, 0);
@@ -162,7 +169,7 @@ void CVICALLBACK ecgPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigne
 
 
 								case  SAMPLE_ECG:
-								
+
 									PlotStripChart (ECG_D_handle, PANEL_ECGD_CHART_D, data_ld, 1, 0, 0, VAL_DOUBLE);
 									break;
 
@@ -178,7 +185,7 @@ void CVICALLBACK ecgPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigne
 				}
 
 			}
-
+			free(rdata);
 			break;
 	}
 }

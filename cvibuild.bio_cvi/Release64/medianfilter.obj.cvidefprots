@@ -1,0 +1,20 @@
+[MedianFilterInit]
+Class="Function"
+Prototype="void MedianFilterInit(int seed);"
+
+[MedianFilterProcess]
+Class="Function"
+Prototype="int MedianFilterProcess(int value);"
+
+[MedianFilterResult]
+Class="Function"
+Prototype="int MedianFilterResult();"
+
+[MedianFilterGetMin]
+Class="Function"
+Prototype="int MedianFilterGetMin();"
+
+[MedianFilterGetMax]
+Class="Function"
+Prototype="int MedianFilterGetMax();"
+

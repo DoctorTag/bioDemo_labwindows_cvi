@@ -208,7 +208,7 @@ extern "C" {
 		unsigned char dframe[MAX_RX_LENGTH];
 		 	void *tmptest;  
 	} h_comm_rdata_t;
-
+	  
 	typedef struct
 	{
 		unsigned char rx_state;

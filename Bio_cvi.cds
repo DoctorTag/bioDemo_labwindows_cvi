@@ -6,25 +6,25 @@
 		<workingdir>workspacedir</workingdir>
 		<actions></actions></postbuild>
 	<msi GUID="{F53BBC23-11D4-431F-A801-36B391D25368}" x64="true">
-		<general appName="Bio_cvi" outputLocation="d:\software\2019\cvi\Demo_labwindows_cvi\cvidistkit.Bio_cvi" relOutputLocation="cvidistkit.Bio_cvi" outputLocationWithVars="d:\software\2019\cvi\Demo_labwindows_cvi\cvidistkit.%name" relOutputLocationWithVars="cvidistkit.%name" upgradeBehavior="1" autoIncrement="true" version="1.0.1">
+		<general appName="BioSensor_cvi" outputLocation="d:\software\2020\cvi\Demo_labwindows_cvi\cvidistkit.BioSensor_cvi" relOutputLocation="cvidistkit.BioSensor_cvi" outputLocationWithVars="d:\software\2020\cvi\Demo_labwindows_cvi\cvidistkit.%name" relOutputLocationWithVars="cvidistkit.%name" upgradeBehavior="1" autoIncrement="true" version="1.0.2">
 			<arp company="Microsoft" companyURL="" supportURL="" contact="" phone="" comments=""/>
 			<summary title="" subject="" keyWords="" comments="" author=""/></general>
 		<userinterface language="English" showPaths="true" showRuntimeOnly="true" readMe="" license="">
-			<dlgstrings welcomeTitle="Bio_cvi" welcomeText=""/></userinterface>
-		<dirs appDirID="101">
-			<installDir name="[Start&gt;&gt;Programs]" dirID="7" parentID="-1" isMSIDir="true" visible="true" unlock="false"/>
+			<dlgstrings welcomeTitle="BioSensor_cvi" welcomeText=""/></userinterface>
+		<dirs appDirID="100">
+			<installDir name="Bio_cvi" dirID="100" parentID="24" isMSIDir="false" visible="true" unlock="false"/>
+			<installDir name="Bio_cvi" dirID="101" parentID="7" isMSIDir="false" visible="true" unlock="false"/>
 			<installDir name="[Program Files]" dirID="24" parentID="-1" isMSIDir="true" visible="true" unlock="false"/>
-			<installDir name="Bio_cvi" dirID="100" parentID="7" isMSIDir="false" visible="true" unlock="false"/>
-			<installDir name="Bio_cvi" dirID="101" parentID="24" isMSIDir="false" visible="true" unlock="false"/></dirs>
+			<installDir name="[Start&gt;&gt;Programs]" dirID="7" parentID="-1" isMSIDir="true" visible="true" unlock="false"/></dirs>
 		<files>
-			<simpleFile fileID="0" sourcePath="d:\software\2019\cvi\Demo_labwindows_cvi\bio_demo.uir" relSourcePath="bio_demo.uir" relSourceBase="0" targetDir="101" readonly="false" hidden="false" system="false" regActiveX="false" runAfterInstallStyle="IMMEDIATELY_RESUME_INSTALL" cmdLineArgs="" runAfterInstall="false" uninstCmdLnArgs="" runUninst="false"/>
-			<simpleFile fileID="1" sourcePath="d:\software\2019\cvi\Demo_labwindows_cvi\cvibuild.bio_cvi\Release64\bio_demo_64bits.exe" targetDir="101" readonly="false" hidden="false" system="false" regActiveX="false" runAfterInstallStyle="IMMEDIATELY_RESUME_INSTALL" cmdLineArgs="" runAfterInstall="false" uninstCmdLnArgs="" runUninst="false"/></files>
+			<simpleFile fileID="0" sourcePath="d:\software\2020\cvi\Demo_labwindows_cvi\cvibuild.bio_cvi\Release64\bio_demo_64bits.exe" targetDir="100" readonly="false" hidden="false" system="false" regActiveX="false" runAfterInstallStyle="IMMEDIATELY_RESUME_INSTALL" cmdLineArgs="" runAfterInstall="false" uninstCmdLnArgs="" runUninst="false"/>
+			<simpleFile fileID="1" sourcePath="d:\software\2020\cvi\Demo_labwindows_cvi\bio_demo.uir" relSourcePath="bio_demo.uir" relSourceBase="0" targetDir="100" readonly="false" hidden="false" system="false" regActiveX="false" runAfterInstallStyle="IMMEDIATELY_RESUME_INSTALL" cmdLineArgs="" runAfterInstall="false" uninstCmdLnArgs="" runUninst="false"/></files>
 		<fileGroups>
-			<projectOutput64 targetType="0" dirID="101" projectID="0">
-				<fileID>1</fileID></projectOutput64>
-			<projectDependencies64 dirID="101" projectID="0"/></fileGroups>
+			<projectOutput64 targetType="0" dirID="100" projectID="0">
+				<fileID>0</fileID></projectOutput64>
+			<projectDependencies64 dirID="100" projectID="0"/></fileGroups>
 		<shortcuts>
-			<shortcut name="Bio_cvi" targetFileID="1" destDirID="100" cmdLineArgs="" description="" runStyle="NORMAL"/></shortcuts>
+			<shortcut name="Bio_cvi" targetFileID="0" destDirID="101" cmdLineArgs="" description="" runStyle="NORMAL"/></shortcuts>
 		<mergemodules/>
 		<products/>
 		<runtimeEngine installToAppDir="false" activeXsup="false" analysis="true" cvirte="true" dotnetsup="true" instrsup="true" lowlevelsup="true" lvrt="true" netvarsup="true" rtutilsup="false">
@@ -79,15 +79,15 @@
 					<productID>{FF56A0C1-3413-4024-89A6-0FB565B2E78C}</productID>
 					<productID>{FF8EF684-CF13-4EE7-BC1D-26AB49EB0CD4}</productID></dependencies></product></baselineProducts>
 		<Projects NumProjects="1">
-			<Project000 ProjectID="0" ProjectAbsolutePath="d:\software\2019\cvi\Demo_labwindows_cvi\bio_cvi.prj" ProjectRelativePath="bio_cvi.prj"/></Projects>
-		<buildData progressBarRate="0.538223453660739">
+			<Project000 ProjectID="0" ProjectAbsolutePath="d:\software\2020\cvi\Demo_labwindows_cvi\bio_cvi.prj" ProjectRelativePath="bio_cvi.prj"/></Projects>
+		<buildData progressBarRate="0.725152952251945">
 			<progressTimes>
 				<Begin>0.000000000000000</Begin>
-				<ProductsAdded>0.053299000000000</ProductsAdded>
-				<DPConfigured>2.503296500000000</DPConfigured>
-				<DPMergeModulesAdded>4.893299499999999</DPMergeModulesAdded>
-				<DPClosed>13.918834499999997</DPClosed>
-				<DistributionsCopied>18.670062500000000</DistributionsCopied>
-				<End>185.796436999999997</End></progressTimes></buildData>
+				<ProductsAdded>0.054833500000000</ProductsAdded>
+				<DPConfigured>3.129824750000000</DPConfigured>
+				<DPMergeModulesAdded>4.649827749999999</DPMergeModulesAdded>
+				<DPClosed>10.612595249999996</DPClosed>
+				<DistributionsCopied>13.038487750000000</DistributionsCopied>
+				<End>137.901941499999992</End></progressTimes></buildData>
 	</msi>
 </distribution>

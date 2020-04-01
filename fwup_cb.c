@@ -40,6 +40,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <ansi_c.h>
 #include <progressbar.h>
 #include <toolbox.h>
+
+#include "bio_common.h"
+
 #include "bio_demo.h"
 #include "serial.h"
 #include "mmd_comm.h"
@@ -185,7 +188,7 @@ int CVICALLBACK FWUP_QuitCb (int panel, int control, int event,
 				fclose(pfile);
 				pfile = NULL;
 			}
-							CmtUninstallTSQCallback (h_comm_handle.queueHandle, fwupPlotcallbackID);
+			CmtUninstallTSQCallback (h_comm_handle.queueHandle, fwupPlotcallbackID);
 
 			DiscardPanel (FWUpgrade_handle);
 			break;
@@ -212,15 +215,16 @@ static void FWUpgradeReturnInd(int panel,char *tip,char *msg )
 
 void CVICALLBACK sensorFWUPFromQueueCallback (CmtTSQHandle queueHandle, unsigned int event,int value, void *callbackData)
 {
-	h_comm_rdata_t rdata[1];
-	  char message[64];
+	new_tsq_t rtsq[1];
+	h_comm_rdata_t *rdata;
+	char message[64];
 
 	switch (event)
 	{
 		case EVENT_TSQ_ITEMS_IN_QUEUE:
 
-			CmtReadTSQData (queueHandle, rdata, 1, TSQ_INFINITE_TIMEOUT, 0);
-
+			CmtReadTSQData (queueHandle, rtsq, 1, TSQ_INFINITE_TIMEOUT, 0);
+			rdata = rtsq[0].p_tsq;
 			switch(rdata->dframe[1])
 			{
 				case STATUS_INFO_REQ:
@@ -242,8 +246,8 @@ void CVICALLBACK sensorFWUPFromQueueCallback (CmtTSQHandle queueHandle, unsigned
 							else
 							{
 								check_cnt++;
-								h_comm_sendCMD(&h_comm_handle,RESTART_COMMAND,FWUPGRADE_RST,0,0); 
-								
+								h_comm_sendCMD(&h_comm_handle,RESTART_COMMAND,FWUPGRADE_RST,0,0);
+
 								//	SetCtrlAttribute (FWUpgrade_handle, PANEL_FWUP_TIMER, ATTR_ENABLED, 1);
 
 							}
@@ -261,25 +265,25 @@ void CVICALLBACK sensorFWUPFromQueueCallback (CmtTSQHandle queueHandle, unsigned
 						break;
 
 						case BIO_LOSE :
-								{
+						{
 							if(check_cnt == 1)
 							{
-								FWUpgradeReturnInd(FWUpgrade_handle,"BioSensor :","Sensor module lost !!!");  
+								FWUpgradeReturnInd(FWUpgrade_handle,"BioSensor :","Sensor module lost !!!");
 								//goto sensor_up_done;
 
 							}
 							else
 							{
 								check_cnt++;
-								h_comm_sendCMD(&h_comm_handle,RESTART_COMMAND,FWUPGRADE_RST,0,0); 
-								
+								h_comm_sendCMD(&h_comm_handle,RESTART_COMMAND,FWUPGRADE_RST,0,0);
+
 								//	SetCtrlAttribute (FWUpgrade_handle, PANEL_FWUP_TIMER, ATTR_ENABLED, 1);
 
 							}
 
 						}
 						break;
-						
+
 						default:
 
 							FWUpgradeReturnInd(FWUpgrade_handle,"BioSensor :","Sensor module unknow !!!");
@@ -292,7 +296,7 @@ void CVICALLBACK sensorFWUPFromQueueCallback (CmtTSQHandle queueHandle, unsigned
 
 				}
 				break;
-				
+
 				case RESTART_COMMAND:
 				{
 					//	SetCtrlAttribute (FWUpgrade_handle, PANEL_FWUP_TIMER, ATTR_ENABLED, 0);
@@ -301,22 +305,22 @@ void CVICALLBACK sensorFWUPFromQueueCallback (CmtTSQHandle queueHandle, unsigned
 					switch(rdata->dframe[3])
 					{
 
-						case  FWUPGRADE_RST:   
+						case  FWUPGRADE_RST:
 						{
-						
+
 							Delay(3);
-							 h_comm_sendCMD(&h_comm_handle,STATUS_INFO_REQ,0,0,0);
-								
+							h_comm_sendCMD(&h_comm_handle,STATUS_INFO_REQ,0,0,0);
+
 						}
 						break;
 
-						case    NORMAL_RST:   
+						case    NORMAL_RST:
 						{
-				
+
 						}
 						break;
 
-					
+
 
 
 					}
@@ -347,27 +351,27 @@ void CVICALLBACK sensorFWUPFromQueueCallback (CmtTSQHandle queueHandle, unsigned
 							DisplayPanel (FWUpgrade_handle);
 							program_cnt = 1;
 							if(rdata->dframe[4] == RSP_OK)
-							h_comm_sendFWUpgrade(&h_comm_handle,BL_CMD_PROGRAM,Wrbuf,0,binBuf,MAX_TDATA_LENGTH) ;
+								h_comm_sendFWUpgrade(&h_comm_handle,BL_CMD_PROGRAM,Wrbuf,0,binBuf,MAX_TDATA_LENGTH) ;
 							else
 							{
-										sprintf (message, "ERASE Error Upgrade rsp: 0x%x", rdata->dframe[4]);
-							FWUpgradeReturnInd(FWUpgrade_handle,"Sensor Error:",message);
-					
+								sprintf (message, "ERASE Error Upgrade rsp: 0x%x", rdata->dframe[4]);
+								FWUpgradeReturnInd(FWUpgrade_handle,"Sensor Error:",message);
+
 							}
 							//	SetCtrlAttribute (FWUpgrade_handle, PANEL_FWUP_TIMER, ATTR_ENABLED, 1);
 
 						}
 						break;
 
-				//	default:	 
+						//	default:
 						case BL_CMD_PROGRAM:
 						{
-							
+
 							if(	program_cnt < PAGECNT)
 							{
-							//	h_comm_sendFWUpgrade(&h_comm_handle,BL_CMD_PROGRAM,Wrbuf,0,binBuf,MAX_TDATA_LENGTH) ;
+								//	h_comm_sendFWUpgrade(&h_comm_handle,BL_CMD_PROGRAM,Wrbuf,0,binBuf,MAX_TDATA_LENGTH) ;
 								h_comm_sendFWUpgrade(&h_comm_handle,BL_CMD_PROGRAM,Wrbuf,program_cnt*(MAX_TDATA_LENGTH / 2),binBuf+program_cnt*MAX_TDATA_LENGTH,MAX_TDATA_LENGTH) ;
-							//	Delay(0.5);
+								//	Delay(0.5);
 								ProgressBar_SetPercentage (FWUpgrade_handle, PANEL_FWUP_PROGRESSBAR, (100*program_cnt)/PAGECNT, NULL);
 								program_cnt++;
 
@@ -381,22 +385,22 @@ void CVICALLBACK sensorFWUPFromQueueCallback (CmtTSQHandle queueHandle, unsigned
 						case BL_CMD_APRDY:
 						{
 
-						//	h_comm_sendCMD(&h_comm_handle,RESTART_COMMAND,NORMAL_RST,0); 
+							//	h_comm_sendCMD(&h_comm_handle,RESTART_COMMAND,NORMAL_RST,0);
 							SetCtrlAttribute(FWUpgrade_handle,PANEL_FWUP_PROGRESSBAR,ATTR_LABEL_TEXT,"Program OK");
 							FWUpgradeReturnInd(FWUpgrade_handle,"Firmware upgrade:","Program OK!!");
 
 						}
 						break;
-						
+
 						default:
-							{
-							 
+						{
+
 							sprintf (message, "Error Upgrade rsp: 0x%x , 0x%x", rdata->dframe[3],rdata->dframe[4]);
 							FWUpgradeReturnInd(FWUpgrade_handle,"Sensor Error:",message);
 							//	goto sensor_up_done;
-							}
-							break;
-						
+						}
+						break;
+
 
 					}
 
@@ -404,7 +408,7 @@ void CVICALLBACK sensorFWUPFromQueueCallback (CmtTSQHandle queueHandle, unsigned
 				break;
 			}
 
-
+			free(rdata);
 
 			break;
 	}
@@ -480,15 +484,15 @@ int CVICALLBACK sensorFWUpgradeCb (int panel, int control, int event,
 
 void CVICALLBACK otaFWUPFromQueueCallback (CmtTSQHandle queueHandle, unsigned int event,int value, void *callbackData)
 {
-	h_comm_rdata_t rdata[1];
+	h_comm_rdata_t *rdata;
 
-
+	new_tsq_t rtsq[1];
 	switch (event)
 	{
 		case EVENT_TSQ_ITEMS_IN_QUEUE:
 
-			CmtReadTSQData (queueHandle, rdata, 1, TSQ_INFINITE_TIMEOUT, 0);
-
+			CmtReadTSQData (queueHandle, rtsq, 1, TSQ_INFINITE_TIMEOUT, 0);
+			rdata = rtsq[0].p_tsq;
 			switch(rdata->dframe[1])
 			{
 
@@ -579,9 +583,9 @@ void CVICALLBACK otaFWUPFromQueueCallback (CmtTSQHandle queueHandle, unsigned in
 								unsigned int tmplen = ftell(pfile) ;
 								check_cnt = (filelen-tmplen)/MAX_TDATA_LENGTH;
 								if((filelen-tmplen)%MAX_TDATA_LENGTH)
-								   check_cnt++;
+									check_cnt++;
 
-									fread((void*)binBuf,(filelen-tmplen),1, pfile);
+								fread((void*)binBuf,(filelen-tmplen),1, pfile);
 								if(check_cnt > 1)
 									h_comm_sendFWUpgrade(&h_comm_handle,BL_CMD_OTA_DSEG0,Wrbuf,0,binBuf,MAX_TDATA_LENGTH) ;
 								else
@@ -628,7 +632,7 @@ void CVICALLBACK otaFWUPFromQueueCallback (CmtTSQHandle queueHandle, unsigned in
 			}
 
 
-
+			free(rdata);
 			break;
 	}
 }
@@ -705,13 +709,13 @@ void initFwupCb(unsigned char forSensor)
 {
 
 	if(fwupPlotcallbackID)
-				 CmtUninstallTSQCallback (h_comm_handle.queueHandle, fwupPlotcallbackID);   
+		CmtUninstallTSQCallback (h_comm_handle.queueHandle, fwupPlotcallbackID);
 	if(forSensor)
 
 		CmtInstallTSQCallback (h_comm_handle.queueHandle, EVENT_TSQ_ITEMS_IN_QUEUE, 1, sensorFWUPFromQueueCallback, NULL,CmtGetCurrentThreadID(), &fwupPlotcallbackID);
 
 	else
-		
+
 		CmtInstallTSQCallback (h_comm_handle.queueHandle, EVENT_TSQ_ITEMS_IN_QUEUE, 1, otaFWUPFromQueueCallback, NULL,CmtGetCurrentThreadID(), &fwupPlotcallbackID);
 
 

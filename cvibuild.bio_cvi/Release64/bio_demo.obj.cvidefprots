@@ -1,0 +1,36 @@
+[main]
+Class="Function"
+Prototype="int main(int argc, char **argv);"
+
+[cfgQuitCb]
+Class="Function"
+Prototype="int cfgQuitCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+
+[cfgOkCallback]
+Class="Function"
+Prototype="int cfgOkCallback(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+
+[MenuConfigPortCb]
+Class="Function"
+Prototype="void MenuConfigPortCb(int menubar, int menuItem, void *callbackData, int panel);"
+
+[MenuFirmUpgradeCb]
+Class="Function"
+Prototype="void MenuFirmUpgradeCb(int menubar, int menuItem, void *callbackData, int panel);"
+
+[MenuLocalAnalysisCb]
+Class="Function"
+Prototype="void MenuLocalAnalysisCb(int menubar, int menuItem, void *callbackData, int panel);"
+
+[FunctionTestBeginCb]
+Class="Function"
+Prototype="int FunctionTestBeginCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+
+[Shutdown]
+Class="Function"
+Prototype="int Shutdown(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+
+[PanelCB]
+Class="Function"
+Prototype="int PanelCB(int panel, int event, void *callbackData, int eventData1, int eventData2);"
+

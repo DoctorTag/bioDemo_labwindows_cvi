@@ -10,10 +10,6 @@ Prototype="unsigned char RecvStreamFrame(h_comm_protocol_t *pc, unsigned char sr
 Class="Function"
 Prototype="int serial_comm_recv_Thread(void *callbackData);"
 
-[serial_comm_recv_Thread_tmp]
-Class="Function"
-Prototype="int serial_comm_recv_Thread_tmp(void *callbackData);"
-
 [h_comm_connectTcpServer]
 Class="Function"
 Prototype="void h_comm_connectTcpServer(h_comm_handle_t *handle);"

@@ -44,6 +44,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdbool.h>
 //#include <progressbar.h>
 #include <toolbox.h>
+
+#include "bio_common.h"
 #include "bio_demo.h"
 #include "serial.h"
 
@@ -52,7 +54,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "mmd_comm.h"
 
 #include "analysis_piezo.h"
-#include "local_analysis_cb.h"
+
 
 
 
@@ -100,7 +102,8 @@ void CVICALLBACK laPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigned
 				//result = ana_plot->analysis_result[i]	 ;
 				result = ana_plot->variance	 ;
 				//filter_data = ana_plot->hr_filted_data[i];
-				filter_data = ana_plot->hr_enhanced_data[i];
+				//filter_data = ana_plot->hr_enhanced_data[i];
+				filter_data = ana_plot->resp_data[i];
 				PlotStripChart (l_analysis_handle,PANEL_LA_CHART_DATA,&wave_data , 1, 0, 0, VAL_FLOAT);
 				PlotStripChart (l_analysis_handle,PANEL_LA_CHART_RESULT,&filter_data , 1, 0, 0, VAL_FLOAT);
 			//	PlotStripChart (l_analysis_handle,PANEL_LA_CHART_RESULT_2,&result , 1, 0, 0, VAL_DOUBLE);

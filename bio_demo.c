@@ -105,8 +105,7 @@ int main (int argc, char *argv[])
 	DisplayPanel (hpanel);
 
 	/* Create Thread-safe Queue */
-//	if(CmtNewTSQ (QUEUE_LENGTH, sizeof(h_comm_rdata_t), OPT_TSQ_DYNAMIC_SIZE, &h_comm_handle.queueHandle) < 0)
-				if(CmtNewTSQ (QUEUE_LENGTH, sizeof(new_tsq_t), OPT_TSQ_DYNAMIC_SIZE, &h_comm_handle.queueHandle) < 0)
+	if(CmtNewTSQ (QUEUE_LENGTH, sizeof(new_tsq_t), OPT_TSQ_DYNAMIC_SIZE, &h_comm_handle.queueHandle) < 0)
 
 		return -1;
 
@@ -329,7 +328,7 @@ int CVICALLBACK Shutdown (int panel, int control, int event,
 	{
 //	h_comm_handle.receiving = 0;
 		h_comm_handle.s_receiving = 0;
-	//	uninstallDefaultTSQCb() ;
+		//	uninstallDefaultTSQCb() ;
 		QuitUserInterface (0);
 	}
 	return 0;
@@ -345,7 +344,7 @@ int CVICALLBACK PanelCB (int panel, int event, void *callbackData,
 		case EVENT_CLOSE:
 //	tcp_comm_handle.receiving = 0;
 			h_comm_handle.s_receiving = 0;
-		//	uninstallDefaultTSQCb() ;
+			//	uninstallDefaultTSQCb() ;
 			QuitUserInterface (0);
 			break;
 

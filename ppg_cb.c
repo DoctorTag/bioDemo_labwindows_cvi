@@ -42,6 +42,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <ansi_c.h>
 //#include <progressbar.h>
 #include <toolbox.h>
+
+#include "bio_common.h"
+
 #include "bio_demo.h"
 #include "serial.h"
 
@@ -76,20 +79,21 @@ void openCsvFile(unsigned char file_num)
 void writeCsvFile(int i)
 {
 
-	 fprintf(csv_fd, "%d\r\n", i);
+	fprintf(csv_fd, "%d\r\n", i);
 }
 void CVICALLBACK ppgPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigned int event,
 		int value, void *callbackData)
 {
-	h_comm_rdata_t rdata[1];
-
+	h_comm_rdata_t *rdata;
+	new_tsq_t rtsq[1];
 	double data_ld[1];
 
 	switch (event)
 	{
 		case EVENT_TSQ_ITEMS_IN_QUEUE:
 
-			CmtReadTSQData (queueHandle, rdata, 1, TSQ_INFINITE_TIMEOUT, 0);
+			CmtReadTSQData (queueHandle, rtsq, 1, TSQ_INFINITE_TIMEOUT, 0);
+			rdata = rtsq[0].p_tsq;
 			if(rdata->dframe[1] == DATA_STREAMING_COMMAND)
 			{
 				SetCtrlAttribute (PPG_handle, PANEL_PPG_TIMER, ATTR_ENABLED, 0);
@@ -168,10 +172,10 @@ void CVICALLBACK ppgPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigne
 
 									case  SAMPLE_RESP:
 									case  SAMPLE_PPG_R:
-									//	Filter_Low(data_ld, data_ld[0],0) ;
+										//	Filter_Low(data_ld, data_ld[0],0) ;
 										PlotStripChart (PPG_handle, PANEL_PPG_CHART_AC, data_ld, 1, 0, 0, VAL_DOUBLE);
-									//	readSensor(data_ld[0]) ;
-									//	AnalysisLoop();
+										//	readSensor(data_ld[0]) ;
+										//	AnalysisLoop();
 										break;
 									case  SAMPLE_IMP:
 									case  SAMPLE_PPG_IR:
@@ -217,7 +221,7 @@ void CVICALLBACK ppgPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigne
 				}
 
 			}
-
+			free(rdata);
 			break;
 	}
 }
@@ -261,7 +265,7 @@ int CVICALLBACK Quit_PPG_Cb (int panel, int control, int event,
 			}
 			DiscardPanel (panel);
 			if( csv_fd)
-			fclose(csv_fd);
+				fclose(csv_fd);
 			break;
 		}
 	}
@@ -296,7 +300,7 @@ int CVICALLBACK PPG_StartCb (int panel, int control, int event,
 				case PPG_R_FUN:
 					SteamCBdata[0] = (unsigned char)(REG_FUN1_PPG_R >> 8);
 					SteamCBdata[1] = (unsigned char)REG_FUN1_PPG_R;
-					
+
 					break;
 
 				case PPG_IR_FUN:
@@ -315,10 +319,10 @@ int CVICALLBACK PPG_StartCb (int panel, int control, int event,
 					break;
 
 			}
-			openCsvFile(1);  
-		//	Filter_Low_init(0.1);
-		//	initData() ;
-		//	MedianFilterInit(2048) ;
+			openCsvFile(1);
+			//	Filter_Low_init(0.1);
+			//	initData() ;
+			//	MedianFilterInit(2048) ;
 			h_comm_sendCMD(&h_comm_handle,DATA_STREAMING_COMMAND,SteamCBdata[0],SteamCBdata[1],0);
 			SetCtrlAttribute (PPG_handle, PANEL_PPG_TIMER, ATTR_ENABLED, 1);
 			plotting = 1;

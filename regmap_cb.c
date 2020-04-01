@@ -40,6 +40,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <ansi_c.h>
 //#include <progressbar.h>
 #include <toolbox.h>
+
+#include "bio_common.h"
+
 #include "bio_demo.h"
 //#include "serial.h"
 #include "mmd_comm.h"
@@ -58,25 +61,26 @@ Point focus;
 void CVICALLBACK bioDefaultFromQueueCallback (CmtTSQHandle queueHandle, unsigned int event,
 		int value, void *callbackData)
 {
-	h_comm_rdata_t rdata[1];
-
-	 char ret_value[5] ;
+	h_comm_rdata_t *rdata;
+	new_tsq_t rtsq[1];
+	char ret_value[5] ;
 	switch (event)
 	{
 		case EVENT_TSQ_ITEMS_IN_QUEUE:
 
-			CmtReadTSQData (queueHandle, rdata, 1, TSQ_INFINITE_TIMEOUT, 0);
+			CmtReadTSQData (queueHandle, rtsq, 1, TSQ_INFINITE_TIMEOUT, 0);
+			rdata = rtsq[0].p_tsq;
 			switch(rdata->dframe[1])
 			{
 				case READ_REG_COMMAND:
 				{
 					sprintf( ret_value,"0x%02x", rdata->dframe[4]);
-				
-						SetTableCellVal(hpanel, PANEL_REG_TABLE , MakePoint(REG_VALUE_COLUMN, rdata->dframe[3] +1),ret_value);
-						  SetCtrlAttribute(hpanel, PANEL_REG_INFO,ATTR_CTRL_VAL,rdata->dframe[4]); 
+
+					SetTableCellVal(hpanel, PANEL_REG_TABLE , MakePoint(REG_VALUE_COLUMN, rdata->dframe[3] +1),ret_value);
+					SetCtrlAttribute(hpanel, PANEL_REG_INFO,ATTR_CTRL_VAL,rdata->dframe[4]);
 				}
 			}
-
+			free(rdata);
 			break;
 	}
 }
@@ -85,11 +89,11 @@ void CVICALLBACK bioDefaultFromQueueCallback (CmtTSQHandle queueHandle, unsigned
 void installDefaultTSQCb(void)
 {
 	focus.x = REG_VALUE_COLUMN;
-		focus.y = 1;
-		
+	focus.y = 1;
+
 	CmtFlushTSQ(h_comm_handle.queueHandle,TSQ_FLUSH_ALL ,NULL);
 	if(defaultcallbackID)
-	CmtUninstallTSQCallback (h_comm_handle.queueHandle, defaultcallbackID);
+		CmtUninstallTSQCallback (h_comm_handle.queueHandle, defaultcallbackID);
 	/* Install a callback to read and plot the generated data. */
 	CmtInstallTSQCallback (h_comm_handle.queueHandle, EVENT_TSQ_ITEMS_IN_QUEUE, 1, bioDefaultFromQueueCallback, NULL,CmtGetCurrentThreadID(), &defaultcallbackID);
 
@@ -99,7 +103,7 @@ void installDefaultTSQCb(void)
 void uninstallDefaultTSQCb(void)
 {
 	if(defaultcallbackID)
-	CmtUninstallTSQCallback (h_comm_handle.queueHandle, defaultcallbackID);
+		CmtUninstallTSQCallback (h_comm_handle.queueHandle, defaultcallbackID);
 	defaultcallbackID = 0;
 
 }
@@ -115,7 +119,7 @@ int CVICALLBACK Reg_ReadCb (int panel, int control, int event,
 	{
 		case EVENT_COMMIT:
 		{
-			 			h_comm_sendCMD(&h_comm_handle,READ_REG_COMMAND,focus.y - 1,0,0);
+			h_comm_sendCMD(&h_comm_handle,READ_REG_COMMAND,focus.y - 1,0,0);
 
 
 
@@ -138,7 +142,7 @@ int CVICALLBACK Reg_WriteCb (int panel, int control, int event,
 			{
 
 				GetCtrlAttribute(panel, PANEL_REG_INFO,ATTR_CTRL_VAL,&wvalue);
-				h_comm_sendCMD(&h_comm_handle,WRITE_REG_COMMAND,focus.y - 1,wvalue,0); 
+				h_comm_sendCMD(&h_comm_handle,WRITE_REG_COMMAND,focus.y - 1,wvalue,0);
 			}
 
 		}
