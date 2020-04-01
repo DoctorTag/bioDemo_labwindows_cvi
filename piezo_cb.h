@@ -33,28 +33,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ---------------------------------------------------------------------------*/
 
-#ifndef _BIO_COMMON_H_
-#define _BIO_COMMON_H_
+#ifndef _PIEZO_CB_H_
+#define _PIEZO_CB_H_
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-// #include "analysis_piezo.h"
+	int CVICALLBACK Quit_PPG_Cb (int panel, int control, int event, void *callbackData, int eventData1, int eventData2) ;
 
 
-	typedef struct
-	{
-		void * p_tsq;
-	} new_tsq_t;
-	
-	
-FILE* openCsvFileForWrite(char* fun_string)  ;
+	int CVICALLBACK PPG_StartCb (int panel, int control, int event,void *callbackData, int eventData1, int eventData2);
 
 
-void writeDataToCsvFile(FILE* csv_fd,int data);	
-	
+	 void rxframe_ppg_handler(unsigned char *ptrframe,unsigned char crc_result);
+
+
 
 #ifdef __cplusplus
 }

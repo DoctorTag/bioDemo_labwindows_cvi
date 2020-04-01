@@ -1,7 +1,7 @@
 #include "C:\Program Files (x86)\National Instruments\Shared\MSDTRedistributables\SDKHeaderFiles\8.1\winver.h"
 
 2 ICON "c:\\program files (x86)\\national instruments\\cvi2017\\bin\\default.ico"
-1 24 "d:\\software\\2020\\cvi\\Demo_labwindows_cvi\\cvibuild.bio_cvi\\Debug\\manifest.xml"
+1 24 "d:\\software\\2020\\cvi\\github\\bioDemo_labwindows_cvi\\cvibuild.bio_cvi\\Debug\\manifest.xml"
 
 
 STRINGTABLE DISCARDABLE

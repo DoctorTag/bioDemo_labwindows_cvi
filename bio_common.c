@@ -33,32 +33,32 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ---------------------------------------------------------------------------*/
 
-#ifndef _BIO_COMMON_H_
-#define _BIO_COMMON_H_
+#include <utility.h>
+#include <ansi_c.h>
+#include "bio_common.h"
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-// #include "analysis_piezo.h"
-
-
-	typedef struct
+FILE* openCsvFileForWrite(char* fun_string)
+{
+	 FILE* csv_fd; 
+	char output_file[128];
+	int secs,mins,hours;
+	int month,day,year;
+	   GetSystemDate (&month, &day, &year);
+	   
+	GetSystemTime (&hours, &mins, &secs);
+	sprintf(output_file,"fl_%s_%d_%d_%d_%d_%d_%d.csv",fun_string,year,month,day,hours,mins,secs); //设置文件名
+	csv_fd = fopen(output_file,"w");	//“写”打开文件
+	if(!csv_fd)
 	{
-		void * p_tsq;
-	} new_tsq_t;
-	
-	
-FILE* openCsvFileForWrite(char* fun_string)  ;
+		perror("fopen failed!");
 
-
-void writeDataToCsvFile(FILE* csv_fd,int data);	
-	
-
-#ifdef __cplusplus
+	}
+	 return csv_fd;
 }
-#endif
 
+void writeDataToCsvFile(FILE* csv_fd,int data)
+{
 
-#endif
+	fprintf(csv_fd, "%d\r\n", data);
+}

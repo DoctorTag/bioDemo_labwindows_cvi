@@ -63,7 +63,7 @@ extern "C" {
 
 //#define MAX_RDATA_LENGTH ((3*PACK_SAMPLES)/2+1)
 
-#define SAMPLE_PPG_GDC	 0x00
+#define SAMPLE_PIEZO	 0x00
 #define SAMPLE_PPG_RDC   0x10
 #define SAMPLE_PPG_IRDC	 0x20
 #define SAMPLE_IMP		 0x30
@@ -96,6 +96,8 @@ extern "C" {
 #define REG_FUN2_GSR              0x0400
 #define REG_FUN2_EMG              0x0800
 #define REG_FUN2_TEMP             0x1000
+#define REG_FUN2_PIEZO            0x2000
+	
 
 #define FUN1_COMBO_SPO2            (REG_FUN1_PPG_R|REG_FUN1_PPG_IR)
 

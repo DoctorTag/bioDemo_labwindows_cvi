@@ -1,0 +1,8 @@
+[analysis_piezo_init]
+Class="Function"
+Prototype="void analysis_piezo_init();"
+
+[analysis_piezo_all]
+Class="Function"
+Prototype="bool analysis_piezo_all(int pie_data, analysis_result_t *a_result);"
+

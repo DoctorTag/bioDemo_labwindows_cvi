@@ -58,7 +58,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define     QUEUE_LENGTH  5000
 
-extern int PPG_handle,ECG_D_handle;
+extern int PPG_handle,ECG_D_handle,PIEZO_handle;
 extern int FWUpgrade_handle;
 extern int l_analysis_handle;
 
@@ -296,6 +296,13 @@ int CVICALLBACK FunctionTestBeginCb(int panel, int control, int event,
 						PPG_handle = LoadPanel (hpanel, "bio_demo.uir", PANEL_PPG);
 						uninstallDefaultTSQCb() ;
 						InstallPopup (PPG_handle);
+
+						break;
+						
+						case 6:
+						PIEZO_handle = LoadPanel (hpanel, "bio_demo.uir", PANEL_PZ);
+						uninstallDefaultTSQCb() ;
+						InstallPopup (PIEZO_handle);
 
 						break;
 

@@ -48,46 +48,35 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "bio_demo.h"
 #include "serial.h"
 
-#include "ppg_cb.h"
+#include "piezo_cb.h"
 #include "timer_cb.h"
 #include "mmd_comm.h"
 
+#include "analysis_piezo.h"
+
+
 extern	  h_comm_handle_t h_comm_handle;
 
-extern unsigned char  funSelectionValue;
-int PPG_handle;
+//xtern unsigned char  funSelectionValue;
+int PIEZO_handle;
 
 static int RdAdcData,crc_err,dtype,err_comm;
 static  unsigned char SteamCBdata[2],stream_seq[MAX_MMED_TYPES];
 static  unsigned char plotting = 0;
-static CmtTSQCallbackID ppgPlotcallbackID =0;
+static CmtTSQCallbackID piezoPlotcallbackID =0;
 
-static FILE* csv_fd;
-void openCsvFile(unsigned char file_num)
-{
-	char output_file[]="fl_ppg_xxx.csv";
-	sprintf(output_file,"fl_ppg_%3d.csv",file_num); //设置文件名
-	csv_fd = fopen(output_file,"w");	//“写”打开文件
-	if(!csv_fd)
-	{
-		perror("fopen failed!");
+static FILE* piezo_csv_fd = NULL;
 
-	}
+static	analysis_result_t ana_result;
 
-}
-
-void writeCsvFile(int i)
-{
-
-	fprintf(csv_fd, "%d\r\n", i);
-}
-void CVICALLBACK ppgPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigned int event,
+void CVICALLBACK piezoPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigned int event,
 		int value, void *callbackData)
 {
 	h_comm_rdata_t *rdata;
 	new_tsq_t rtsq[1];
 	double data_ld[1];
-
+	bool ana_ok;
+	short i;
 	switch (event)
 	{
 		case EVENT_TSQ_ITEMS_IN_QUEUE:
@@ -96,7 +85,7 @@ void CVICALLBACK ppgPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigne
 			rdata = rtsq[0].p_tsq;
 			if(rdata->dframe[1] == DATA_STREAMING_COMMAND)
 			{
-				SetCtrlAttribute (PPG_handle, PANEL_PPG_TIMER, ATTR_ENABLED, 0);
+				SetCtrlAttribute (PIEZO_handle, PANEL_PZ_TIMER, ATTR_ENABLED, 0);
 			}
 			else
 			{
@@ -105,7 +94,7 @@ void CVICALLBACK ppgPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigne
 					//	MessagePopup ("Error:","RecvSensor crc!!!!");
 					crc_err++;
 					//	sprintf (message, "Lost Frames: %d", err_comm);
-					SetCtrlVal (PPG_handle, PANEL_PPG_CRC_ERROR_IND,crc_err);
+					SetCtrlVal (PIEZO_handle, PANEL_PZ_CRC_ERROR_IND,crc_err);
 				}
 				else
 				{
@@ -119,7 +108,7 @@ void CVICALLBACK ppgPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigne
 							{
 								err_comm++;
 								//	sprintf (message, "Lost Frames: %d", err_comm);
-								SetCtrlVal (PPG_handle, PANEL_PPG_LOST_IND,err_comm);
+								SetCtrlVal (PIEZO_handle, PANEL_PZ_LOST_IND,err_comm);
 							}
 
 						}
@@ -165,55 +154,26 @@ void CVICALLBACK ppgPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigne
 
 							data_ld[0] =  RdAdcData;
 
-							if((funSelectionValue == PPG_SPO2)||(funSelectionValue == RESP_FUN) )
+
+
+							if( (dtype << 4) == SAMPLE_PIEZO)
 							{
-								switch (dtype << 4)
+								writeDataToCsvFile(piezo_csv_fd, RdAdcData);
+								ana_ok = analysis_piezo_all(RdAdcData,&ana_result) ;
+
+								if(ana_ok == true)
 								{
-
-									case  SAMPLE_RESP:
-									case  SAMPLE_PPG_R:
-										//	Filter_Low(data_ld, data_ld[0],0) ;
-										PlotStripChart (PPG_handle, PANEL_PPG_CHART_AC, data_ld, 1, 0, 0, VAL_DOUBLE);
-										//	readSensor(data_ld[0]) ;
-										//	AnalysisLoop();
-										break;
-									case  SAMPLE_IMP:
-									case  SAMPLE_PPG_IR:
-										PlotStripChart (PPG_handle, PANEL_PPG_CHART_DC, data_ld, 1, 0, 0, VAL_DOUBLE);
-										break;
-
+									i=0;
+									while(i < SAMPLE_HZ)
+									{ 
+										PlotStripChart (PIEZO_handle, PANEL_PZ_CHART_ANALYSIS, ana_result.hr_filted_data+i, 1, 0, 0, VAL_FLOAT);
+										i++;
+									}
 								}
+								PlotStripChart (PIEZO_handle, PANEL_PZ_CHART_RAW, data_ld, 1, 0, 0, VAL_DOUBLE);
+
+
 							}
-							else
-							{
-								switch (dtype << 4)
-								{
-
-
-									case  SAMPLE_PPG_G:
-									case  SAMPLE_PPG_R:
-									case  SAMPLE_PPG_IR:
-										//		data_ld[0] =  RdAdcData - MedianFilterProcess(RdAdcData);
-										//	Filter_Low(data_ld, data_ld[0],0) ;
-										//	 data_ld[0] = map(data_ld[0], float I_Min, float I_Max, float O_Min, float O_Max)
-
-										writeCsvFile(data_ld[0]);
-										PlotStripChart (PPG_handle, PANEL_PPG_CHART_AC, data_ld, 1, 0, 0, VAL_DOUBLE);
-										//	readSensor(data_ld[0]) ;
-										//	AnalysisLoop();
-										break;
-								//	case  SAMPLE_PPG_GDC:
-									case  SAMPLE_PPG_RDC:
-									case  SAMPLE_PPG_IRDC:
-										PlotStripChart (PPG_handle, PANEL_PPG_CHART_DC, data_ld, 1, 0, 0, VAL_DOUBLE);
-										break;
-
-								}
-							}
-
-
-
-
 
 						}
 					}
@@ -226,12 +186,10 @@ void CVICALLBACK ppgPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigne
 	}
 }
 
-int CVICALLBACK ppgTimerCallback (int panel, int control, int event,
-								  void *callbackData, int eventData1,
-								  int eventData2)
-{
-
-
+int CVICALLBACK piezoTimerCallback (int panel, int control, int event,
+									void *callbackData, int eventData1,
+									int eventData2)
+{  
 	switch (event)
 	{
 		case EVENT_TIMER_TICK:
@@ -244,8 +202,8 @@ int CVICALLBACK ppgTimerCallback (int panel, int control, int event,
 
 
 
-int CVICALLBACK Quit_PPG_Cb (int panel, int control, int event,
-							 void *callbackData, int eventData1, int eventData2)
+int CVICALLBACK Quit_Piezo_Cb (int panel, int control, int event,
+							   void *callbackData, int eventData1, int eventData2)
 {
 	switch (event)
 	{
@@ -258,25 +216,23 @@ int CVICALLBACK Quit_PPG_Cb (int panel, int control, int event,
 
 				plotting = 0;
 
-				CmtUninstallTSQCallback (h_comm_handle.queueHandle, ppgPlotcallbackID);
-
-
+				CmtUninstallTSQCallback (h_comm_handle.queueHandle, piezoPlotcallbackID);  
 
 			}
 			DiscardPanel (panel);
-			if( csv_fd)
-				fclose(csv_fd);
+			if( piezo_csv_fd)
+				fclose(piezo_csv_fd);
 			break;
 		}
 	}
 	return 0;
 }
 
-int CVICALLBACK PPG_StartCb (int panel, int control, int event,
-							 void *callbackData, int eventData1, int eventData2)
+int CVICALLBACK Piezo_StartCb (int panel, int control, int event,
+							   void *callbackData, int eventData1, int eventData2)
 {
 	int val, traces, i;
-	h_comm_rdata_t *rdata;
+//	h_comm_rdata_t *rdata;
 
 
 	if (event == EVENT_COMMIT)
@@ -290,62 +246,35 @@ int CVICALLBACK PPG_StartCb (int panel, int control, int event,
 			for (i=0; i<MAX_MMED_TYPES; i++)
 				stream_seq[i] = 0;
 
-			switch(funSelectionValue)
-			{
-				case PPG_G_FUN:
-					SteamCBdata[0] = (unsigned char)(REG_FUN1_PPG_G >> 8);
-					SteamCBdata[1] = (unsigned char)REG_FUN1_PPG_G;
-					break;
 
-				case PPG_R_FUN:
-					SteamCBdata[0] = (unsigned char)(REG_FUN1_PPG_R >> 8);
-					SteamCBdata[1] = (unsigned char)REG_FUN1_PPG_R;
+			SteamCBdata[0] = (unsigned char)(REG_FUN2_PIEZO >> 8);
+			SteamCBdata[1] = (unsigned char)REG_FUN2_PIEZO;
 
-					break;
-
-				case PPG_IR_FUN:
-					SteamCBdata[0] = (unsigned char)(REG_FUN1_PPG_IR >> 8);
-					SteamCBdata[1] = (unsigned char)REG_FUN1_PPG_IR;
-					break;
-
-				case PPG_SPO2:
-					SteamCBdata[0] = (unsigned char)(FUN1_COMBO_SPO2 >> 8);
-					SteamCBdata[1] = (unsigned char)FUN1_COMBO_SPO2;
-					break;
-
-				case RESP_FUN:
-					SteamCBdata[0] = (unsigned char)(REG_FUN1_RESP >> 8);
-					SteamCBdata[1] = (unsigned char)REG_FUN1_RESP;
-					break;
-
-			}
-			openCsvFile(1);
-			//	Filter_Low_init(0.1);
-			//	initData() ;
-			//	MedianFilterInit(2048) ;
+			analysis_piezo_init()  ;
+			piezo_csv_fd = openCsvFileForWrite("piezo");
 			h_comm_sendCMD(&h_comm_handle,DATA_STREAMING_COMMAND,SteamCBdata[0],SteamCBdata[1],0);
-			SetCtrlAttribute (PPG_handle, PANEL_PPG_TIMER, ATTR_ENABLED, 1);
+			SetCtrlAttribute (PIEZO_handle, PANEL_PPG_TIMER, ATTR_ENABLED, 1);
 			plotting = 1;
 			CmtFlushTSQ(h_comm_handle.queueHandle,TSQ_FLUSH_ALL ,NULL);
 			/* Install a callback to read and plot the generated data. */
-			CmtInstallTSQCallback (h_comm_handle.queueHandle, EVENT_TSQ_ITEMS_IN_QUEUE, 1, ppgPlotDataFromQueueCallback, NULL,CmtGetCurrentThreadID(), &ppgPlotcallbackID);
+			CmtInstallTSQCallback (h_comm_handle.queueHandle, EVENT_TSQ_ITEMS_IN_QUEUE, 1, piezoPlotDataFromQueueCallback, NULL,CmtGetCurrentThreadID(), &piezoPlotcallbackID);
 		}
 		else
 		{
 			h_comm_sendCMD(&h_comm_handle,DATA_STREAMING_COMMAND,SteamCBdata[0]&(~M_FUN_START),SteamCBdata[1],0);
 			plotting = 0;
 
-			CmtUninstallTSQCallback (h_comm_handle.queueHandle, ppgPlotcallbackID);
+			CmtUninstallTSQCallback (h_comm_handle.queueHandle, piezoPlotcallbackID);
 
 		}
 
-		GetCtrlAttribute(panel, PANEL_PPG_CHART_DC, ATTR_NUM_TRACES, &traces);
+		GetCtrlAttribute(panel, PANEL_PZ_CHART_ANALYSIS, ATTR_NUM_TRACES, &traces);
 		for (i=1; i<=traces; i++)
-			SetTraceAttribute(panel,PANEL_PPG_CHART_DC, i, ATTR_TRACE_LG_VISIBLE, 1);
+			SetTraceAttribute(panel,PANEL_PZ_CHART_ANALYSIS, i, ATTR_TRACE_LG_VISIBLE, 1);
 
-		GetCtrlAttribute(panel, PANEL_PPG_CHART_AC, ATTR_NUM_TRACES, &traces);
+		GetCtrlAttribute(panel, PANEL_PZ_CHART_RAW, ATTR_NUM_TRACES, &traces);
 		for (i=1; i<=traces; i++)
-			SetTraceAttribute(panel,PANEL_PPG_CHART_AC, i, ATTR_TRACE_LG_VISIBLE, 1);
+			SetTraceAttribute(panel,PANEL_PZ_CHART_RAW, i, ATTR_TRACE_LG_VISIBLE, 1);
 
 
 

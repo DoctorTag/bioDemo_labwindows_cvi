@@ -75,6 +75,15 @@
 #define  PANEL_PPG_LOST_IND               7       /* control type: numeric, callback function: (none) */
 #define  PANEL_PPG_TIMER                  8       /* control type: timer, callback function: ppgTimerCallback */
 
+#define  PANEL_PZ                         7
+#define  PANEL_PZ_PLOTPIEZO               2       /* control type: textButton, callback function: Piezo_StartCb */
+#define  PANEL_PZ_CHART_ANALYSIS          3       /* control type: strip, callback function: (none) */
+#define  PANEL_PZ_CHART_RAW               4       /* control type: strip, callback function: (none) */
+#define  PANEL_PZ_LOST_IND                5       /* control type: numeric, callback function: (none) */
+#define  PANEL_PZ_CRC_ERROR_IND           6       /* control type: numeric, callback function: (none) */
+#define  PANEL_PZ_QUITPIEZO               7       /* control type: command, callback function: Quit_Piezo_Cb */
+#define  PANEL_PZ_TIMER                   8       /* control type: timer, callback function: piezoTimerCallback */
+
 
      /* Control Arrays: */
 
@@ -107,9 +116,12 @@ void CVICALLBACK MenuConfigPortCb(int menubar, int menuItem, void *callbackData,
 void CVICALLBACK MenuFirmUpgradeCb(int menubar, int menuItem, void *callbackData, int panel);
 void CVICALLBACK MenuLocalAnalysisCb(int menubar, int menuItem, void *callbackData, int panel);
 int  CVICALLBACK PanelCB(int panel, int event, void *callbackData, int eventData1, int eventData2);
+int  CVICALLBACK Piezo_StartCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
+int  CVICALLBACK piezoTimerCallback(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK PPG_StartCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK ppgTimerCallback(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK Quit_ECG_D_Cb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
+int  CVICALLBACK Quit_Piezo_Cb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK Quit_PPG_Cb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK Reg_ReadCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK Reg_WriteCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
