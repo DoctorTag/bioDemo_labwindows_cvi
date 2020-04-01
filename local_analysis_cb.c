@@ -49,7 +49,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "bio_demo.h"
 #include "serial.h"
 
-#include "ppg_cb.h"
+//#include "ppg_cb.h"
 #include "timer_cb.h"
 #include "mmd_comm.h"
 
@@ -78,7 +78,6 @@ void CVICALLBACK laPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigned
 		int value, void *callbackData)
 {
 	new_tsq_t rtsq[1];
-//	local_analysis_t ana_plot[1];
 	analysis_result_t *ana_plot;
 	float wave_data;
 	double result;
@@ -100,7 +99,7 @@ void CVICALLBACK laPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigned
 
 				wave_data = ana_plot->o_data[i];
 				//result = ana_plot->analysis_result[i]	 ;
-				result = ana_plot->variance	 ;
+				result = ana_plot->moved_Intensity	 ;
 				//filter_data = ana_plot->hr_filted_data[i];
 				//filter_data = ana_plot->hr_enhanced_data[i];
 				filter_data = ana_plot->resp_data[i];
@@ -261,14 +260,10 @@ float debug_buf[SAMPLE_HZ] ;
 /*------------------------------------------------------------------*/
 int CVICALLBACK laThreadFunction (void *functionData)
 {
-	static float max_value = 0;
-	static float min_value = 0xffffff;
 
-	int     		mainThreadID,tdata,fret,median,cnt=0;
+	int     		mainThreadID,tdata,fret;
 	char    		Mesg[600];
-	short     		iStatus                     =   0;
-	short     		iLoopCount                  =   0;
-	float     	abs_value,lp_max,mapi,lp_data;
+
 	analysis_result_t *pdBuffer               =   NULL;
 	bool   new_rd;
 	mainThreadID = CmtGetMainThreadID ();

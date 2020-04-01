@@ -49,10 +49,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "fwup_cb.h"
 
 #include "timer_cb.h"
-#include "ppg_cb.h"
-//#include "ppg_r_cb.h"
-
-#include "ecg_d_cb.h"
 #include "mmd_comm.h"
 #include "local_analysis_cb.h"
 
@@ -65,9 +61,8 @@ extern int l_analysis_handle;
 int hpanel,cfg_handle;
 
 
-static      CmtThreadFunctionID tcpThreadFunctionID;
+
 static      CmtThreadFunctionID serialThreadFunctionID;
-//static      CmtThreadFunctionID plotThreadFunctionID;
 
 
 unsigned char  funSelectionValue = 0;

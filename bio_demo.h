@@ -83,6 +83,8 @@
 #define  PANEL_PZ_CRC_ERROR_IND           6       /* control type: numeric, callback function: (none) */
 #define  PANEL_PZ_QUITPIEZO               7       /* control type: command, callback function: Quit_Piezo_Cb */
 #define  PANEL_PZ_TIMER                   8       /* control type: timer, callback function: piezoTimerCallback */
+#define  PANEL_PZ_CHECKBOX                9       /* control type: radioButton, callback function: (none) */
+#define  PANEL_PZ_RING                    10      /* control type: ring, callback function: (none) */
 
 
      /* Control Arrays: */

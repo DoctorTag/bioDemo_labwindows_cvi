@@ -44,8 +44,10 @@ typedef struct
 	Sleep_status  cur_sleep_status;
 	unsigned short hr;
 	unsigned char  resp;
+	
+	uint32_t moved_Intensity;
 	 /* only test */
-	uint32_t variance;
+	
 		double analysis_result[SAMPLE_HZ] ;
 
 

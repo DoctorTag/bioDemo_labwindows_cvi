@@ -1,0 +1,8 @@
+[openCsvFileForWrite]
+Class="Function"
+Prototype="FILE *openCsvFileForWrite(char *fun_string);"
+
+[writeDataToCsvFile]
+Class="Function"
+Prototype="void writeDataToCsvFile(FILE *csv_fd, int data);"
+

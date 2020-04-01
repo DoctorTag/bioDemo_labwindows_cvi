@@ -48,7 +48,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "bio_demo.h"
 #include "serial.h"
 
-#include "piezo_cb.h"
+//#include "piezo_cb.h"
 #include "timer_cb.h"
 #include "mmd_comm.h"
 
@@ -68,6 +68,11 @@ static CmtTSQCallbackID piezoPlotcallbackID =0;
 static FILE* piezo_csv_fd = NULL;
 
 static	analysis_result_t ana_result;
+
+
+volatile int fileSaveFlag =  0;
+volatile int resultPlot =  0;
+
 
 void CVICALLBACK piezoPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigned int event,
 		int value, void *callbackData)
@@ -158,16 +163,29 @@ void CVICALLBACK piezoPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsig
 
 							if( (dtype << 4) == SAMPLE_PIEZO)
 							{
-								writeDataToCsvFile(piezo_csv_fd, RdAdcData);
+								if(fileSaveFlag == 1)
+									writeDataToCsvFile(piezo_csv_fd, RdAdcData);
 								ana_ok = analysis_piezo_all(RdAdcData,&ana_result) ;
 
 								if(ana_ok == true)
 								{
-									i=0;
-									while(i < SAMPLE_HZ)
-									{ 
-										PlotStripChart (PIEZO_handle, PANEL_PZ_CHART_ANALYSIS, ana_result.hr_filted_data+i, 1, 0, 0, VAL_FLOAT);
-										i++;
+
+									if(resultPlot == 2)
+									{
+										double moved_result = ana_result.moved_Intensity;
+										PlotStripChart (PIEZO_handle, PANEL_PZ_CHART_ANALYSIS, &moved_result, 1, 0, 0, VAL_DOUBLE);
+									}
+									else
+									{
+										i=0;
+										while(i < SAMPLE_HZ)
+										{
+											if(resultPlot == 0)
+												PlotStripChart (PIEZO_handle, PANEL_PZ_CHART_ANALYSIS, ana_result.hr_filted_data+i, 1, 0, 0, VAL_FLOAT);
+											else
+												PlotStripChart (PIEZO_handle, PANEL_PZ_CHART_ANALYSIS, ana_result.hr_enhanced_data+i, 1, 0, 0, VAL_FLOAT);
+											i++;
+										}
 									}
 								}
 								PlotStripChart (PIEZO_handle, PANEL_PZ_CHART_RAW, data_ld, 1, 0, 0, VAL_DOUBLE);
@@ -189,7 +207,7 @@ void CVICALLBACK piezoPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsig
 int CVICALLBACK piezoTimerCallback (int panel, int control, int event,
 									void *callbackData, int eventData1,
 									int eventData2)
-{  
+{
 	switch (event)
 	{
 		case EVENT_TIMER_TICK:
@@ -216,7 +234,7 @@ int CVICALLBACK Quit_Piezo_Cb (int panel, int control, int event,
 
 				plotting = 0;
 
-				CmtUninstallTSQCallback (h_comm_handle.queueHandle, piezoPlotcallbackID);  
+				CmtUninstallTSQCallback (h_comm_handle.queueHandle, piezoPlotcallbackID);
 
 			}
 			DiscardPanel (panel);
@@ -241,6 +259,9 @@ int CVICALLBACK Piezo_StartCb (int panel, int control, int event,
 
 		if(val ==1)
 		{
+			GetCtrlVal (panel, PANEL_PZ_CHECKBOX, (int *)&fileSaveFlag);
+			GetCtrlVal (panel, PANEL_PZ_RING, (int *)&resultPlot);
+
 			crc_err=0;
 			err_comm =0;
 			for (i=0; i<MAX_MMED_TYPES; i++)
@@ -251,7 +272,8 @@ int CVICALLBACK Piezo_StartCb (int panel, int control, int event,
 			SteamCBdata[1] = (unsigned char)REG_FUN2_PIEZO;
 
 			analysis_piezo_init()  ;
-			piezo_csv_fd = openCsvFileForWrite("piezo");
+			if(fileSaveFlag == 1)
+				piezo_csv_fd = openCsvFileForWrite("piezo");
 			h_comm_sendCMD(&h_comm_handle,DATA_STREAMING_COMMAND,SteamCBdata[0],SteamCBdata[1],0);
 			SetCtrlAttribute (PIEZO_handle, PANEL_PPG_TIMER, ATTR_ENABLED, 1);
 			plotting = 1;
