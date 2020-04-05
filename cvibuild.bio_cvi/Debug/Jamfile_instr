@@ -1,4 +1,3 @@
-Depends "d:\\software\\2020\\cvi\\github\\bioDemo_labwindows_cvi\\cvibuild.bio_cvi\\Debug\\bio_cvi_dbg.exe" : "d:\\software\\2020\\cvi\\github\\bioDemo_labwindows_cvi\\cvibuild.bio_cvi\\Debug\\analysis_piezo.obj" ;
 Depends "d:\\software\\2020\\cvi\\github\\bioDemo_labwindows_cvi\\cvibuild.bio_cvi\\Debug\\bio_cvi_dbg.exe" : "d:\\software\\2020\\cvi\\github\\bioDemo_labwindows_cvi\\cvibuild.bio_cvi\\Debug\\bio_common.obj" ;
 Depends "d:\\software\\2020\\cvi\\github\\bioDemo_labwindows_cvi\\cvibuild.bio_cvi\\Debug\\bio_cvi_dbg.exe" : "d:\\software\\2020\\cvi\\github\\bioDemo_labwindows_cvi\\cvibuild.bio_cvi\\Debug\\bio_demo.obj" ;
 Depends "d:\\software\\2020\\cvi\\github\\bioDemo_labwindows_cvi\\cvibuild.bio_cvi\\Debug\\bio_cvi_dbg.exe" : "d:\\software\\2020\\cvi\\github\\bioDemo_labwindows_cvi\\cvibuild.bio_cvi\\Debug\\ecg_d_cb.obj" ;
@@ -16,6 +15,8 @@ Depends "d:\\software\\2020\\cvi\\github\\bioDemo_labwindows_cvi\\cvibuild.bio_c
 NoCare "c:\\ProgramData\\National Instruments\\CVI2017\\bin\\msvc\\analysis.lib" ;
 Depends "d:\\software\\2020\\cvi\\github\\bioDemo_labwindows_cvi\\cvibuild.bio_cvi\\Debug\\bio_cvi_dbg.exe" : "c:\\Program Files (x86)\\National Instruments\\CVI2017\\toolslib\\toolbox\\msvc\\asynctmr.obj" ;
 NoCare "c:\\Program Files (x86)\\National Instruments\\CVI2017\\toolslib\\toolbox\\msvc\\asynctmr.obj" ;
+Depends "d:\\software\\2020\\cvi\\github\\bioDemo_labwindows_cvi\\cvibuild.bio_cvi\\Debug\\bio_cvi_dbg.exe" : "d:\\software\\2020\\cvi\\github\\bioDemo_labwindows_cvi\\msvc\\bio_analysis.lib" ;
+NoCare "d:\\software\\2020\\cvi\\github\\bioDemo_labwindows_cvi\\msvc\\bio_analysis.lib" ;
 Depends "d:\\software\\2020\\cvi\\github\\bioDemo_labwindows_cvi\\cvibuild.bio_cvi\\Debug\\bio_cvi_dbg.exe" : "c:\\Program Files (x86)\\National Instruments\\CVI2017\\bin\\msvc\\cviauto.lib" ;
 NoCare "c:\\Program Files (x86)\\National Instruments\\CVI2017\\bin\\msvc\\cviauto.lib" ;
 Depends "d:\\software\\2020\\cvi\\github\\bioDemo_labwindows_cvi\\cvibuild.bio_cvi\\Debug\\bio_cvi_dbg.exe" : "c:\\Program Files (x86)\\National Instruments\\CVI2017\\bin\\msvc\\cvidotnet.lib" ;

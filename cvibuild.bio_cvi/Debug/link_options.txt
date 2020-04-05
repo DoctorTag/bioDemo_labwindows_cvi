@@ -13,7 +13,6 @@
 -browsedeps:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\moduledependencies.txt
 -stackreserve:131072
 -stackcommit:4096
--in:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\analysis_piezo.obj
 -in:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\bio_common.obj
 -in:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\bio_demo.obj
 -in:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\ecg_d_cb.obj
@@ -30,6 +29,7 @@
 -more:C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x86\advapi32.lib
 -more:c:\ProgramData\National Instruments\CVI2017\bin\msvc\analysis.lib
 -more:c:\Program Files (x86)\National Instruments\CVI2017\toolslib\toolbox\msvc\asynctmr.obj
+-more:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\msvc\bio_analysis.lib
 -more:c:\Program Files (x86)\National Instruments\CVI2017\bin\msvc\cviauto.lib
 -more:c:\Program Files (x86)\National Instruments\CVI2017\bin\msvc\cvidotnet.lib
 -more:c:\Program Files (x86)\National Instruments\CVI2017\bin\msvc\cvinetstreams.lib
