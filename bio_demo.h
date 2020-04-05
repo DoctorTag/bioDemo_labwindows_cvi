@@ -55,16 +55,18 @@
 #define  PANEL_FWUP_FW_SW                 8       /* control type: binary, callback function: FW_SWCb */
 
 #define  PANEL_LA                         5
-#define  PANEL_LA_LA_QUIT                 2       /* control type: command, callback function: LA_QuitCb */
-#define  PANEL_LA_CHART_RESULT_2          3       /* control type: strip, callback function: (none) */
+#define  PANEL_LA_START                   2       /* control type: textButton, callback function: LAStartCb */
+#define  PANEL_LA_LA_QUIT                 3       /* control type: command, callback function: LA_QuitCb */
 #define  PANEL_LA_CHART_RESULT            4       /* control type: strip, callback function: (none) */
 #define  PANEL_LA_CHART_DATA              5       /* control type: strip, callback function: (none) */
-#define  PANEL_LA_LA_STOP                 6       /* control type: command, callback function: LAStopCb */
-#define  PANEL_LA_LA_START                7       /* control type: command, callback function: LAStartCb */
+#define  PANEL_LA_RESP_IND                6       /* control type: numeric, callback function: (none) */
+#define  PANEL_LA_HR_IND                  7       /* control type: numeric, callback function: (none) */
 #define  PANEL_LA_LA_LOAD_FILE            8       /* control type: command, callback function: LALoadFileCb */
-#define  PANEL_LA_LA_LED                  9       /* control type: LED, callback function: (none) */
-#define  PANEL_LA_LA_STRING               10      /* control type: string, callback function: (none) */
-#define  PANEL_LA_NUMERIC                 11      /* control type: numeric, callback function: (none) */
+#define  PANEL_LA_RUN_IND                 9       /* control type: string, callback function: (none) */
+#define  PANEL_LA_BODY_STATUS             10      /* control type: string, callback function: (none) */
+#define  PANEL_LA_LED_RUN                 11      /* control type: LED, callback function: (none) */
+#define  PANEL_LA_LED_ANA                 12      /* control type: LED, callback function: (none) */
+#define  PANEL_LA_RESULT_PLOT             13      /* control type: ring, callback function: (none) */
 
 #define  PANEL_PPG                        6
 #define  PANEL_PPG_PLOT                   2       /* control type: textButton, callback function: PPG_StartCb */
@@ -80,11 +82,15 @@
 #define  PANEL_PZ_CHART_ANALYSIS          3       /* control type: strip, callback function: (none) */
 #define  PANEL_PZ_CHART_RAW               4       /* control type: strip, callback function: (none) */
 #define  PANEL_PZ_LOST_IND                5       /* control type: numeric, callback function: (none) */
-#define  PANEL_PZ_CRC_ERROR_IND           6       /* control type: numeric, callback function: (none) */
-#define  PANEL_PZ_QUITPIEZO               7       /* control type: command, callback function: Quit_Piezo_Cb */
-#define  PANEL_PZ_TIMER                   8       /* control type: timer, callback function: piezoTimerCallback */
-#define  PANEL_PZ_CHECKBOX                9       /* control type: radioButton, callback function: (none) */
-#define  PANEL_PZ_RING                    10      /* control type: ring, callback function: (none) */
+#define  PANEL_PZ_RESP_IND                6       /* control type: numeric, callback function: (none) */
+#define  PANEL_PZ_HR_IND                  7       /* control type: numeric, callback function: (none) */
+#define  PANEL_PZ_CRC_ERROR_IND           8       /* control type: numeric, callback function: (none) */
+#define  PANEL_PZ_QUITPIEZO               9       /* control type: command, callback function: Quit_Piezo_Cb */
+#define  PANEL_PZ_TIMER                   10      /* control type: timer, callback function: piezoTimerCallback */
+#define  PANEL_PZ_LOCAL_SAVE_CHK          11      /* control type: radioButton, callback function: (none) */
+#define  PANEL_PZ_RESULT_PLOT             12      /* control type: ring, callback function: (none) */
+#define  PANEL_PZ_BODY_STATUS             13      /* control type: string, callback function: (none) */
+#define  PANEL_PZ_LED                     14      /* control type: LED, callback function: (none) */
 
 
      /* Control Arrays: */
@@ -112,7 +118,6 @@ int  CVICALLBACK FWUP_QuitCb(int panel, int control, int event, void *callbackDa
 int  CVICALLBACK LA_QuitCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK LALoadFileCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK LAStartCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
-int  CVICALLBACK LAStopCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK LoadBinFileCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 void CVICALLBACK MenuConfigPortCb(int menubar, int menuItem, void *callbackData, int panel);
 void CVICALLBACK MenuFirmUpgradeCb(int menubar, int menuItem, void *callbackData, int panel);

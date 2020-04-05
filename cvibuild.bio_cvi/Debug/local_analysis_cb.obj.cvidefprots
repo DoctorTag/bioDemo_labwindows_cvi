@@ -10,10 +10,6 @@ Prototype="int LA_QuitCb(int panel, int control, int event, void *callbackData, 
 Class="Function"
 Prototype="int LALoadFileCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
 
-[LAStop]
-Class="Function"
-Prototype="void LAStop();"
-
 [LAStopCb]
 Class="Function"
 Prototype="int LAStopCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"

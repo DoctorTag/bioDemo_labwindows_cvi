@@ -55,12 +55,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "analysis_piezo.h"
 
-
-
-
-
-
-
+ 
 extern	  h_comm_handle_t h_comm_handle;
 
 FILE * pLAfile;
@@ -71,17 +66,24 @@ volatile    int     laStopFlag             =   1;
 static CmtTSQCallbackID laPlotcallbackID = 0;
 static      CmtThreadFunctionID laThreadFunctionID = NULL;
 
-void LAStop(void);
+
+static volatile int resultPlot =  0;
+
+
+
+static void LAStop(void);
 
 
 void CVICALLBACK laPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigned int event,
 		int value, void *callbackData)
 {
+					static	double enhance_peaks[2];
+
 	new_tsq_t rtsq[1];
 	analysis_result_t *ana_plot;
-	float wave_data;
-	double result;
-	float filter_data;
+//	float wave_data;
+//	double result;
+//	float filter_data;
 	short i;
 	switch (event)
 	{
@@ -89,28 +91,91 @@ void CVICALLBACK laPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigned
 
 			CmtReadTSQData (queueHandle, rtsq, 1, TSQ_INFINITE_TIMEOUT, 0);
 
-
+			ana_plot = rtsq[0].p_tsq;
 
 			i=0;
-			ana_plot = rtsq[0].p_tsq;
-	//		SetCtrlVal (l_analysis_handle, PANEL_LA_NUMERIC, ana_plot->count);
 			while(i < SAMPLE_HZ)
 			{
-
-				wave_data = ana_plot->o_data[i];
-				//result = ana_plot->analysis_result[i]	 ;
-				result = ana_plot->moved_Intensity	 ;
-				//filter_data = ana_plot->hr_filted_data[i];
-				//filter_data = ana_plot->hr_enhanced_data[i];
-				filter_data = ana_plot->resp_data[i];
-				PlotStripChart (l_analysis_handle,PANEL_LA_CHART_DATA,&wave_data , 1, 0, 0, VAL_FLOAT);
-				PlotStripChart (l_analysis_handle,PANEL_LA_CHART_RESULT,&filter_data , 1, 0, 0, VAL_FLOAT);
-			//	PlotStripChart (l_analysis_handle,PANEL_LA_CHART_RESULT_2,&result , 1, 0, 0, VAL_DOUBLE);
-
+				PlotStripChart (l_analysis_handle,PANEL_LA_CHART_DATA,ana_plot->raw_data+i , 1, 0, 0, VAL_INTEGER);
 				i++;
 			}
-			
-							PlotStripChart (l_analysis_handle,PANEL_LA_CHART_RESULT_2,&result , 1, 0, 0, VAL_DOUBLE);
+
+			if(resultPlot == 2)
+			{
+				enhance_peaks[0] = ana_plot->moved_Intensity;
+				enhance_peaks[1] = ana_plot->moved_Intensity; 
+			//	SetTraceAttribute(l_analysis_handle,PANEL_LA_CHART_RESULT, 2, ATTR_TRACE_VISIBLE , 0);
+				PlotStripChart (l_analysis_handle, PANEL_LA_CHART_RESULT, enhance_peaks, 2, 0, 0, VAL_DOUBLE);
+			}
+			else
+			{
+				i=0;
+				while(i < SAMPLE_HZ)
+				{
+					if(resultPlot == 0)
+					{
+						enhance_peaks[0] = ana_plot->hr_filted_data[i];
+						enhance_peaks[1] = ana_plot->hr_filted_data[i];
+						PlotStripChart (l_analysis_handle, PANEL_LA_CHART_RESULT,enhance_peaks ,2, 0, 0, VAL_DOUBLE);
+					}
+					else if(resultPlot == 3)
+					{
+						enhance_peaks[0] = ana_plot->resp_data[i];
+						enhance_peaks[1] = ana_plot->resp_data[i];
+						PlotStripChart (l_analysis_handle, PANEL_LA_CHART_RESULT, enhance_peaks, 2, 0, 0, VAL_DOUBLE);
+					}
+					else
+					{
+
+						unsigned char di = 0;
+						enhance_peaks[0] = ana_plot->hr_enhanced_data[i];
+						while(di < ana_plot->ppoints)
+						{
+							if(ana_plot->hr_peak_points[di] == i)
+								enhance_peaks[1] = ana_plot->hr_enhanced_data[i];
+							di++;
+						}
+						//	SetTraceAttribute(l_analysis_handle,PANEL_LA_CHART_RESULT, 2, ATTR_TRACE_VISIBLE , 0);
+						//PlotStripChart (l_analysis_handle, PANEL_LA_CHART_RESULT, ana_plot->hr_enhanced_data+i, 1, 0, 0, VAL_FLOAT);
+
+						PlotStripChart (l_analysis_handle, PANEL_LA_CHART_RESULT, enhance_peaks, 2, 0, 0, VAL_DOUBLE);
+					}
+					i++;
+				}
+			}
+
+			switch(ana_plot->cur_body_status)
+			{
+				case OUT_OF_BED:
+					SetCtrlVal (l_analysis_handle, PANEL_LA_BODY_STATUS,"Out of bed");
+					break;
+
+				case BODY_REPOSE:
+					SetCtrlVal (l_analysis_handle, PANEL_LA_BODY_STATUS,"Repose");
+					break;
+
+				case BODY_MOVE:
+					SetCtrlVal (l_analysis_handle, PANEL_LA_BODY_STATUS,"Moving");
+					break;
+				case BODY_UNKNOW:
+					SetCtrlVal (l_analysis_handle, PANEL_LA_BODY_STATUS,"Unknow");
+					break;
+			}
+
+			if(ana_plot->ana_ok == true)
+			{
+				SetCtrlVal (l_analysis_handle, PANEL_LA_LED_ANA,1);
+				SetCtrlVal (l_analysis_handle, PANEL_LA_RESP_IND,ana_plot->resp);
+				SetCtrlVal (l_analysis_handle, PANEL_LA_HR_IND,ana_plot->hr);
+
+			}
+			else
+			{
+				SetCtrlVal (l_analysis_handle, PANEL_LA_LED_ANA,0);
+				SetCtrlVal (l_analysis_handle, PANEL_LA_RESP_IND,0);
+				SetCtrlVal (l_analysis_handle, PANEL_LA_HR_IND,0);
+
+			}
 
 			free(ana_plot);
 			break;
@@ -191,7 +256,7 @@ int CVICALLBACK LALoadFileCb (int panel, int control, int event,
 /*------------------------------------------------------------------*/
 /*  Function called to stop the Data Acquisition & cleanup          */
 /*------------------------------------------------------------------*/
-void LAStop(void)
+static void LAStop(void)
 {
 	int laThreadFunctionStatus;
 
@@ -238,11 +303,11 @@ void CVICALLBACK MessageCB (void *mesg)
 {
 	if (mesg != NULL)
 	{
-		SetCtrlVal (l_analysis_handle, PANEL_LA_LA_STRING, (char *)mesg);
+		SetCtrlVal (l_analysis_handle, PANEL_LA_RUN_IND, (char *)mesg);
 		if (FindPattern ((char *)mesg, 0, strlen((char *)mesg), "Error", 0, 0) != -1)
 		{
 			/* Error occurred */
-			SetCtrlVal (l_analysis_handle, PANEL_LA_LA_LED, 1);
+			SetCtrlVal (l_analysis_handle, PANEL_LA_LED_RUN, 1);
 			LAStopCb (l_analysis_handle, 0, EVENT_COMMIT, 0, 0, 0);
 		}
 		else if (FindPattern ((char *)mesg, 0, strlen((char *)mesg), "done", 0, 0) != -1)
@@ -252,7 +317,7 @@ void CVICALLBACK MessageCB (void *mesg)
 
 
 
-float debug_buf[SAMPLE_HZ] ;
+//float debug_buf[SAMPLE_HZ] ;
 
 //h_comm_rdata_t la_data;
 /*------------------------------------------------------------------*/
@@ -316,25 +381,45 @@ int CVICALLBACK laThreadFunction (void *functionData)
 int CVICALLBACK LAStartCb (int panel, int control, int event,
 						   void *callbackData, int eventData1, int eventData2)
 {
+	int val;
 	switch (event)
 	{
 		case EVENT_COMMIT:
 		{
-
-			if(pLAfile != NULL)
+			GetCtrlVal(panel, control, &val);
+			if(val == 1)
 			{
-				analysis_piezo_init()  ;
-				SetInputMode (l_analysis_handle, PANEL_LA_LA_START, 0);
-				laStopFlag = 0;
-				CmtScheduleThreadPoolFunctionAdv (DEFAULT_THREAD_POOL_HANDLE, laThreadFunction, NULL,THREAD_PRIORITY_LOWEST, NULL, 0, NULL, 0, &laThreadFunctionID);
 
+
+				if(pLAfile != NULL)
+				{
+					GetCtrlVal (panel, PANEL_LA_RESULT_PLOT, (int *)&resultPlot);
+
+					if(resultPlot == 1)
+							SetTraceAttribute(l_analysis_handle,PANEL_LA_CHART_RESULT, 2, ATTR_TRACE_VISIBLE , 1);
+					else
+							SetTraceAttribute(l_analysis_handle,PANEL_LA_CHART_RESULT, 2, ATTR_TRACE_VISIBLE , 0);
+
+
+					analysis_piezo_init(5800000,0xF30000)  ;
+					//SetInputMode (l_analysis_handle, PANEL_LA_LA_START, 0);
+					laStopFlag = 0;
+					CmtScheduleThreadPoolFunctionAdv (DEFAULT_THREAD_POOL_HANDLE, laThreadFunction, NULL,THREAD_PRIORITY_LOWEST, NULL, 0, NULL, 0, &laThreadFunctionID);
+
+				}
+				else
+				{
+					MessagePopup ("Error:","Open file error!!");
+
+				}
 			}
 			else
 			{
-				MessagePopup ("Error:","Open file error!!");
+				LAStop();
+				/* Flush the thread-safe queue */
+				CmtFlushTSQ (h_comm_handle.queueHandle, TSQ_FLUSH_ALL, NULL);
 
 			}
-
 
 		}
 

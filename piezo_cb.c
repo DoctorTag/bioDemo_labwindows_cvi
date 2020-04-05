@@ -71,7 +71,7 @@ static	analysis_result_t ana_result;
 
 
 volatile int fileSaveFlag =  0;
-volatile int resultPlot =  0;
+static volatile int resultPlot =  0;
 
 
 void CVICALLBACK piezoPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigned int event,
@@ -182,13 +182,50 @@ void CVICALLBACK piezoPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsig
 										{
 											if(resultPlot == 0)
 												PlotStripChart (PIEZO_handle, PANEL_PZ_CHART_ANALYSIS, ana_result.hr_filted_data+i, 1, 0, 0, VAL_FLOAT);
+											else if(resultPlot == 3)
+												PlotStripChart (PIEZO_handle, PANEL_PZ_CHART_ANALYSIS, ana_result.resp_data+i, 1, 0, 0, VAL_FLOAT);
 											else
 												PlotStripChart (PIEZO_handle, PANEL_PZ_CHART_ANALYSIS, ana_result.hr_enhanced_data+i, 1, 0, 0, VAL_FLOAT);
 											i++;
 										}
 									}
+
+									switch(ana_result.cur_body_status)
+									{
+										case OUT_OF_BED:
+											SetCtrlVal (PIEZO_handle, PANEL_PZ_BODY_STATUS,"Out of bed");
+											break;
+
+										case BODY_REPOSE:
+											SetCtrlVal (PIEZO_handle, PANEL_PZ_BODY_STATUS,"Repose");
+											break;
+
+										case BODY_MOVE:
+											SetCtrlVal (PIEZO_handle, PANEL_PZ_BODY_STATUS,"Moving");
+											break;
+										case BODY_UNKNOW:
+											SetCtrlVal (PIEZO_handle, PANEL_PZ_BODY_STATUS,"Unknow");
+											break;
+									}
+
+									if(ana_result.ana_ok == true)
+									{
+										SetCtrlVal (PIEZO_handle, PANEL_PZ_LED,1);
+										SetCtrlVal (PIEZO_handle, PANEL_PZ_RESP_IND,ana_result.resp);
+										SetCtrlVal (PIEZO_handle, PANEL_PZ_HR_IND,ana_result.hr);
+
+									}
+									else
+									{
+										SetCtrlVal (PIEZO_handle, PANEL_PZ_LED,0);
+										SetCtrlVal (PIEZO_handle, PANEL_PZ_RESP_IND,0);
+										SetCtrlVal (PIEZO_handle, PANEL_PZ_HR_IND,0);
+
+									}
 								}
 								PlotStripChart (PIEZO_handle, PANEL_PZ_CHART_RAW, data_ld, 1, 0, 0, VAL_DOUBLE);
+
+
 
 
 							}
@@ -259,8 +296,8 @@ int CVICALLBACK Piezo_StartCb (int panel, int control, int event,
 
 		if(val ==1)
 		{
-			GetCtrlVal (panel, PANEL_PZ_CHECKBOX, (int *)&fileSaveFlag);
-			GetCtrlVal (panel, PANEL_PZ_RING, (int *)&resultPlot);
+			GetCtrlVal (panel, PANEL_PZ_LOCAL_SAVE_CHK, (int *)&fileSaveFlag);
+			GetCtrlVal (panel, PANEL_PZ_RESULT_PLOT, (int *)&resultPlot);
 
 			crc_err=0;
 			err_comm =0;
@@ -271,11 +308,11 @@ int CVICALLBACK Piezo_StartCb (int panel, int control, int event,
 			SteamCBdata[0] = (unsigned char)(REG_FUN2_PIEZO >> 8);
 			SteamCBdata[1] = (unsigned char)REG_FUN2_PIEZO;
 
-			analysis_piezo_init()  ;
+			analysis_piezo_init(30000000,0xcfffff);
 			if(fileSaveFlag == 1)
 				piezo_csv_fd = openCsvFileForWrite("piezo");
 			h_comm_sendCMD(&h_comm_handle,DATA_STREAMING_COMMAND,SteamCBdata[0],SteamCBdata[1],0);
-			SetCtrlAttribute (PIEZO_handle, PANEL_PPG_TIMER, ATTR_ENABLED, 1);
+			SetCtrlAttribute (PIEZO_handle, PANEL_PZ_TIMER, ATTR_ENABLED, 1);
 			plotting = 1;
 			CmtFlushTSQ(h_comm_handle.queueHandle,TSQ_FLUSH_ALL ,NULL);
 			/* Install a callback to read and plot the generated data. */

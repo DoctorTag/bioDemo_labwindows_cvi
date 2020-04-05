@@ -4,14 +4,13 @@
 
 #include "stdbool.h"
 
- #define SAMPLE_HZ    80 
+#define SAMPLE_HZ    80      /*Don't change the value */
 
 typedef enum
 {
 	OUT_OF_BED = 0,
 	BODY_REPOSE,
 	BODY_MOVE,
-	BODY_MOVE_LIGHT,
 	BODY_UNKNOW
 } Body_status;
 
@@ -32,31 +31,34 @@ typedef enum
 
 
 typedef struct
-{
-	float o_data[SAMPLE_HZ] ;
-	float hr_filted_data[SAMPLE_HZ] ;
-	float hr_enhanced_data[SAMPLE_HZ] ; 
-	float resp_data[SAMPLE_HZ];
-	
-	
+{	 
 	Body_status cur_body_status;
 	Sleeping_posture sleep_post;
 	Sleep_status  cur_sleep_status;
-	unsigned short hr;
-	unsigned char  resp;
-	
-	uint32_t moved_Intensity;
-	 /* only test */
-	
-		double analysis_result[SAMPLE_HZ] ;
+	short hr;
+	char  resp;
+	bool ana_ok;
 
+	/* only test */
+	uint32_t moved_Intensity;
+	short hr_peak_points[SAMPLE_HZ] ;
+	unsigned char ppoints; 
+	/* data length is SAMPLE_HZ */
+//	int *o_data;
+//	float *hr_filted_data;
+//	float *hr_enhanced_data;
+//	float *resp_data; 
+	int raw_data[SAMPLE_HZ] ;
+	float hr_filted_data[SAMPLE_HZ] ;
+	float hr_enhanced_data[SAMPLE_HZ] ;
+	float resp_data[SAMPLE_HZ] ; 
 
 } analysis_result_t;
 
 
 //float analysis_piezo(int pie_data) ;
 
-void analysis_piezo_init(void);
+void analysis_piezo_init(uint32_t out_of_bed_threshold,uint32_t raw_peak_threshold);
 
 bool analysis_piezo_all(int pie_data,analysis_result_t * a_result) ;
 

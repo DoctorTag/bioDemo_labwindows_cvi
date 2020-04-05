@@ -12,11 +12,11 @@ VXIplug&play Framework 64-bit Dir = "/C/Program Files/IVI Foundation/VISA/win64"
 Number of Projects = 1
 Active Project = 1
 Project 0001 = "bio_cvi.prj"
-Drag Bar Left = 239
-Window Top = 71
-Window Left = 509
-Window Bottom = 465
-Window Right = 1259
+Drag Bar Left = 288
+Window Top = 48
+Window Left = 18
+Window Bottom = 523
+Window Right = 768
 Maximized = True
 Maximized Children = True
 Max32 Number Of Errors = 20
@@ -30,9 +30,9 @@ Save Changes Before Compiling = "Always"
 Hide Windows = False
 Break At First Statement = False
 Sort Type = "File Name"
-Number of Opened Files = 18
+Number of Opened Files = 14
 Window Confinement Region Enabled = True
-MainColumnWidth = 222
+MainColumnWidth = 271
 FileDateColumnWidth = 70
 FileSizeColumnWidth = 70
 
@@ -59,7 +59,7 @@ Disk Date = 3668593298
 In Projects = "1,"
 Window Top = 25
 Window Left = 6
-Window Z-Order = 5
+Window Z-Order = 3
 Source Window State = "1,51,55,51,0,0,0,0,0,80,0,0,0,0,0,25,96,0,108,4,323,517,1,0,"
 
 [File 0003]
@@ -69,7 +69,7 @@ Disk Date = 3668592925
 In Projects = "1,"
 Window Top = 48
 Window Left = 18
-Window Z-Order = 11
+Window Z-Order = 8
 Source Window State = "1,252,252,252,16,26,26,0,0,80,0,0,0,0,0,20,39,0,49,2,263,517,1,0,"
 
 [File 0004]
@@ -79,167 +79,144 @@ Disk Date = 3668550211
 In Projects = "1,"
 Window Top = 48
 Window Left = 18
-Window Z-Order = 18
+Window Z-Order = 14
 Source Window State = "1,0,731,0,0,1,0,0,0,80,0,0,0,0,0,25,441,0,719,41,323,517,1,0,"
 
 [File 0005]
-Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/local_analysis_cb.c"
-File Type = "CSource"
-Disk Date = 3668596410
-In Projects = "1,"
-Window Top = 94
-Window Left = 42
-Window Z-Order = 4
-Source Window State = "1,82,82,82,4,18,4,0,3,80,0,267,0,0,0,25,77,0,82,18,323,517,1,54,"
-
-[File 0006]
 Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/analysis_piezo.h"
 File Type = "Include"
-Disk Date = 3668596263
+Disk Date = 3668831790
 In Projects = "1,"
 Window Top = 71
 Window Left = 30
-Window Z-Order = 6
-Source Window State = "1,47,47,47,13,28,28,0,3,80,0,0,0,0,0,25,28,0,47,13,323,517,1,0,"
+Window Z-Order = 5
+Source Window State = "1,6,6,6,8,17,8,0,3,80,0,0,0,0,0,25,0,0,6,17,323,517,1,0,"
 
-[File 0007]
+[File 0006]
 Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/mmd_comm.c"
 File Type = "CSource"
 Disk Date = 3668550342
 In Projects = "1,"
 Window Top = 25
 Window Left = 6
-Window Z-Order = 17
-Source Window State = "1,0,393,0,0,0,0,0,0,80,0,0,0,0,0,25,361,0,379,33,323,517,1,0,"
+Window Z-Order = 6
+Source Window State = "1,0,393,0,0,0,0,0,0,80,0,0,0,0,0,25,152,0,164,33,323,517,1,0,"
 
-[File 0008]
+[File 0007]
 Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/bio_common.h"
 File Type = "Include"
 Disk Date = 3668581101
 In Projects = "1,"
 Window Top = 71
 Window Left = 30
-Window Z-Order = 13
+Window Z-Order = 10
 Source Window State = "1,55,55,55,5,24,5,0,3,80,0,0,0,0,0,25,41,0,55,24,323,517,1,0,"
 
-[File 0009]
+[File 0008]
 Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/ppg_cb.c"
 File Type = "CSource"
 Disk Date = 3668594141
 In Projects = "1,"
 Window Top = 117
 Window Left = 54
-Window Z-Order = 10
+Window Z-Order = 7
 Source Window State = "1,64,64,64,0,21,0,0,0,80,0,0,0,0,0,25,38,0,50,2,323,517,1,0,"
 
-[File 0010]
+[File 0009]
 Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/regmap_cb.c"
 File Type = "CSource"
 Disk Date = 3668550356
 In Projects = "1,"
 Window Top = 232
 Window Left = 114
-Window Z-Order = 16
+Window Z-Order = 13
 Source Window State = "1,0,230,0,0,1,0,0,3,80,0,0,0,0,0,25,198,0,230,1,323,517,1,0,"
 
-[File 0011]
+[File 0010]
 Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/regmap_cb.h"
 File Type = "Include"
 Disk Date = 3667436482
 In Projects = "1,"
 Window Top = 25
 Window Left = 6
-Window Z-Order = 12
+Window Z-Order = 9
 Source Window State = "1,0,87,0,0,6,0,0,0,80,0,0,0,0,0,13,31,312,88,20,179,517,1,0,"
 
-[File 0012]
+[File 0011]
 Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/mmd_comm.h"
 File Type = "Include"
 Disk Date = 3668581553
 In Projects = "1,"
 Window Top = 25
 Window Left = 6
-Window Z-Order = 14
+Window Z-Order = 11
 Source Window State = "1,65,65,65,8,20,8,0,3,80,0,193,0,0,0,25,59,0,65,20,323,517,1,0,"
 
-[File 0013]
-Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/piezo_cb.c"
-File Type = "CSource"
-Disk Date = 3668597162
-In Projects = "1,"
-Window Top = 48
-Window Left = 18
-Window Z-Order = 3
-Source Window State = "1,175,175,175,123,139,123,0,0,80,0,0,0,0,0,25,162,0,179,131,323,517,1,0,"
-
-[File 0014]
+[File 0012]
 Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/bio_common.c"
 File Type = "CSource"
 Disk Date = 3668597608
 In Projects = "1,"
 Window Top = 117
 Window Left = 54
-Window Z-Order = 2
+Window Z-Order = 4
 Source Window State = "1,0,63,0,0,1,0,0,0,80,0,0,0,0,0,25,35,0,51,38,323,517,1,0,"
 
-[File 0015]
+[File 0013]
 Path = "/c/Program Files (x86)/National Instruments/CVI2017/include/utility.h"
 File Type = "Include"
 Disk Date = 3573565200
 In Projects = ""
 Window Top = 140
 Window Left = 66
-Window Z-Order = 15
+Window Z-Order = 12
 Source Window State = "1,519,519,519,15,63,15,0,3,80,0,0,0,0,0,25,509,0,519,63,323,517,1,0,"
 
-[File 0016]
-Path = "/c/Program Files (x86)/National Instruments/CVI2017/include/userint.h"
-File Type = "Include"
-Disk Date = 3573565200
-In Projects = ""
-Window Top = 163
-Window Left = 78
-Window Z-Order = 7
-Source Window State = "1,921,921,921,8,28,8,0,3,80,0,0,0,0,0,23,907,0,921,28,299,517,1,0,"
-
-[File 0017]
+[File 0014]
 Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/bio_demo.h"
 File Type = "Include"
-Disk Date = 3668595804
+Disk Date = 3668827366
 In Projects = "1,"
 Window Top = 117
 Window Left = 54
-Window Z-Order = 9
-Source Window State = "1,86,86,86,9,22,9,0,3,80,0,0,0,0,0,25,66,0,86,22,323,517,1,0,"
+Window Z-Order = 2
+Source Window State = "1,67,67,67,9,25,9,0,3,80,0,0,0,0,0,25,39,0,67,25,323,517,1,0,"
 
-[File 0018]
+[File 0015]
 Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/analysis_piezo.c"
 File Type = "CSource"
-Disk Date = 3668596388
-In Projects = ""
-Window Top = 48
-Window Left = 18
-Window Z-Order = 1
-Source Window State = "1,282,282,282,5,23,23,0,0,168,0,0,0,0,0,54,291,0,323,23,323,517,1,0,"
-
-[File 0019]
-Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/bio_demo.uir"
-File Type = "User Interface Resource"
-Disk Date = 3668595804
+Disk Date = 3668911313
 In Projects = "1,"
 Window Top = 48
 Window Left = 18
-Window Height = 323
-Window Width = 517
-Window Z-Order = 8
+Window Z-Order = 1
+Source Window State = "1,343,343,343,12,20,12,0,3,160,0,1,0,1,0,31,326,0,343,20,323,517,1,0,"
 
-[File 0020]
+[File 0016]
 Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/msvc/bio_analysis.lib"
 File Type = "Library"
 Disk Date = 3668553860
 In Projects = "1,"
 
-[File 0021]
+[File 0017]
+Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/local_analysis_cb.c"
+File Type = "CSource"
+Disk Date = 3668836527
+In Projects = "1,"
+Window Top = 94
+Window Left = 42
+Source Window State = "1,258,258,258,12,18,18,0,0,80,0,267,0,0,0,25,261,0,275,36,323,517,1,54,"
+
+[File 0018]
+Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/piezo_cb.c"
+File Type = "CSource"
+Disk Date = 3668805620
+In Projects = "1,"
+Window Top = 48
+Window Left = 18
+Source Window State = "1,299,299,299,12,74,12,0,0,0,0,0,0,0,0,0,291,0,310,88,323,517,1,0,"
+
+[File 0019]
 Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/serial.c"
 File Type = "CSource"
 Disk Date = 3668550363
@@ -247,7 +224,7 @@ In Projects = "1,"
 Window Top = 23
 Source Window State = "1,0,132,0,0,1,0,0,3,0,0,0,0,0,0,0,100,0,132,1,400,600,1,0,"
 
-[File 0022]
+[File 0020]
 Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/timer_cb.c"
 File Type = "CSource"
 Disk Date = 3668550370
@@ -256,7 +233,7 @@ Window Top = 140
 Window Left = -94
 Source Window State = "1,0,75,0,0,0,0,0,0,0,0,0,0,0,0,0,43,0,51,22,323,517,1,0,"
 
-[File 0023]
+[File 0021]
 Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/fwup_cb.h"
 File Type = "Include"
 Disk Date = 3635283000
@@ -265,7 +242,7 @@ Window Top = 71
 Window Left = 30
 Source Window State = "1,47,47,47,4,12,12,0,3,0,0,0,0,0,0,0,35,0,47,4,323,517,1,0,"
 
-[File 0024]
+[File 0022]
 Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/serial.h"
 File Type = "Include"
 Disk Date = 3620037702
@@ -273,7 +250,7 @@ In Projects = "1,"
 Window Top = 23
 Source Window State = "1,0,5,0,0,77,0,0,0,0,0,0,0,0,0,0,6,0,33,77,400,600,1,0,"
 
-[File 0025]
+[File 0023]
 Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/timer_cb.h"
 File Type = "Include"
 Disk Date = 3634373646
@@ -281,6 +258,16 @@ In Projects = "1,"
 Window Top = 117
 Window Left = 54
 Source Window State = "1,47,47,47,12,18,12,0,3,0,0,0,0,0,0,0,38,0,47,18,323,517,1,0,"
+
+[File 0024]
+Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/bio_demo.uir"
+File Type = "User Interface Resource"
+Disk Date = 3668839150
+In Projects = "1,"
+Window Top = 48
+Window Left = 18
+Window Height = 323
+Window Width = 517
 
 [Tab Order]
 Tab 0001 = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/regmap_cb.h"
@@ -293,14 +280,10 @@ Tab 0007 = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/mmd_comm.c"
 Tab 0008 = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/ppg_cb.c"
 Tab 0009 = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/regmap_cb.c"
 Tab 0010 = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/bio_demo.c"
-Tab 0011 = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/piezo_cb.c"
-Tab 0012 = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/bio_common.c"
-Tab 0013 = "/c/Program Files (x86)/National Instruments/CVI2017/include/utility.h"
-Tab 0014 = "/c/Program Files (x86)/National Instruments/CVI2017/include/userint.h"
-Tab 0015 = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/local_analysis_cb.c"
-Tab 0016 = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/bio_demo.uir"
-Tab 0017 = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/bio_demo.h"
-Tab 0018 = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/analysis_piezo.c"
+Tab 0011 = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/bio_common.c"
+Tab 0012 = "/c/Program Files (x86)/National Instruments/CVI2017/include/utility.h"
+Tab 0013 = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/analysis_piezo.c"
+Tab 0014 = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/bio_demo.h"
 
 [Default Build Config 0001 Debug]
 Generate Browse Info = True
@@ -391,406 +374,13 @@ Working Directory = ""
 Environment Options = ""
 
 [Watch 1]
-Watch Expression = "hrData"
+Watch Expression = "debugbuf"
 
 [Watch 2]
-Watch Expression = "/*new watchpoint*/"
+Watch Expression = "di"
 
 [Watch 3]
-Watch Expression = "workingData"
-
-[Watch 4]
-Watch Expression = "hrData"
-
-[Watch 5]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 6]
-Watch Expression = "workingData"
-
-[Watch 7]
-Watch Expression = "hrData"
-
-[Watch 8]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 9]
-Watch Expression = "workingData"
-
-[Watch 10]
-Watch Expression = "hrData"
-
-[Watch 11]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 12]
-Watch Expression = "workingData"
-
-[Watch 13]
-Watch Expression = "hrData"
-
-[Watch 14]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 15]
-Watch Expression = "workingData"
-
-[Watch 16]
-Watch Expression = "hrData"
-
-[Watch 17]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 18]
-Watch Expression = "workingData"
-
-[Watch 19]
-Watch Expression = "hrData"
-
-[Watch 20]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 21]
-Watch Expression = "workingData"
-
-[Watch 22]
-Watch Expression = "hrData"
-
-[Watch 23]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 24]
-Watch Expression = "workingData"
-
-[Watch 25]
-Watch Expression = "hrData"
-
-[Watch 26]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 27]
-Watch Expression = "workingData"
-
-[Watch 28]
-Watch Expression = "hrData"
-
-[Watch 29]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 30]
-Watch Expression = "workingData"
-
-[Watch 31]
-Watch Expression = "hrData"
-
-[Watch 32]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 33]
-Watch Expression = "workingData"
-
-[Watch 34]
-Watch Expression = "hrData"
-
-[Watch 35]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 36]
-Watch Expression = "workingData"
-
-[Watch 37]
-Watch Expression = "hrData"
-
-[Watch 38]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 39]
-Watch Expression = "workingData"
-
-[Watch 40]
-Watch Expression = "hrData"
-
-[Watch 41]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 42]
-Watch Expression = "workingData"
-
-[Watch 43]
-Watch Expression = "hrData"
-
-[Watch 44]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 45]
-Watch Expression = "workingData"
-
-[Watch 46]
-Watch Expression = "hrData"
-
-[Watch 47]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 48]
-Watch Expression = "workingData"
-
-[Watch 49]
-Watch Expression = "hrData"
-
-[Watch 50]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 51]
-Watch Expression = "workingData"
-
-[Watch 52]
-Watch Expression = "hrData"
-
-[Watch 53]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 54]
-Watch Expression = "workingData"
-
-[Watch 55]
-Watch Expression = "hrData"
-
-[Watch 56]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 57]
-Watch Expression = "workingData"
-
-[Watch 58]
-Watch Expression = "hrData"
-
-[Watch 59]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 60]
-Watch Expression = "workingData"
-
-[Watch 61]
-Watch Expression = "hrData"
-
-[Watch 62]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 63]
-Watch Expression = "workingData"
-
-[Watch 64]
-Watch Expression = "hrData"
-
-[Watch 65]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 66]
-Watch Expression = "workingData"
-
-[Watch 67]
-Watch Expression = "hrData"
-
-[Watch 68]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 69]
-Watch Expression = "workingData"
-
-[Watch 70]
-Watch Expression = "hrData"
-
-[Watch 71]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 72]
-Watch Expression = "workingData"
-
-[Watch 73]
-Watch Expression = "hrData"
-
-[Watch 74]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 75]
-Watch Expression = "workingData"
-
-[Watch 76]
-Watch Expression = "hrData"
-
-[Watch 77]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 78]
-Watch Expression = "workingData"
-
-[Watch 79]
-Watch Expression = "hrData"
-
-[Watch 80]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 81]
-Watch Expression = "workingData"
-
-[Watch 82]
-Watch Expression = "hrData"
-
-[Watch 83]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 84]
-Watch Expression = "workingData"
-
-[Watch 85]
-Watch Expression = "hrData"
-
-[Watch 86]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 87]
-Watch Expression = "workingData"
-
-[Watch 88]
-Watch Expression = "hrData"
-
-[Watch 89]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 90]
-Watch Expression = "workingData"
-
-[Watch 91]
-Watch Expression = "hrData"
-
-[Watch 92]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 93]
-Watch Expression = "workingData"
-
-[Watch 94]
-Watch Expression = "hrData"
-
-[Watch 95]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 96]
-Watch Expression = "workingData"
-
-[Watch 97]
-Watch Expression = "hrData"
-
-[Watch 98]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 99]
-Watch Expression = "workingData"
-
-[Watch 100]
-Watch Expression = "hrData"
-
-[Watch 101]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 102]
-Watch Expression = "workingData"
-
-[Watch 103]
-Watch Expression = "hrData"
-
-[Watch 104]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 105]
-Watch Expression = "workingData"
-
-[Watch 106]
-Watch Expression = "hrData"
-
-[Watch 107]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 108]
-Watch Expression = "workingData"
-
-[Watch 109]
-Watch Expression = "hrData"
-
-[Watch 110]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 111]
-Watch Expression = "workingData"
-
-[Watch 112]
-Watch Expression = "hrData"
-
-[Watch 113]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 114]
-Watch Expression = "workingData"
-
-[Watch 115]
-Watch Expression = "hrData"
-
-[Watch 116]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 117]
-Watch Expression = "workingData"
-
-[Watch 118]
-Watch Expression = "hrData"
-
-[Watch 119]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 120]
-Watch Expression = "workingData"
-
-[Watch 121]
-Watch Expression = "hrData"
-
-[Watch 122]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 123]
-Watch Expression = "workingData"
-
-[Watch 124]
-Watch Expression = "hrData"
-
-[Watch 125]
-Watch Expression = "/*new watchpoint*/"
-
-[Watch 126]
-Watch Expression = "debug_buf"
-
-[Watch 127]
-Watch Expression = "debug_buf[0]"
-
-[Watch 128]
-Watch Expression = "debug_buf[1]"
-
-[Watch 129]
-Watch Expression = "debug_buf[2]"
-
-[Watch 130]
-Watch Expression = "debug_buf[3]"
-
-[Watch 131]
-Watch Expression = "rdata"
-
-[Watch 132]
-Watch Expression = "mean"
-
-[Watch 133]
-Watch Expression = "pow_sum"
-
-[Watch 134]
-Watch Expression = "result"
+Watch Expression = "pdBuffer"
 
 [Distributions]
 Active Index = 1
