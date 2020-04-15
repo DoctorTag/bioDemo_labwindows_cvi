@@ -55,7 +55,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "analysis_piezo.h"
 
-
+ 
 extern	  h_comm_handle_t h_comm_handle;
 
 FILE * pLAfile;
@@ -77,7 +77,7 @@ static void LAStop(void);
 void CVICALLBACK laPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigned int event,
 		int value, void *callbackData)
 {
-	static	double enhance_peaks[2];
+					static	double enhance_peaks[2];
 
 	new_tsq_t rtsq[1];
 	analysis_result_t *ana_plot;
@@ -93,8 +93,6 @@ void CVICALLBACK laPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigned
 
 			ana_plot = rtsq[0].p_tsq;
 
-			if(ana_plot->resp_ok == true)
-				SetCtrlVal (l_analysis_handle, PANEL_LA_RESP_IND,ana_plot->resp);
 			i=0;
 			while(i < SAMPLE_HZ)
 			{
@@ -105,76 +103,49 @@ void CVICALLBACK laPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigned
 			if(resultPlot == 2)
 			{
 				enhance_peaks[0] = ana_plot->moved_Intensity;
-				enhance_peaks[1] = ana_plot->moved_Intensity;
-				//	SetTraceAttribute(l_analysis_handle,PANEL_LA_CHART_RESULT, 2, ATTR_TRACE_VISIBLE , 0);
-				PlotStripChart (l_analysis_handle, PANEL_LA_CHART_RESULT, enhance_peaks, 2, 0, 1, VAL_DOUBLE);
+				enhance_peaks[1] = ana_plot->moved_Intensity; 
+			//	SetTraceAttribute(l_analysis_handle,PANEL_LA_CHART_RESULT, 2, ATTR_TRACE_VISIBLE , 0);
+				PlotStripChart (l_analysis_handle, PANEL_LA_CHART_RESULT, enhance_peaks, 2, 0, 0, VAL_DOUBLE);
 			}
-
-			if(resultPlot == 0)
+			else
 			{
 				i=0;
 				while(i < SAMPLE_HZ)
 				{
-					enhance_peaks[0] = ana_plot->hr_filted_data[i];
-					enhance_peaks[1] = ana_plot->hr_filted_data[i];
-					PlotStripChart (l_analysis_handle, PANEL_LA_CHART_RESULT,enhance_peaks ,2, 0, 1, VAL_DOUBLE);
-					i++;
-				}
-			}
-
-			if(resultPlot == 3)
-			{
-				if(ana_plot->resp_ok == true)
-				{
-
-					i=0;
-					while(i < ANA_BUF_LEN)
+					if(resultPlot == 0)
 					{
-						unsigned char di = 0;
+						enhance_peaks[0] = ana_plot->hr_filted_data[i];
+						enhance_peaks[1] = ana_plot->hr_filted_data[i];
+						PlotStripChart (l_analysis_handle, PANEL_LA_CHART_RESULT,enhance_peaks ,2, 0, 0, VAL_DOUBLE);
+					}
+					else if(resultPlot == 3)
+					{   if(ana_plot->resp_ok == true)
+					{
+						while(i
 						enhance_peaks[0] = ana_plot->resp_data[i];
-						while(di < ana_plot->resp_ppoints)
+						enhance_peaks[1] = ana_plot->resp_data[i];
+						PlotStripChart (l_analysis_handle, PANEL_LA_CHART_RESULT, enhance_peaks, 2, 0, 0, VAL_DOUBLE);
+					}
+					}
+					else
+					{
+
+						unsigned char di = 0;
+						enhance_peaks[0] = ana_plot->hr_enhanced_data[i];
+						while(di < ana_plot->ppoints)
 						{
-							if(ana_plot->resp_peak_points[di] == i)
-							{
-								enhance_peaks[1] = ana_plot->resp_data[i];
-								break;
-							}
+							if(ana_plot->hr_peak_points[di] == i)
+								enhance_peaks[1] = ana_plot->hr_enhanced_data[i];
 							di++;
 						}
-						PlotStripChart (l_analysis_handle, PANEL_LA_CHART_RESULT, enhance_peaks, 2, 0, 0,VAL_DOUBLE);
-						i++;
+						//	SetTraceAttribute(l_analysis_handle,PANEL_LA_CHART_RESULT, 2, ATTR_TRACE_VISIBLE , 0);
+						//PlotStripChart (l_analysis_handle, PANEL_LA_CHART_RESULT, ana_plot->hr_enhanced_data+i, 1, 0, 0, VAL_FLOAT);
+
+						PlotStripChart (l_analysis_handle, PANEL_LA_CHART_RESULT, enhance_peaks, 2, 0, 0, VAL_DOUBLE);
 					}
-
-
-				}
-			}
-
-			if(resultPlot == 1)
-			{
-				i=0;
-				while(i < SAMPLE_HZ)
-				{	 
-					unsigned char di = 0;
-					enhance_peaks[0] = ana_plot->hr_enhanced_data[i];
-					while(di < ana_plot->ppoints)
-					{
-						if(ana_plot->hr_peak_points[di] == i)
-						{
-							enhance_peaks[1] = ana_plot->hr_enhanced_data[i];
-							break;
-						}
-						di++;
-					}
-					//	SetTraceAttribute(l_analysis_handle,PANEL_LA_CHART_RESULT, 2, ATTR_TRACE_VISIBLE , 0);
-					//PlotStripChart (l_analysis_handle, PANEL_LA_CHART_RESULT, ana_plot->hr_enhanced_data+i, 1, 0, 0, VAL_FLOAT);
-
-					PlotStripChart (l_analysis_handle, PANEL_LA_CHART_RESULT, enhance_peaks, 2, 0, 0, VAL_DOUBLE);
 					i++;
 				}
-
-
 			}
-
 
 			switch(ana_plot->cur_body_status)
 			{
@@ -197,14 +168,14 @@ void CVICALLBACK laPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigned
 			if(ana_plot->hr_ok == true)
 			{
 				SetCtrlVal (l_analysis_handle, PANEL_LA_LED_ANA,1);
-				//	SetCtrlVal (l_analysis_handle, PANEL_LA_RESP_IND,ana_plot->resp);
+				SetCtrlVal (l_analysis_handle, PANEL_LA_RESP_IND,ana_plot->resp);
 				SetCtrlVal (l_analysis_handle, PANEL_LA_HR_IND,ana_plot->hr);
 
 			}
 			else
 			{
 				SetCtrlVal (l_analysis_handle, PANEL_LA_LED_ANA,0);
-				//		SetCtrlVal (l_analysis_handle, PANEL_LA_RESP_IND,0);
+				SetCtrlVal (l_analysis_handle, PANEL_LA_RESP_IND,0);
 				SetCtrlVal (l_analysis_handle, PANEL_LA_HR_IND,0);
 
 			}
@@ -387,7 +358,7 @@ int CVICALLBACK laThreadFunction (void *functionData)
 				if ((pdBuffer = (analysis_result_t*)malloc(sizeof(analysis_result_t)))==NULL)
 
 					break;
-				pdBuffer->resp_ok = false;
+					pdBuffer->resp_ok = false;
 
 				Delay(0.5);
 			}
@@ -428,10 +399,10 @@ int CVICALLBACK LAStartCb (int panel, int control, int event,
 				{
 					GetCtrlVal (panel, PANEL_LA_RESULT_PLOT, (int *)&resultPlot);
 
-					//	if(resultPlot == 1)
-					//		SetTraceAttribute(l_analysis_handle,PANEL_LA_CHART_RESULT, 2, ATTR_TRACE_VISIBLE , 1);
-					//	else
-					//		SetTraceAttribute(l_analysis_handle,PANEL_LA_CHART_RESULT, 2, ATTR_TRACE_VISIBLE , 0);
+					if(resultPlot == 1)
+							SetTraceAttribute(l_analysis_handle,PANEL_LA_CHART_RESULT, 2, ATTR_TRACE_VISIBLE , 1);
+					else
+							SetTraceAttribute(l_analysis_handle,PANEL_LA_CHART_RESULT, 2, ATTR_TRACE_VISIBLE , 0);
 
 
 					analysis_piezo_init(5800000,0xF30000)  ;

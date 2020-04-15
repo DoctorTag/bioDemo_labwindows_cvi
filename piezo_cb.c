@@ -162,6 +162,7 @@ void CVICALLBACK piezoPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsig
 
 
 							if( (dtype << 4) == SAMPLE_PIEZO)
+								//		if( (dtype << 4) == SAMPLE_PPG_G)
 							{
 								if(fileSaveFlag == 1)
 									writeDataToCsvFile(piezo_csv_fd, RdAdcData);
@@ -169,11 +170,13 @@ void CVICALLBACK piezoPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsig
 
 								if(ana_ok == true)
 								{
+									double enhance_peaks[2];
 
 									if(resultPlot == 2)
 									{
-										double moved_result = ana_result.moved_Intensity;
-										PlotStripChart (PIEZO_handle, PANEL_PZ_CHART_ANALYSIS, &moved_result, 1, 0, 0, VAL_DOUBLE);
+										enhance_peaks[0] = ana_result.moved_Intensity;
+										enhance_peaks[1] = ana_result.moved_Intensity;
+										PlotStripChart (PIEZO_handle, PANEL_PZ_CHART_ANALYSIS, enhance_peaks, 2, 0, 1, VAL_DOUBLE);
 									}
 									else
 									{
@@ -181,11 +184,55 @@ void CVICALLBACK piezoPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsig
 										while(i < SAMPLE_HZ)
 										{
 											if(resultPlot == 0)
-												PlotStripChart (PIEZO_handle, PANEL_PZ_CHART_ANALYSIS, ana_result.hr_filted_data+i, 1, 0, 0, VAL_FLOAT);
+											{
+												enhance_peaks[0] = ana_result.hr_filted_data[i];
+												enhance_peaks[1] = ana_result.hr_filted_data[i];
+												PlotStripChart (PIEZO_handle, PANEL_PZ_CHART_ANALYSIS, enhance_peaks, 2, 0, 1, VAL_DOUBLE);
+											}
 											else if(resultPlot == 3)
-												PlotStripChart (PIEZO_handle, PANEL_PZ_CHART_ANALYSIS, ana_result.resp_data+i, 1, 0, 0, VAL_FLOAT);
+											{
+												if(ana_result.resp_ok == true)
+												{
+
+												short	j=0;
+													while(j < ANA_BUF_LEN)
+													{
+														unsigned char di = 0;
+														enhance_peaks[0] = ana_result.resp_data[j];
+														while(di < ana_result.resp_ppoints)
+														{
+															if(ana_result.resp_peak_points[di] == j)
+																enhance_peaks[1] = ana_result.resp_data[j];
+															di++;
+														}
+														PlotStripChart (PIEZO_handle, PANEL_PZ_CHART_ANALYSIS, enhance_peaks, 2, 0, 1, VAL_DOUBLE);
+														j++;
+													}
+
+
+												}
+											}
+
 											else
-												PlotStripChart (PIEZO_handle, PANEL_PZ_CHART_ANALYSIS, ana_result.hr_enhanced_data+i, 1, 0, 0, VAL_FLOAT);
+												{
+
+						unsigned char di = 0;
+						enhance_peaks[0] = ana_result.hr_enhanced_data[i];
+						while(di < ana_result.ppoints)
+						{
+							if(ana_result.hr_peak_points[di] == i)
+							{
+								enhance_peaks[1] = ana_result.hr_enhanced_data[i];
+								break;
+							}
+							di++;
+						}
+						//	SetTraceAttribute(l_analysis_handle,PANEL_LA_CHART_RESULT, 2, ATTR_TRACE_VISIBLE , 0);
+						//PlotStripChart (l_analysis_handle, PANEL_LA_CHART_RESULT, ana_plot->hr_enhanced_data+i, 1, 0, 0, VAL_FLOAT);
+
+						PlotStripChart (PIEZO_handle, PANEL_PZ_CHART_ANALYSIS, enhance_peaks, 2, 0, 1, VAL_DOUBLE);
+					}
+												
 											i++;
 										}
 									}
@@ -208,7 +255,7 @@ void CVICALLBACK piezoPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsig
 											break;
 									}
 
-									if(ana_result.ana_ok == true)
+									if(ana_result.hr_ok == true)
 									{
 										SetCtrlVal (PIEZO_handle, PANEL_PZ_LED,1);
 										SetCtrlVal (PIEZO_handle, PANEL_PZ_RESP_IND,ana_result.resp);
@@ -307,6 +354,9 @@ int CVICALLBACK Piezo_StartCb (int panel, int control, int event,
 
 			SteamCBdata[0] = (unsigned char)(REG_FUN2_PIEZO >> 8);
 			SteamCBdata[1] = (unsigned char)REG_FUN2_PIEZO;
+
+			//	SteamCBdata[0] = (unsigned char)(REG_FUN1_PPG_G  >> 8);
+			//		SteamCBdata[1] = (unsigned char)REG_FUN1_PPG_G ;
 
 			analysis_piezo_init(30000000,0xcfffff);
 			if(fileSaveFlag == 1)

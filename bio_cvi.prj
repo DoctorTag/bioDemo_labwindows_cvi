@@ -336,7 +336,7 @@ Stack Reserve = 131072
 Stack Commit = 4096
 Image Base Address = 4194304
 Image Base Address x64 = 4194304
-Compiler Defines = ""
+Compiler Defines = "/DDEBUG_ON=1"
 Sign = False
 Sign Store = ""
 Sign Certificate = ""

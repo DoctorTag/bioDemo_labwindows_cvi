@@ -1,10 +1,14 @@
 #ifndef ANALYSIS_PIEZO_H__
 #define ANALYSIS_PIEZO_H__
 
-
 #include "stdbool.h"
 
+
 #define SAMPLE_HZ    80      /*Don't change the value */
+
+#define ANA_BUF_SECS  (9)
+
+#define ANA_BUF_LEN  (SAMPLE_HZ*ANA_BUF_SECS)
 
 typedef enum
 {
@@ -31,27 +35,32 @@ typedef enum
 
 
 typedef struct
-{	 
+{
 	Body_status cur_body_status;
 	Sleeping_posture sleep_post;
 	Sleep_status  cur_sleep_status;
 	short hr;
 	char  resp;
-	bool ana_ok;
+	bool hr_ok;
+	bool resp_ok; 
 
+#if DEBUG_ON
 	/* only test */
 	uint32_t moved_Intensity;
 	short hr_peak_points[SAMPLE_HZ] ;
-	unsigned char ppoints; 
+	unsigned char ppoints;
 	/* data length is SAMPLE_HZ */
 //	int *o_data;
 //	float *hr_filted_data;
 //	float *hr_enhanced_data;
-//	float *resp_data; 
+//	float *resp_data;
 	int raw_data[SAMPLE_HZ] ;
 	float hr_filted_data[SAMPLE_HZ] ;
 	float hr_enhanced_data[SAMPLE_HZ] ;
-	float resp_data[SAMPLE_HZ] ; 
+	float resp_data[ANA_BUF_LEN] ;
+	short resp_peak_points[SAMPLE_HZ] ;
+	unsigned char resp_ppoints;
+#endif
 
 } analysis_result_t;
 
