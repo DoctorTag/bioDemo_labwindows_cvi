@@ -72,8 +72,9 @@ static	analysis_result_t ana_result;
 
 volatile int fileSaveFlag =  0;
 static volatile int resultPlot =  0;
+static volatile unsigned char inbed =  0;
 
-
+static volatile double enhance_peaks[2];
 void CVICALLBACK piezoPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigned int event,
 		int value, void *callbackData)
 {
@@ -82,6 +83,7 @@ void CVICALLBACK piezoPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsig
 	double data_ld[1];
 	bool ana_ok;
 	short i;
+	  
 	switch (event)
 	{
 		case EVENT_TSQ_ITEMS_IN_QUEUE:
@@ -92,6 +94,23 @@ void CVICALLBACK piezoPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsig
 			{
 				SetCtrlAttribute (PIEZO_handle, PANEL_PZ_TIMER, ATTR_ENABLED, 0);
 			}
+			 
+			else if(rdata->dframe[1] == INBED_IND)
+			{
+			if(rdata->dframe[3] == 0)
+				{
+
+					SetCtrlVal (PIEZO_handle, PANEL_PZ_BODY_STATUS,"Out of bed");
+					SetCtrlVal (PIEZO_handle, PANEL_PZ_LED_BED,0);
+				}
+				else
+				{
+					SetCtrlVal (PIEZO_handle, PANEL_PZ_BODY_STATUS,"In bed");
+					SetCtrlVal (PIEZO_handle, PANEL_PZ_LED_BED,1);
+				}
+		
+				inbed = rdata->dframe[3];
+			}  
 			else
 			{
 				if(rdata->dframe[0])
@@ -166,11 +185,13 @@ void CVICALLBACK piezoPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsig
 							{
 								if(fileSaveFlag == 1)
 									writeDataToCsvFile(piezo_csv_fd, RdAdcData);
+
 								ana_ok = analysis_piezo_all(RdAdcData,&ana_result) ;
+
 
 								if(ana_ok == true)
 								{
-									double enhance_peaks[2];
+									
 
 									if(resultPlot == 2)
 									{
@@ -194,7 +215,8 @@ void CVICALLBACK piezoPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsig
 												if(ana_result.resp_ok == true)
 												{
 
-												short	j=0;
+													short	j=0;
+													ana_result.resp_ok = false;
 													while(j < ANA_BUF_LEN)
 													{
 														unsigned char di = 0;
@@ -205,7 +227,7 @@ void CVICALLBACK piezoPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsig
 																enhance_peaks[1] = ana_result.resp_data[j];
 															di++;
 														}
-														PlotStripChart (PIEZO_handle, PANEL_PZ_CHART_ANALYSIS, enhance_peaks, 2, 0, 1, VAL_DOUBLE);
+														PlotStripChart (PIEZO_handle, PANEL_PZ_CHART_ANALYSIS, enhance_peaks, 2, 0, 0, VAL_DOUBLE);
 														j++;
 													}
 
@@ -214,52 +236,60 @@ void CVICALLBACK piezoPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsig
 											}
 
 											else
+											{
+
+												unsigned char di = 0;
+												enhance_peaks[0] = ana_result.hr_enhanced_data[i];
+												while(di < ana_result.ppoints)
 												{
+													if(ana_result.hr_peak_points[di] == i)
+													{
+														enhance_peaks[1] = ana_result.hr_enhanced_data[i];
+														break;
+													}
+													di++;
+												}
+												//	SetTraceAttribute(l_analysis_handle,PANEL_LA_CHART_RESULT, 2, ATTR_TRACE_VISIBLE , 0);
+												//PlotStripChart (l_analysis_handle, PANEL_LA_CHART_RESULT, ana_plot->hr_enhanced_data+i, 1, 0, 0, VAL_FLOAT);
 
-						unsigned char di = 0;
-						enhance_peaks[0] = ana_result.hr_enhanced_data[i];
-						while(di < ana_result.ppoints)
-						{
-							if(ana_result.hr_peak_points[di] == i)
-							{
-								enhance_peaks[1] = ana_result.hr_enhanced_data[i];
-								break;
-							}
-							di++;
-						}
-						//	SetTraceAttribute(l_analysis_handle,PANEL_LA_CHART_RESULT, 2, ATTR_TRACE_VISIBLE , 0);
-						//PlotStripChart (l_analysis_handle, PANEL_LA_CHART_RESULT, ana_plot->hr_enhanced_data+i, 1, 0, 0, VAL_FLOAT);
+												PlotStripChart (PIEZO_handle, PANEL_PZ_CHART_ANALYSIS, enhance_peaks, 2, 0, 0, VAL_DOUBLE);
+											}
 
-						PlotStripChart (PIEZO_handle, PANEL_PZ_CHART_ANALYSIS, enhance_peaks, 2, 0, 1, VAL_DOUBLE);
-					}
-												
 											i++;
 										}
 									}
-
-									switch(ana_result.cur_body_status)
+									if(inbed == 1)
 									{
-										case OUT_OF_BED:
-											SetCtrlVal (PIEZO_handle, PANEL_PZ_BODY_STATUS,"Out of bed");
-											break;
 
-										case BODY_REPOSE:
-											SetCtrlVal (PIEZO_handle, PANEL_PZ_BODY_STATUS,"Repose");
-											break;
+										switch(ana_result.cur_body_status)
+										{
+											case OUT_OF_BED:
+												SetCtrlVal (PIEZO_handle, PANEL_PZ_BODY_STATUS,"Out of bed");
+												break;
 
-										case BODY_MOVE:
-											SetCtrlVal (PIEZO_handle, PANEL_PZ_BODY_STATUS,"Moving");
-											break;
-										case BODY_UNKNOW:
-											SetCtrlVal (PIEZO_handle, PANEL_PZ_BODY_STATUS,"Unknow");
-											break;
+											case BODY_REPOSE:
+												SetCtrlVal (PIEZO_handle, PANEL_PZ_BODY_STATUS,"Repose");
+												break;
+
+											case BODY_MOVE:
+												SetCtrlVal (PIEZO_handle, PANEL_PZ_BODY_STATUS,"Moving");
+												break;
+											case BODY_UNKNOW:
+												SetCtrlVal (PIEZO_handle, PANEL_PZ_BODY_STATUS,"Unknow");
+												break;
+										}
 									}
+									else
+										SetCtrlVal (PIEZO_handle, PANEL_PZ_BODY_STATUS,"Out of bed");
 
 									if(ana_result.hr_ok == true)
 									{
-										SetCtrlVal (PIEZO_handle, PANEL_PZ_LED,1);
-										SetCtrlVal (PIEZO_handle, PANEL_PZ_RESP_IND,ana_result.resp);
-										SetCtrlVal (PIEZO_handle, PANEL_PZ_HR_IND,ana_result.hr);
+										if(inbed == 1)
+										{
+											SetCtrlVal (PIEZO_handle, PANEL_PZ_LED,1);
+											SetCtrlVal (PIEZO_handle, PANEL_PZ_RESP_IND,ana_result.resp);
+											SetCtrlVal (PIEZO_handle, PANEL_PZ_HR_IND,ana_result.hr);
+										}
 
 									}
 									else

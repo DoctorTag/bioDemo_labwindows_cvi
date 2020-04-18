@@ -133,7 +133,7 @@ extern "C" {
 #define FIRMWARE_VERSION_REQ		0x19
 #define STATUS_INFO_REQ 			0x1A
 #define FILTER_SELECT_COMMAND		0x1B
-#define ERASE_MEMORY_COMMAND		0x1C
+#define ON_HSENSOR_COMMAND		0x1C
 #define RESTART_COMMAND				0x1D
 #define START_RECORDING_COMMAND		0x1E
 
@@ -146,6 +146,11 @@ extern "C" {
 #define DATA_TYPE_24BIT	               (DATA_TYPE_DEFAULT+((MASK_24BIT-MASK_8BIT)<<4))
 
 #define DATA_TYPE_MASK		          0x0F
+	
+	#define SET_WIFI_CONFIG			0x30
+#define IPADDR_IND			0x31
+#define INBED_IND                 0x32
+
 
 #define AP_MASK				0x80
 

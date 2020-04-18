@@ -25,6 +25,7 @@
 #define  PANEL_TEXT_FUN_TEXT              10      /* control type: textMsg, callback function: (none) */
 #define  PANEL_LISTBOX_FUNCTION           11      /* control type: listBox, callback function: (none) */
 #define  PANEL_CMDBUTTON_TEST             12      /* control type: command, callback function: FunctionTestBeginCb */
+#define  PANEL_BIOSENSOR_SWITCH           13      /* control type: binary, callback function: BioSensorOnCb */
 
 #define  PANEL_CFG                        2
 #define  PANEL_CFG_TCP_PORT               2       /* control type: numeric, callback function: (none) */
@@ -90,7 +91,8 @@
 #define  PANEL_PZ_LOCAL_SAVE_CHK          11      /* control type: radioButton, callback function: (none) */
 #define  PANEL_PZ_RESULT_PLOT             12      /* control type: ring, callback function: (none) */
 #define  PANEL_PZ_BODY_STATUS             13      /* control type: string, callback function: (none) */
-#define  PANEL_PZ_LED                     14      /* control type: LED, callback function: (none) */
+#define  PANEL_PZ_LED_BED                 14      /* control type: LED, callback function: (none) */
+#define  PANEL_PZ_LED                     15      /* control type: LED, callback function: (none) */
 
 
      /* Control Arrays: */
@@ -108,6 +110,7 @@
 
      /* Callback Prototypes: */
 
+int  CVICALLBACK BioSensorOnCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK cfgOkCallback(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK cfgQuitCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);
 int  CVICALLBACK ECG_D_StartCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);

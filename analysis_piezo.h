@@ -44,7 +44,6 @@ typedef struct
 	bool hr_ok;
 	bool resp_ok; 
 
-#if DEBUG_ON
 	/* only test */
 	uint32_t moved_Intensity;
 	short hr_peak_points[SAMPLE_HZ] ;
@@ -60,7 +59,6 @@ typedef struct
 	float resp_data[ANA_BUF_LEN] ;
 	short resp_peak_points[SAMPLE_HZ] ;
 	unsigned char resp_ppoints;
-#endif
 
 } analysis_result_t;
 

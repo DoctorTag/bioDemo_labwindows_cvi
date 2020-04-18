@@ -320,6 +320,25 @@ int CVICALLBACK FunctionTestBeginCb(int panel, int control, int event,
 }
 
 
+int CVICALLBACK BioSensorOnCb(int panel, int control, int event,
+									void *callbackData, int eventData1, int eventData2)
+{
+
+	switch (event)
+	{
+		case EVENT_COMMIT:
+		{
+			unsigned char val;
+			GetCtrlVal(panel, control, &val); 
+			h_comm_sendCMD(&h_comm_handle,ON_HSENSOR_COMMAND,val,0,0); 
+				
+
+		}
+		break;
+	}
+	return 0;
+}
+
 /*---------------------------------------------------------------------------*/
 /* Quit the UI loop.                                                         */
 /*---------------------------------------------------------------------------*/
