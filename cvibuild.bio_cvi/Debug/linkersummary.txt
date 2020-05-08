@@ -1,3 +1,4 @@
+analysis_piezo.obj
 bio_common.obj
 bio_demo.obj
 ecg_d_cb.obj
@@ -11,7 +12,6 @@ serial.obj
 timer_cb.obj
 cvi.lib
 cvistart.lib
-bio_analysis.lib
 progressbar.obj
 asynctmr.obj
 cviauto.lib

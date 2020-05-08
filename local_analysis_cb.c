@@ -67,20 +67,18 @@ static CmtTSQCallbackID laPlotcallbackID = 0;
 static      CmtThreadFunctionID laThreadFunctionID = NULL;
 
 
-static volatile int resultPlot =  0;
-
-
-
+static volatile int resultPlot =  0; 
 static void LAStop(void);
-
 
 void CVICALLBACK laPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigned int event,
 		int value, void *callbackData)
 {
 	static	double enhance_peaks[2];
+		analysis_result_t *ana_plot;  
+
 
 	new_tsq_t rtsq[1];
-	analysis_result_t *ana_plot;
+
 //	float wave_data;
 //	double result;
 //	float filter_data;
@@ -98,7 +96,7 @@ void CVICALLBACK laPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigned
 			i=0;
 			while(i < SAMPLE_HZ)
 			{
-				PlotStripChart (l_analysis_handle,PANEL_LA_CHART_DATA,ana_plot->raw_data+i , 1, 0, 0, VAL_INTEGER);
+				PlotStripChart (l_analysis_handle,PANEL_LA_CHART_DATA,ana_plot->hr_raw_dbuf+i , 1, 0, 0, VAL_INTEGER);
 				i++;
 			}
 
@@ -115,8 +113,8 @@ void CVICALLBACK laPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigned
 				i=0;
 				while(i < SAMPLE_HZ)
 				{
-					enhance_peaks[0] = ana_plot->hr_filted_data[i];
-					enhance_peaks[1] = ana_plot->hr_filted_data[i];
+					enhance_peaks[0] = ana_plot->hr_filted_dbuf[i];
+					enhance_peaks[1] = ana_plot->hr_filted_dbuf[i];
 					PlotStripChart (l_analysis_handle, PANEL_LA_CHART_RESULT,enhance_peaks ,2, 0, 1, VAL_DOUBLE);
 					i++;
 				}
@@ -131,12 +129,12 @@ void CVICALLBACK laPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigned
 					while(i < ANA_BUF_LEN)
 					{
 						unsigned char di = 0;
-						enhance_peaks[0] = ana_plot->resp_data[i];
+						enhance_peaks[0] = ana_plot->resp_dbuf[i];
 						while(di < ana_plot->resp_ppoints)
 						{
-							if(ana_plot->resp_peak_points[di] == i)
+							if(ana_plot->resp_peak_locbuf[di] == i)
 							{
-								enhance_peaks[1] = ana_plot->resp_data[i];
+								enhance_peaks[1] = ana_plot->resp_dbuf[i];
 								break;
 							}
 							di++;
@@ -155,12 +153,12 @@ void CVICALLBACK laPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsigned
 				while(i < SAMPLE_HZ)
 				{	 
 					unsigned char di = 0;
-					enhance_peaks[0] = ana_plot->hr_enhanced_data[i];
-					while(di < ana_plot->ppoints)
+					enhance_peaks[0] = ana_plot->hr_enhanced_dbuf[i];
+					while(di < ana_plot->hr_ppoints)
 					{
-						if(ana_plot->hr_peak_points[di] == i)
+						if(ana_plot->hr_peak_locbuf[di] == i)
 						{
-							enhance_peaks[1] = ana_plot->hr_enhanced_data[i];
+							enhance_peaks[1] = ana_plot->hr_enhanced_dbuf[i];
 							break;
 						}
 						di++;
@@ -434,7 +432,7 @@ int CVICALLBACK LAStartCb (int panel, int control, int event,
 					//		SetTraceAttribute(l_analysis_handle,PANEL_LA_CHART_RESULT, 2, ATTR_TRACE_VISIBLE , 0);
 
 
-					analysis_piezo_init(5800000,0xF30000)  ;
+					analysis_piezo_init(0xF30000)  ;
 					//SetInputMode (l_analysis_handle, PANEL_LA_LA_START, 0);
 					laStopFlag = 0;
 					CmtScheduleThreadPoolFunctionAdv (DEFAULT_THREAD_POOL_HANDLE, laThreadFunction, NULL,THREAD_PRIORITY_LOWEST, NULL, 0, NULL, 0, &laThreadFunctionID);

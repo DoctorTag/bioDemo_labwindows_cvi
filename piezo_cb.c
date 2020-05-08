@@ -206,8 +206,8 @@ void CVICALLBACK piezoPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsig
 										{
 											if(resultPlot == 0)
 											{
-												enhance_peaks[0] = ana_result.hr_filted_data[i];
-												enhance_peaks[1] = ana_result.hr_filted_data[i];
+												enhance_peaks[0] = ana_result.hr_filted_dbuf[i];
+												enhance_peaks[1] = ana_result.hr_filted_dbuf[i];
 												PlotStripChart (PIEZO_handle, PANEL_PZ_CHART_ANALYSIS, enhance_peaks, 2, 0, 1, VAL_DOUBLE);
 											}
 											else if(resultPlot == 3)
@@ -220,11 +220,11 @@ void CVICALLBACK piezoPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsig
 													while(j < ANA_BUF_LEN)
 													{
 														unsigned char di = 0;
-														enhance_peaks[0] = ana_result.resp_data[j];
+														enhance_peaks[0] = ana_result.resp_dbuf[j];
 														while(di < ana_result.resp_ppoints)
 														{
-															if(ana_result.resp_peak_points[di] == j)
-																enhance_peaks[1] = ana_result.resp_data[j];
+															if(ana_result.resp_peak_locbuf[di] == j)
+																enhance_peaks[1] = ana_result.resp_dbuf[j];
 															di++;
 														}
 														PlotStripChart (PIEZO_handle, PANEL_PZ_CHART_ANALYSIS, enhance_peaks, 2, 0, 0, VAL_DOUBLE);
@@ -239,12 +239,12 @@ void CVICALLBACK piezoPlotDataFromQueueCallback (CmtTSQHandle queueHandle, unsig
 											{
 
 												unsigned char di = 0;
-												enhance_peaks[0] = ana_result.hr_enhanced_data[i];
-												while(di < ana_result.ppoints)
+												enhance_peaks[0] = ana_result.hr_enhanced_dbuf[i];
+												while(di < ana_result.hr_ppoints)
 												{
-													if(ana_result.hr_peak_points[di] == i)
+													if(ana_result.hr_peak_locbuf[di] == i)
 													{
-														enhance_peaks[1] = ana_result.hr_enhanced_data[i];
+														enhance_peaks[1] = ana_result.hr_enhanced_dbuf[i];
 														break;
 													}
 													di++;
@@ -388,7 +388,7 @@ int CVICALLBACK Piezo_StartCb (int panel, int control, int event,
 			//	SteamCBdata[0] = (unsigned char)(REG_FUN1_PPG_G  >> 8);
 			//		SteamCBdata[1] = (unsigned char)REG_FUN1_PPG_G ;
 
-			analysis_piezo_init(30000000,0xcfffff);
+			analysis_piezo_init(0xcfffff);
 			if(fileSaveFlag == 1)
 				piezo_csv_fd = openCsvFileForWrite("piezo");
 			h_comm_sendCMD(&h_comm_handle,DATA_STREAMING_COMMAND,SteamCBdata[0],SteamCBdata[1],0);

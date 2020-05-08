@@ -3,10 +3,15 @@
 
 #include "stdbool.h"
 
+#define ANALYSIS_TEST_ON  1		 /*Don't change the value */
 
-#define SAMPLE_HZ    80      /*Don't change the value */
+#define SAMPLE_HZ        80      /*Don't change the value */
+#define MAX_HR_MINUTE    300      /*Don't change the value */
+#define MAX_RESP_MINUTE  60      /*Don't change the value */
 
-#define ANA_BUF_SECS  (9)
+
+
+#define ANA_BUF_SECS  (9)	   /*Don't change the value */
 
 #define ANA_BUF_LEN  (SAMPLE_HZ*ANA_BUF_SECS)
 
@@ -44,29 +49,31 @@ typedef struct
 	bool hr_ok;
 	bool resp_ok; 
 
-	/* only test */
-	uint32_t moved_Intensity;
-	short hr_peak_points[SAMPLE_HZ] ;
-	unsigned char ppoints;
-	/* data length is SAMPLE_HZ */
-//	int *o_data;
-//	float *hr_filted_data;
-//	float *hr_enhanced_data;
-//	float *resp_data;
-	int raw_data[SAMPLE_HZ] ;
-	float hr_filted_data[SAMPLE_HZ] ;
-	float hr_enhanced_data[SAMPLE_HZ] ;
-	float resp_data[ANA_BUF_LEN] ;
-	short resp_peak_points[SAMPLE_HZ] ;
-	unsigned char resp_ppoints;
+#if ANALYSIS_TEST_ON	
+	///// only test 
+	
+	uint32_t moved_Intensity; 
 
+	/*  HR */   
+	int  hr_raw_dbuf[SAMPLE_HZ];	  /*  HR raw data buf length is SAMPLE_HZ */
+	float hr_filted_dbuf[SAMPLE_HZ];   /*  HR filted data buf length is SAMPLE_HZ */
+	float hr_enhanced_dbuf[SAMPLE_HZ];  /*  HR enhanced data buf length is SAMPLE_HZ */
+	unsigned char hr_peak_locbuf[MAX_HR_MINUTE/60 +1];	/* space length is (MAX_HR_MINUTE/60 +1) */	
+	unsigned char hr_ppoints;		 /* maximum is (MAX_HR_MINUTE/60 +1) */ 
+
+		/*  RESP */   
+	float resp_dbuf[ANA_BUF_LEN] ;   /*  RESP data buf length is ANA_BUF_LEN */
+	unsigned char resp_peak_locbuf[ANA_BUF_SECS +1];	/* space length is (ANA_BUF_SECS +1) */	
+	unsigned char resp_ppoints;		 /* maximum is (ANA_BUF_SECS +1) */ 
+
+  	///// 
+	
+	
+#endif
 } analysis_result_t;
 
 
-//float analysis_piezo(int pie_data) ;
-
-void analysis_piezo_init(uint32_t out_of_bed_threshold,uint32_t raw_peak_threshold);
-
+void analysis_piezo_init(uint32_t raw_peak_threshold) ;
 bool analysis_piezo_all(int pie_data,analysis_result_t * a_result) ;
 
 #endif
