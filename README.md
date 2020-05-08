@@ -1,7 +1,7 @@
 # Demo_labwindows_cvi
-Local demo software of Bio-Sensor--F58GM  about labwindows cvi 2017, Part of development Kits for Bio-Sensor. 
+PC demo software of Bio-Sensor--F58GM  about labwindows cvi 2017, Part of development Kits for BioSensor. 
 
-For whole project, please refer to [https://github.com/feelkit/BIO_SENSOR](https://github.com/feelkit/BIO_SENSOR).
+For whole project, please refer to [https://github.com/feelkit/BIO_SENSOR](https://github.com/feelkit/bio-hdf).
 
 # Contact
 If you have technical problems and ideas to communicate with us, you can
