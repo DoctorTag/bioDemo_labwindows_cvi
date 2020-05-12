@@ -1,8 +1,0 @@
-[First_filter_buf1]
-Class="Function"
-Prototype="double *First_filter_buf1(double *IIR_Filter_Data);"
-
-[Else_filter_buf1]
-Class="Function"
-Prototype="double *Else_filter_buf1(double *IIR_Filter_Data);"
-

@@ -18,9 +18,17 @@ Prototype="void MenuConfigPortCb(int menubar, int menuItem, void *callbackData, 
 Class="Function"
 Prototype="void MenuFirmUpgradeCb(int menubar, int menuItem, void *callbackData, int panel);"
 
+[MenuLocalAnalysisCb]
+Class="Function"
+Prototype="void MenuLocalAnalysisCb(int menubar, int menuItem, void *callbackData, int panel);"
+
 [FunctionTestBeginCb]
 Class="Function"
 Prototype="int FunctionTestBeginCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+
+[BioSensorOnCb]
+Class="Function"
+Prototype="int BioSensorOnCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
 
 [Shutdown]
 Class="Function"

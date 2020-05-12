@@ -1,34 +1,34 @@
 -nologo
--out:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\bio_demo_64bits.exe
+-out:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\bio_demo_64bits.exe
 -arch:x64
 -timestamp
 -loadextmod
--res:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\resources.res
+-res:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\resources.res
 -entry:CVIWinMainStartupCode
 -base:0x400000
--linked:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\linkersummary.txt
--dlldeps:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\dlldependencies.txt
--licensing:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\linkerlicensing.txt
--browsedeps:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\moduledependencies.txt
+-linked:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\linkersummary.txt
+-dlldeps:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\dlldependencies.txt
+-licensing:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\linkerlicensing.txt
+-browsedeps:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\moduledependencies.txt
 -stackreserve:131072
 -stackcommit:4096
--in:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\bio_common.obj
--in:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\bio_demo.obj
--in:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\ecg_d_cb.obj
--in:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\fwup_cb.obj
--in:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\local_analysis_cb.obj
--in:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\mmd_comm.obj
--in:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\piezo_cb.obj
--in:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\ppg_cb.obj
--in:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\regmap_cb.obj
--in:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\serial.obj
--in:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\timer_cb.obj
+-in:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\bio_common.obj
+-in:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\bio_demo.obj
+-in:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\ecg_d_cb.obj
+-in:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\fwup_cb.obj
+-in:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\local_analysis_cb.obj
+-in:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\mmd_comm.obj
+-in:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\piezo_cb.obj
+-in:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\ppg_cb.obj
+-in:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\regmap_cb.obj
+-in:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\serial.obj
+-in:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Release64\timer_cb.obj
 -more:c:\program files (x86)\national instruments\cvi2017\bin\msvc64\cvistart.lib
 -more:c:\program files (x86)\national instruments\cvi2017\bin\msvc64\cvi.lib
 -more:C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x64\advapi32.lib
 -more:c:\ProgramData\National Instruments\CVI2017\bin\msvc64\analysis.lib
 -more:c:\Program Files (x86)\National Instruments\CVI2017\toolslib\toolbox\msvc64\asynctmr.obj
--more:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\msvc64\bio_analysis.lib
+-more:d:\software\cvi\github\bioDemo_labwindows_cvi\msvc64\bio_analysis.lib
 -more:c:\Program Files (x86)\National Instruments\CVI2017\bin\msvc64\cviauto.lib
 -more:c:\Program Files (x86)\National Instruments\CVI2017\bin\msvc64\cvidotnet.lib
 -more:c:\Program Files (x86)\National Instruments\CVI2017\bin\msvc64\cvinetstreams.lib

@@ -1,6 +1,6 @@
 [Workspace Header]
 Version = 1700
-Pathname = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/bio_cvi.cws"
+Pathname = "/d/software/cvi/github/bioDemo_labwindows_cvi/bio_cvi.cws"
 CVI Dir = "/c/program files (x86)/national instruments/cvi2017"
 CVI Shared Dir = "/C/Program Files (x86)/National Instruments/Shared/CVI"
 CVI Pub Local Dir = "/C/ProgramData/National Instruments/CVI2017"
@@ -12,11 +12,11 @@ VXIplug&play Framework 64-bit Dir = "/C/Program Files/IVI Foundation/VISA/win64"
 Number of Projects = 1
 Active Project = 1
 Project 0001 = "bio_cvi.prj"
-Drag Bar Left = 288
+Drag Bar Left = 359
 Window Top = 48
-Window Left = 18
-Window Bottom = 523
-Window Right = 768
+Window Left = 26
+Window Bottom = 550
+Window Right = 816
 Maximized = True
 Maximized Children = True
 Max32 Number Of Errors = 20
@@ -30,9 +30,9 @@ Save Changes Before Compiling = "Always"
 Hide Windows = False
 Break At First Statement = False
 Sort Type = "File Name"
-Number of Opened Files = 4
+Number of Opened Files = 6
 Window Confinement Region Enabled = True
-MainColumnWidth = 271
+MainColumnWidth = 342
 FileDateColumnWidth = 70
 FileSizeColumnWidth = 70
 
@@ -40,7 +40,7 @@ FileSizeColumnWidth = 70
 Version = 1700
 Don't Update DistKit = False
 Platform Code = 4
-Build Configuration = "Debug"
+Build Configuration = "Release64"
 Warn User If Debugging Release = 1
 Batch Build Release = False
 Batch Build Debug = False
@@ -53,23 +53,53 @@ Disk Date = 3573565200
 In Projects = "1,"
 
 [File 0002]
-Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/analysis_piezo.c"
+Path = "/d/software/cvi/github/bioDemo_labwindows_cvi/analysis_piezo.c"
 File Type = "CSource"
-Disk Date = 3670490451
+Disk Date = 3670490529
+In Projects = ""
+Window Top = 48
+Window Left = 18
+Window Z-Order = 4
+Source Window State = "1,614,614,614,29,33,29,0,0,80,0,5,0,5,0,25,6,0,18,66,323,517,1,0,"
+
+[File 0003]
+Path = "/d/software/cvi/github/bioDemo_labwindows_cvi/local_analysis_cb.c"
+File Type = "CSource"
+Disk Date = 3670476327
+In Projects = "1,"
+Window Top = 31
+Window Left = 6
+Window Z-Order = 6
+Source Window State = "1,434,434,434,40,47,40,0,0,60,0,0,0,0,0,20,84,0,62,55,263,397,1,0,"
+
+[File 0004]
+Path = "/d/software/cvi/github/bioDemo_labwindows_cvi/piezo_cb.c"
+File Type = "CSource"
+Disk Date = 3670476554
 In Projects = "1,"
 Window Top = 48
 Window Left = 18
-Window Z-Order = 1
-Source Window State = "1,614,614,614,29,33,29,0,0,160,0,5,0,5,0,31,647,0,654,64,323,517,1,0,"
+Window Z-Order = 5
+Source Window State = "1,390,390,390,32,39,32,0,0,80,0,0,0,0,0,25,390,0,403,44,323,517,1,0,"
 
-[File 0003]
-Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/msvc/bio_analysis.lib"
+[File 0005]
+Path = "/d/software/cvi/github/bioDemo_labwindows_cvi/analysis_piezo.h"
+File Type = "Include"
+Disk Date = 3670481926
+In Projects = "1,"
+Window Top = 71
+Window Left = 30
+Window Z-Order = 3
+Source Window State = "1,5,5,5,26,27,26,0,0,80,0,39,0,0,0,25,23,0,5,27,323,517,1,0,"
+
+[File 0006]
+Path = "/d/software/cvi/github/bioDemo_labwindows_cvi/msvc64/bio_analysis.lib"
 File Type = "Library"
-Disk Date = 3670063147
+Disk Date = 3672131166
 In Projects = "1,"
 
-[File 0004]
-Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/bio_common.c"
+[File 0007]
+Path = "/d/software/cvi/github/bioDemo_labwindows_cvi/bio_common.c"
 File Type = "CSource"
 Disk Date = 3668597608
 In Projects = "1,"
@@ -77,90 +107,71 @@ Window Top = 117
 Window Left = 54
 Source Window State = "1,0,63,0,0,1,0,0,0,0,0,0,0,0,0,0,26,0,58,27,323,517,1,0,"
 
-[File 0005]
-Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/bio_demo.c"
+[File 0008]
+Path = "/d/software/cvi/github/bioDemo_labwindows_cvi/bio_demo.c"
 File Type = "CSource"
-Disk Date = 3670042386
+Disk Date = 3672131705
 In Projects = "1,"
 Window Top = 25
 Window Left = 6
-Source Window State = "1,322,322,322,16,29,16,0,0,0,0,0,0,0,0,0,96,0,108,4,323,517,1,0,"
+Window Z-Order = 1
+Source Window State = "1,322,322,322,16,29,16,0,0,148,0,0,0,0,0,57,186,0,212,14,323,517,1,0,"
 
-[File 0006]
-Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/ecg_d_cb.c"
+[File 0009]
+Path = "/d/software/cvi/github/bioDemo_labwindows_cvi/ecg_d_cb.c"
 File Type = "CSource"
-Disk Date = 3668592925
+Disk Date = 3668592926
 In Projects = "1,"
 Window Top = 48
 Window Left = 18
 Source Window State = "1,268,268,268,12,26,26,0,0,0,0,0,0,0,0,0,258,0,268,22,263,517,1,0,"
 
-[File 0007]
-Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/fwup_cb.c"
+[File 0010]
+Path = "/d/software/cvi/github/bioDemo_labwindows_cvi/fwup_cb.c"
 File Type = "CSource"
-Disk Date = 3668550211
+Disk Date = 3668550212
 In Projects = "1,"
 Window Top = 48
 Window Left = 18
 Source Window State = "1,0,731,0,0,1,0,0,0,0,0,0,0,0,0,0,441,0,719,41,323,517,1,0,"
 
-[File 0008]
-Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/local_analysis_cb.c"
-File Type = "CSource"
-Disk Date = 3670476326
-In Projects = "1,"
-Window Top = 25
-Window Left = 6
-Window Z-Order = 4
-Source Window State = "1,434,434,434,40,47,40,0,0,60,0,0,0,0,0,20,84,0,62,55,263,397,1,0,"
-
-[File 0009]
-Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/mmd_comm.c"
-File Type = "CSource"
-Disk Date = 3668550342
-In Projects = "1,"
-Window Top = 25
-Window Left = 6
-Source Window State = "1,314,314,314,4,18,18,0,0,80,0,0,0,0,0,25,155,0,180,89,323,517,0,0,"
-
-[File 0010]
-Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/piezo_cb.c"
-File Type = "CSource"
-Disk Date = 3670476553
-In Projects = "1,"
-Window Top = 48
-Window Left = 18
-Window Z-Order = 2
-Source Window State = "1,390,390,390,32,39,32,0,0,80,0,0,0,0,0,25,390,0,403,44,323,517,1,0,"
-
 [File 0011]
-Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/ppg_cb.c"
+Path = "/d/software/cvi/github/bioDemo_labwindows_cvi/mmd_comm.c"
 File Type = "CSource"
-Disk Date = 3668594141
+Disk Date = 3668550343
+In Projects = "1,"
+Window Top = 25
+Window Left = 6
+Source Window State = "1,314,314,314,4,18,18,0,0,0,0,0,0,0,0,0,155,0,180,89,323,517,0,0,"
+
+[File 0012]
+Path = "/d/software/cvi/github/bioDemo_labwindows_cvi/ppg_cb.c"
+File Type = "CSource"
+Disk Date = 3668594142
 In Projects = "1,"
 Window Top = 117
 Window Left = 54
 Source Window State = "1,64,64,64,0,21,0,0,0,0,0,0,0,0,0,0,38,0,50,2,323,517,1,0,"
 
-[File 0012]
-Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/regmap_cb.c"
+[File 0013]
+Path = "/d/software/cvi/github/bioDemo_labwindows_cvi/regmap_cb.c"
 File Type = "CSource"
-Disk Date = 3668550356
+Disk Date = 3668550357
 In Projects = "1,"
 Window Top = 232
 Window Left = 114
 Source Window State = "1,0,230,0,0,1,0,0,3,0,0,0,0,0,0,0,198,0,230,1,323,517,1,0,"
 
-[File 0013]
-Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/serial.c"
+[File 0014]
+Path = "/d/software/cvi/github/bioDemo_labwindows_cvi/serial.c"
 File Type = "CSource"
-Disk Date = 3668550363
+Disk Date = 3668550364
 In Projects = "1,"
 Window Top = 23
 Source Window State = "1,0,132,0,0,1,0,0,3,0,0,0,0,0,0,0,100,0,132,1,400,600,1,0,"
 
-[File 0014]
-Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/timer_cb.c"
+[File 0015]
+Path = "/d/software/cvi/github/bioDemo_labwindows_cvi/timer_cb.c"
 File Type = "CSource"
 Disk Date = 3668550370
 In Projects = "1,"
@@ -168,27 +179,17 @@ Window Top = 140
 Window Left = -94
 Source Window State = "1,0,75,0,0,0,0,0,0,0,0,0,0,0,0,0,43,0,51,22,323,517,1,0,"
 
-[File 0015]
-Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/analysis_piezo.h"
-File Type = "Include"
-Disk Date = 3670481926
-In Projects = "1,"
-Window Top = 71
-Window Left = 30
-Window Z-Order = 3
-Source Window State = "1,5,5,5,26,27,26,0,0,80,0,39,0,0,0,25,0,0,5,27,323,517,1,0,"
-
 [File 0016]
-Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/bio_common.h"
+Path = "/d/software/cvi/github/bioDemo_labwindows_cvi/bio_common.h"
 File Type = "Include"
-Disk Date = 3668581101
+Disk Date = 3668581102
 In Projects = "1,"
 Window Top = 71
 Window Left = 30
 Source Window State = "1,48,48,48,15,20,20,0,3,0,0,0,0,0,0,0,41,0,48,15,323,517,1,0,"
 
 [File 0017]
-Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/bio_demo.h"
+Path = "/d/software/cvi/github/bioDemo_labwindows_cvi/bio_demo.h"
 File Type = "Include"
 Disk Date = 3670063360
 In Projects = "1,"
@@ -197,16 +198,16 @@ Window Left = 54
 Source Window State = "1,92,92,92,9,25,9,0,0,0,0,0,0,0,0,0,60,0,80,26,323,517,1,0,"
 
 [File 0018]
-Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/fwup_cb.h"
+Path = "/d/software/cvi/github/bioDemo_labwindows_cvi/fwup_cb.h"
 File Type = "Include"
-Disk Date = 3635283000
+Disk Date = 3635283001
 In Projects = "1,"
 Window Top = 71
 Window Left = 30
 Source Window State = "1,47,47,47,4,12,12,0,3,0,0,0,0,0,0,0,35,0,47,4,323,517,1,0,"
 
 [File 0019]
-Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/mmd_comm.h"
+Path = "/d/software/cvi/github/bioDemo_labwindows_cvi/mmd_comm.h"
 File Type = "Include"
 Disk Date = 3670042301
 In Projects = "1,"
@@ -215,7 +216,7 @@ Window Left = 6
 Source Window State = "1,65,65,65,8,20,20,0,3,0,0,193,0,0,0,0,46,0,65,8,323,517,1,0,"
 
 [File 0020]
-Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/regmap_cb.h"
+Path = "/d/software/cvi/github/bioDemo_labwindows_cvi/regmap_cb.h"
 File Type = "Include"
 Disk Date = 3667436482
 In Projects = "1,"
@@ -224,15 +225,15 @@ Window Left = 6
 Source Window State = "1,0,87,0,0,6,0,0,0,0,0,0,0,0,0,0,31,312,88,20,179,517,1,0,"
 
 [File 0021]
-Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/serial.h"
+Path = "/d/software/cvi/github/bioDemo_labwindows_cvi/serial.h"
 File Type = "Include"
-Disk Date = 3620037702
+Disk Date = 3620037703
 In Projects = "1,"
 Window Top = 23
 Source Window State = "1,0,5,0,0,77,0,0,0,0,0,0,0,0,0,0,6,0,33,77,400,600,1,0,"
 
 [File 0022]
-Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/timer_cb.h"
+Path = "/d/software/cvi/github/bioDemo_labwindows_cvi/timer_cb.h"
 File Type = "Include"
 Disk Date = 3634373646
 In Projects = "1,"
@@ -241,20 +242,23 @@ Window Left = 54
 Source Window State = "1,47,47,47,12,18,12,0,3,0,0,0,0,0,0,0,38,0,47,18,323,517,1,0,"
 
 [File 0023]
-Path = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/bio_demo.uir"
+Path = "/d/software/cvi/github/bioDemo_labwindows_cvi/bio_demo.uir"
 File Type = "User Interface Resource"
-Disk Date = 3670063360
+Disk Date = 3672131621
 In Projects = "1,"
 Window Top = 48
 Window Left = 18
 Window Height = 323
 Window Width = 517
+Window Z-Order = 2
 
 [Tab Order]
-Tab 0001 = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/analysis_piezo.h"
-Tab 0002 = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/local_analysis_cb.c"
-Tab 0003 = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/piezo_cb.c"
-Tab 0004 = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/analysis_piezo.c"
+Tab 0001 = "/d/software/cvi/github/bioDemo_labwindows_cvi/local_analysis_cb.c"
+Tab 0002 = "/d/software/cvi/github/bioDemo_labwindows_cvi/analysis_piezo.h"
+Tab 0003 = "/d/software/cvi/github/bioDemo_labwindows_cvi/piezo_cb.c"
+Tab 0004 = "/d/software/cvi/github/bioDemo_labwindows_cvi/analysis_piezo.c"
+Tab 0005 = "/d/software/cvi/github/bioDemo_labwindows_cvi/bio_demo.uir"
+Tab 0006 = "/d/software/cvi/github/bioDemo_labwindows_cvi/bio_demo.c"
 
 [Default Build Config 0001 Debug]
 Generate Browse Info = True
@@ -355,6 +359,6 @@ Watch Expression = "pdBuffer"
 
 [Distributions]
 Active Index = 1
-AbsCDSPath 0001 = "/d/software/2020/cvi/github/bioDemo_labwindows_cvi/Bio_cvi.cds"
+AbsCDSPath 0001 = "/d/software/cvi/github/bioDemo_labwindows_cvi/Bio_cvi.cds"
 RelCDSPath 0001 = "Bio_cvi.cds"
 

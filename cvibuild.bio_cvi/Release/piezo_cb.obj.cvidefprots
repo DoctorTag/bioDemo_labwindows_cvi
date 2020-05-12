@@ -1,0 +1,16 @@
+[piezoPlotDataFromQueueCallback]
+Class="Function"
+Prototype="void piezoPlotDataFromQueueCallback(int queueHandle, unsigned int event, int value, void *callbackData);"
+
+[piezoTimerCallback]
+Class="Function"
+Prototype="int piezoTimerCallback(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+
+[Quit_Piezo_Cb]
+Class="Function"
+Prototype="int Quit_Piezo_Cb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+
+[Piezo_StartCb]
+Class="Function"
+Prototype="int Piezo_StartCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+

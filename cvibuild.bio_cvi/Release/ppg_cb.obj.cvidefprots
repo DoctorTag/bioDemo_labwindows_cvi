@@ -1,3 +1,11 @@
+[openCsvFile]
+Class="Function"
+Prototype="void openCsvFile(unsigned char file_num);"
+
+[writeCsvFile]
+Class="Function"
+Prototype="void writeCsvFile(int i);"
+
 [ppgPlotDataFromQueueCallback]
 Class="Function"
 Prototype="void ppgPlotDataFromQueueCallback(int queueHandle, unsigned int event, int value, void *callbackData);"

@@ -1,0 +1,28 @@
+[laPlotDataFromQueueCallback]
+Class="Function"
+Prototype="void laPlotDataFromQueueCallback(int queueHandle, unsigned int event, int value, void *callbackData);"
+
+[LA_QuitCb]
+Class="Function"
+Prototype="int LA_QuitCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+
+[LALoadFileCb]
+Class="Function"
+Prototype="int LALoadFileCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+
+[LAStopCb]
+Class="Function"
+Prototype="int LAStopCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+
+[MessageCB]
+Class="Function"
+Prototype="void MessageCB(void *mesg);"
+
+[laThreadFunction]
+Class="Function"
+Prototype="int laThreadFunction(void *functionData);"
+
+[LAStartCb]
+Class="Function"
+Prototype="int LAStartCb(int panel, int control, int event, void *callbackData, int eventData1, int eventData2);"
+

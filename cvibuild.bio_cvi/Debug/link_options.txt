@@ -1,30 +1,30 @@
 -nologo
--out:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\bio_cvi_dbg.exe
+-out:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\bio_cvi_dbg.exe
 -arch:x86
 -timestamp
 -debug:2
 -loadextmod
--res:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\resources.res
+-res:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\resources.res
 -entry:_CVIWinMainStartupCodeForDebugging@0
 -base:0x400000
--linked:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\linkersummary.txt
--dlldeps:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\dlldependencies.txt
--licensing:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\linkerlicensing.txt
--browsedeps:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\moduledependencies.txt
+-linked:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\linkersummary.txt
+-dlldeps:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\dlldependencies.txt
+-licensing:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\linkerlicensing.txt
+-browsedeps:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\moduledependencies.txt
 -stackreserve:131072
 -stackcommit:4096
--in:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\analysis_piezo.obj
--in:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\bio_common.obj
--in:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\bio_demo.obj
--in:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\ecg_d_cb.obj
--in:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\fwup_cb.obj
--in:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\local_analysis_cb.obj
--in:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\mmd_comm.obj
--in:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\piezo_cb.obj
--in:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\ppg_cb.obj
--in:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\regmap_cb.obj
--in:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\serial.obj
--in:d:\software\2020\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\timer_cb.obj
+-in:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\analysis_piezo.obj
+-in:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\bio_common.obj
+-in:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\bio_demo.obj
+-in:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\ecg_d_cb.obj
+-in:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\fwup_cb.obj
+-in:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\local_analysis_cb.obj
+-in:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\mmd_comm.obj
+-in:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\piezo_cb.obj
+-in:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\ppg_cb.obj
+-in:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\regmap_cb.obj
+-in:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\serial.obj
+-in:d:\software\cvi\github\bioDemo_labwindows_cvi\cvibuild.bio_cvi\Debug\timer_cb.obj
 -more:c:\program files (x86)\national instruments\cvi2017\bin\msvc\cvistart.lib
 -more:c:\program files (x86)\national instruments\cvi2017\bin\msvc\cvi.lib
 -more:C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x86\advapi32.lib
@@ -42,7 +42,6 @@
 -more:C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x86\kernel32.lib
 -more:c:\Program Files (x86)\National Instruments\CVI2017\bin\msvc\nivxi.lib
 -more:c:\Program Files (x86)\National Instruments\CVI2017\bin\msvc\omp.lib
--more:c:\Program Files (x86)\National Instruments\Shared\CVI\Bin\msvc\pid.lib
 -more:c:\Program Files (x86)\National Instruments\CVI2017\toolslib\custctrl\msvc\progressbar.obj
 -more:c:\Program Files (x86)\National Instruments\CVI2017\toolslib\toolbox\msvc\toolbox.obj
 -more:C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x86\user32.lib

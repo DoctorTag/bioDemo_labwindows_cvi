@@ -210,7 +210,7 @@ void CVICALLBACK MenuConfigPortCb (int menubar, int menuItem,void *callbackData,
 			{
 				SetCtrlAttribute(cfg_handle,PANEL_CFG_COM,ATTR_DIMMED,0);
 				SetCtrlAttribute(cfg_handle,PANEL_CFG_COM,ATTR_CTRL_VAL,h_comm_handle.com_port);
-				SetCtrlAttribute(cfg_handle,PANEL_CFG_UART_CHKBOX,ATTR_CTRL_VAL,1);
+			//	SetCtrlAttribute(cfg_handle,PANEL_CFG_UART_CHKBOX,ATTR_CTRL_VAL,1);
 			}
 
 			if(h_comm_handle.tcp_port > 0)
