@@ -34,4 +34,4 @@
 *.bak
 *.md.bak
 
-/cvibuild.bio_cvi
+cvibuild.bio_cvi
