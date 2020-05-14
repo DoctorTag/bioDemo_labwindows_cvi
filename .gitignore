@@ -13,8 +13,8 @@
 
 # Compiled Dynamic libraries
 *.so
-*.dylib
-*.dll
+#*.dylib
+#*.dll
 
 # Fortran module files
 *.mod
@@ -23,10 +23,10 @@
 # Compiled Static libraries
 *.lai
 *.la
-*.a
+#*.a
 
 # Executables
-*.exe
+#*.exe
 *.out
 *.app
 
@@ -34,3 +34,4 @@
 *.bak
 *.md.bak
 
+/cvibuild.bio_cvi
