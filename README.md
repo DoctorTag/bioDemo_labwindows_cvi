@@ -1,7 +1,7 @@
 # PC Demo_labwindows_cvi
 PC demo software of Bio-Sensor--F58GM  about labwindows cvi 2017, Part of development Kits for BioSensor. 
 
-For whole project, please refer to [https://github.com/feelkit/bio-hdf](https://github.com/feelkit/bio-hdf).
+For whole project, please refer to [https://github.com/doctorTag](https://github.com/doctorTag).
 
 # How to install
 If you don't hope to compile the project with LabWindows CVI 2017,then you can directly run setup.exe to install it.
@@ -9,7 +9,7 @@ If you don't hope to compile the project with LabWindows CVI 2017,then you can d
 1. Clone the repository:
 
 ```
-git clone --recursive https://github.com/feelkit/bioDemo_labwindows_cvi
+git clone --recursive https://github.com/doctorTag/bioDemo_labwindows_cvi
 
 ```
 2. Run the setup.exe located:
